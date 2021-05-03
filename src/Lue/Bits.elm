@@ -57,7 +57,7 @@ To use it effectively, you will need some [extra bits of randomness](https://pac
 -}
 random : Nat (ArgIn min max maybeN) -> Random.Generator (Arr (In min max) Bit)
 random bitCount =
-    Arr.random bitCount Bit.generate
+    Arr.random bitCount Bit.random
 
 
 {-| Convert an `Arr` of up to 53 `Bit`s to a `Nat`.

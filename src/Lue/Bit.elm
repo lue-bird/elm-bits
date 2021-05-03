@@ -1,6 +1,6 @@
 module Lue.Bit exposing
     ( Bit(..)
-    , generate
+    , random
     , toNat
     , serialize
     )
@@ -12,7 +12,7 @@ module Lue.Bit exposing
 
 ## create
 
-@docs generate
+@docs random
 
 
 ## shape
@@ -70,8 +70,8 @@ toNat =
 
 {-| `Random.Generator` for either `I` or `O`.
 -}
-generate : Random.Generator Bit
-generate =
+random : Random.Generator Bit
+random =
     Random.uniform I [ O ]
 
 
