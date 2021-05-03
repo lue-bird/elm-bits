@@ -77,7 +77,7 @@ generate =
 
 Bits as a universal way of representing information could then be
 
-- represented in different ways (→ [in action](https://lue-bird.github.io/elm-bits/))
+- represented in different ways (→ [in action](https://lue-bird.github.io/try/elm-bits/))
 
     - different string formats (human readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal...)
     - colors, shapes, identicons: [coinop-logan/phace][coinop-logan/phace] or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon])
