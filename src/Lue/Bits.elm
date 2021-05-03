@@ -4,7 +4,7 @@ module Lue.Bits exposing
     , serialize
     )
 
-{-| Working with a `List` of `Bit`s.
+{-| Working with an [`Arr`](https://package.elm-lang.org/packages/lue-bird/elm-typesafe-array/latest/) of `Bit`s.
 
 
 ## create
@@ -73,7 +73,7 @@ toNat bits =
     Common.bitsToNat bits
 
 
-{-| Group an `Arr` of `Bit`s into an `Arr` of `Byte`s.`O`s at the start are kept.
+{-| Group an `Arr` of `Bit`s into `Arr`s of size 8.
 
     Bits.toBytes (Arr.from1 O)
     --> Arr.from1 (Arr.from8 O O O O O O O O)
@@ -88,6 +88,8 @@ toNat bits =
     -->     |> Arr.push (Arr.from8 O I I I O I O O)
     -->     |> Arr.push (Arr.from8 O I I I O I O O)
     --> )
+
+`O`s at the start are kept.
 
 -}
 toBytes :
