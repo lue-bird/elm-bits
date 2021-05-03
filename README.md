@@ -11,6 +11,10 @@ module CurrentUuid exposing (CurrentUuid, toString, fromString)
 type CurrentUuid =
     CurrentUuid String
 
+toString : CurrentUuid -> String
+toString (CurrentUuid string) =
+    string
+
 fromString : String -> Maybe CurrentUuid
 fromString string =
     if
@@ -24,10 +28,6 @@ fromString string =
 
     else
         Nothing
-
-toString : CurrentUuid -> String
-toString =
-    \(CurrentUuid string) -> string
 
 generate : Random.Generator CurrentUuid
 generate =
@@ -56,12 +56,13 @@ With bits:
 ```elm
 module Uuid exposing (Uuid, generate)
 
-import Typed -- from lue-bird/elm-typed-value
-import Arr -- from lue-bird/elm-typesafe-array
+import Arr -- from typesafe-array
 
--- from lue-bird/elm-bounded-nat
+-- from bounded-nat
 import TypeNats exposing (Nat128)
 import Nat exposing (Only)
+
+import Typed -- from typed-value
 
 type alias Uuid =
     Typed Tagged UuidTag Public (Arr (Only Nat128) Bit)
