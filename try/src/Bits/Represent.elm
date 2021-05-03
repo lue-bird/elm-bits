@@ -404,19 +404,19 @@ asShape bits =
     in
     case ( at nat0, at nat1, at nat2 ) of
         ( O, O, O ) ->
-            Collage.circle 22.5
+            Collage.circle 1
 
         ( O, O, I ) ->
-            Collage.rectangle 23 34
+            Collage.rectangle 0.5 1.5
 
         ( O, I, O ) ->
-            Collage.rectangle 34 23
+            Collage.rectangle 1.5 0.5
 
         _ ->
             {- 3 to 8 -}
             Collage.ngon
                 (Bits.toNat paddedBits |> val)
-                22.5
+                1
 
 
 asCollage : Arr (In min Nat11) Bit -> Collage msg
@@ -434,13 +434,13 @@ asCollage bits =
                     Collage.filled
 
                 ( O, I ) ->
-                    Collage.outlined << Collage.solid 5
+                    Collage.outlined << Collage.solid 0.5
 
                 ( I, O ) ->
-                    Collage.outlined << Collage.dash 5
+                    Collage.outlined << Collage.dash 0.5
 
                 ( I, I ) ->
-                    Collage.outlined << Collage.dot 5
+                    Collage.outlined << Collage.dot 0.5
     in
     colorShape
         (Collage.uniform
@@ -471,12 +471,16 @@ asRecognizableCollage bits =
                     rotation =
                         turns part
 
+                    scale =
+                        32 / (toFloat collageCount ^ 0.8)
+
                     radius =
-                        8 * toFloat collageCount
+                        16
                 in
                 collage
                     |> Collage.shiftX (radius * cos rotation)
                     |> Collage.shiftY (radius * sin rotation)
                     |> Collage.rotate rotation
+                    |> Collage.scale scale
             )
         |> Collage.Layout.stack

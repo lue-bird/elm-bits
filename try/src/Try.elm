@@ -11,7 +11,6 @@ import Element.Border as UiBorder
 import Element.Font as UiFont
 import Element.Input as UiInput
 import Html exposing (Html)
-import Html.Attributes
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
 import MinArr
@@ -109,10 +108,10 @@ view model =
             , UiBg.color (Ui.rgb 0 0 0)
             , UiFont.color (Ui.rgb 1 1 1)
             ]
-            [ Ui.el
-                [ UiFont.size 40
-                ]
-                (Ui.text "Try out some bit stuff")
+            [ Ui.text "Try out some bit stuff"
+                |> Ui.el
+                    [ UiFont.size 40
+                    ]
             , Ui.row [ Ui.paddingXY 16 24 ]
                 [ Ui.paragraph []
                     [ Ui.text
@@ -120,12 +119,13 @@ view model =
                             (model.inputBits |> removeLast)
                         )
 
-                    --editable bit: delete or write 0 or 1
+                    -- editable bit: delete or write 0 or 1
                     , UiInput.text
                         [ UiBorder.color (Ui.rgba 0 1 1 0.2)
                         , UiBorder.rounded 20
                         , Ui.padding 3
                         , UiBg.color (Ui.rgba 0 0 0 0)
+                        , UiFont.size 20
                         ]
                         { label = UiInput.labelHidden "enter 0 or 1"
                         , onChange = InputText
@@ -146,22 +146,38 @@ view model =
                         }
                     ]
                 ]
-            , Ui.column [ Ui.spacing 26 ]
-                ([ ( "bit count", Text << (Arr.length >> val >> String.fromInt) )
-                 , ( "as short unicode string"
-                   , Text << RepresentBits.asShortUnicodeString
-                   )
-                 , ( "as hex (0-9 then a-f) string"
-                   , Text << RepresentBits.asHexString
-                   )
-                 , ( "as 0-9 then a-v string"
-                   , Text << RepresentBits.as09avString
-                   )
-                 , ( "as readable string from words"
-                   , Text << RepresentBits.asReadableWordsString
+            , Ui.column [ Ui.spacing 40, Ui.paddingXY 48 28 ]
+                (let
+                    text =
+                        Ui.text
+                            >> Ui.el
+                                [ UiFont.color (Ui.rgb 1 0.5 0.5)
+                                , UiFont.family [ UiFont.monospace ]
+                                , UiFont.size 24
+                                ]
+
+                    svg =
+                        Collage.Render.svg
+                            >> Ui.html
+                            >> Ui.el [ Ui.paddingXY 0 8 ]
+                 in
+                 [ ( "bit count"
+                   , text << (Arr.length >> val >> String.fromInt)
                    )
                  , ( "as recognizable collage"
-                   , Svg << RepresentBits.asRecognizableCollage
+                   , svg << RepresentBits.asRecognizableCollage
+                   )
+                 , ( "as short unicode string"
+                   , text << RepresentBits.asShortUnicodeString
+                   )
+                 , ( "as hex (0-9 then a-f) string"
+                   , text << RepresentBits.asHexString
+                   )
+                 , ( "as 0-9 then a-v string"
+                   , text << RepresentBits.as09avString
+                   )
+                 , ( "as readable string from words"
+                   , text << RepresentBits.asReadableWordsString
                    )
                  ]
                     |> List.map
@@ -169,27 +185,12 @@ view model =
                             Ui.column [ Ui.spacing 4 ]
                                 [ Ui.el
                                     [ UiFont.family [ UiFont.typeface "Noto Sans" ]
-                                    , UiFont.size 17
+                                    , UiFont.size 24
                                     ]
                                     (Ui.text description)
-                                , case representation model.inputBits of
-                                    Text asString ->
-                                        Ui.el
-                                            [ UiFont.color (Ui.rgb 1 0.5 0.5)
-                                            , UiFont.family [ UiFont.monospace ]
-                                            ]
-                                            (Ui.text asString)
-
-                                    Svg asCollage ->
-                                        Ui.html
-                                            (Collage.Render.svg asCollage)
+                                , representation model.inputBits
                                 ]
                         )
                 )
             ]
         )
-
-
-type BitRepresentation msg
-    = Text String
-    | Svg (Collage msg)
