@@ -54,7 +54,7 @@ generate =
 With bits:
 
 ```elm
-module Uuid exposing (Uuid, generate)
+module Uuid exposing (Uuid, random)
 
 import Arr -- from typesafe-array
 
@@ -62,16 +62,16 @@ import Arr -- from typesafe-array
 import TypeNats exposing (Nat128)
 import Nat exposing (Only)
 
-import Typed -- from typed-value
+import Typed exposing (tag) -- from typed-value
 
 type alias Uuid =
     Typed Tagged UuidTag Public (Arr (Only Nat128) Bit)
 
 type UuidTag = UuidTag Never
 
-generate : Random.Generator Uuid
-generate =
-    Typed.serialize (Bits.serialize nat128)
+random : Random.Generator Uuid
+random =
+    Bits.random nat128 |> Random.map tag
 ```
 
 package links:
