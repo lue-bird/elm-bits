@@ -1,7 +1,7 @@
 module Lue.Bit exposing
     ( Bit(..)
     , generate
-    , to0or1
+    , toNat
     , serialize
     )
 
@@ -17,7 +17,7 @@ module Lue.Bit exposing
 
 ## shape
 
-@docs to0or1
+@docs toNat
 
 
 ## extra
@@ -49,10 +49,16 @@ type Bit
     | O
 
 
-{-| Convert `O` to zero, `I` to one.
+{-| Convert `O` to zero, `I` to one. `Nat (In Nat0 (Nat1Plus a))` means that the result will be between 0 & 1.
+
+    toInt bit =
+        bit |> Bit.toNat |> val
+
+`val` is from [`Typed`](https://package.elm-lang.org/packages/lue-bird/elm-typed-value/latest/Typed).
+
 -}
-to0or1 : Bit -> Nat (In Nat0 (Nat1Plus a))
-to0or1 =
+toNat : Bit -> Nat (In Nat0 (Nat1Plus a))
+toNat =
     \bit ->
         case bit of
             O ->

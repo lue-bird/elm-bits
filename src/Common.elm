@@ -20,10 +20,10 @@ bitsToNat bits =
                     { min = nat0 }
                     { equalOrGreater =
                         \powAtLeast1 ->
-                            Bit.to0or1
+                            Bit.toNat
                                 >> Nat.mul (nat2 |> Nat.toPower powAtLeast1)
                     , less =
-                        \_ -> Bit.to0or1 >> MinNat.value
+                        \_ -> Bit.toNat >> MinNat.value
                     }
         )
         (Arr.nats nat53
