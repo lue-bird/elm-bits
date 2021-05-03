@@ -27,7 +27,7 @@ fromString string =
 
 toString : CurrentUuid -> String
 toString =
-    \(Uuid string) -> string
+    \(CurrentUuid string) -> string
 
 generate : Random.Generator CurrentUuid
 generate =
@@ -46,6 +46,7 @@ generate =
             , thirtyOneHexDigits |> List.drop 19 |> List.take 12 |> List.map mapToHex |> String.fromList
             ]
                 |> String.concat
+                |> CurrentUuid
         )
         (Random.list 31 (Random.int 0 15))
 ```
