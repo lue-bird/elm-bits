@@ -81,16 +81,16 @@ package links:
 
 → type-safety & a cleaner way of storing information
 
-Bits as a universal way of representing information could then be
+Bits – as a universal way of representing information – could then be
 
-- represented in different ways (→ [in action](https://lue-bird.github.io/elm-bits/try/))
+- represented in a varienty of ways (→ [in action](https://lue-bird.github.io/elm-bits/try/))
 
-    - different string formats (human readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal...)
-    - colors, shapes, identicons: [coinop-logan/phace][coinop-logan/phace] or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon])
+    - different string formats (human readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal, ...)
+    - colors, shapes, identicons ([coinop-logan/phace][coinop-logan/phace] or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon])), ...
 
 - converted from multiple types of data
 
-    - from bits directly, from characters...
+    - from bits directly, from characters, from ints...
 
 ```elm
 import Uuid exposing (Uuid)
