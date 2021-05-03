@@ -20,9 +20,9 @@ is a byte.
 import Arr exposing (Arr)
 import Common
 import LinearDirection exposing (LinearDirection(..))
-import Lue.Bit as Bit exposing (Bit(..))
+import Lue.Bit exposing (Bit(..))
 import NNats exposing (..)
-import Nat exposing (In, Is, N, Only, To)
+import Nat exposing (In, Only)
 import Serialize
 import TypeNats exposing (..)
 import Typed exposing (val)
