@@ -1,7 +1,5 @@
 module ArrExtra exposing (groupPaddingLeft)
 
-{-| -}
-
 import Arr exposing (Arr)
 import Array
 import Array.LinearDirection as Array
@@ -10,7 +8,6 @@ import MinArr
 import NNats exposing (..)
 import Nat exposing (ArgIn, In, Min, Nat)
 import TypeNats exposing (..)
-import Typed exposing (val)
 
 
 groupPaddingLeft :
@@ -20,14 +17,14 @@ groupPaddingLeft :
     -> Arr (Min Nat0) (Arr (In (Nat1Plus minGroupSizeMinus1) maxGroupSize) element)
 groupPaddingLeft groupSize defaultElement bitArr =
     let
-        { groups, less } =
+        { groups, remaining } =
             Arr.groupsOf groupSize LastToFirst bitArr
     in
-    if Array.isEmpty (less |> Arr.toArray) then
+    if Array.isEmpty (remaining |> Arr.toArray) then
         groups |> MinArr.value
 
     else
-        less
+        remaining
             |> Arr.resize LastToFirst groupSize defaultElement
             |> Arr.from1
             |> MinArr.extend groups nat0

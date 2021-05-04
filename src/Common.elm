@@ -15,16 +15,13 @@ bitsToNat : Arr (In min Nat53) Bit -> Nat (Min Nat0)
 bitsToNat bits =
     Arr.map2
         (\power ->
-            power
-                |> InNat.isAtLeast nat1
-                    { min = nat0 }
-                    { equalOrGreater =
-                        \powAtLeast1 ->
-                            Bit.toNat
-                                >> Nat.mul (nat2 |> Nat.toPower powAtLeast1)
-                    , less =
-                        \_ -> Bit.toNat >> MinNat.value
-                    }
+            case power |> InNat.isAtLeast nat1 { min = nat0 } of
+                Nat.EqualOrGreater powAtLeast1 ->
+                    Bit.toNat
+                        >> Nat.mul (nat2 |> Nat.toPower powAtLeast1)
+
+                Nat.Below _ ->
+                    Bit.toNat >> MinNat.value
         )
         (Arr.nats nat53
             |> Arr.lowerMinLength nat0
