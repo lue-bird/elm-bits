@@ -76,13 +76,13 @@ random =
 
 package links:
 
-- [typesafe-array](https://package.elm-lang.org/packages/lue-bird/elm-typesafe-array/latest/)
+- **[typesafe-array](https://package.elm-lang.org/packages/lue-bird/elm-typesafe-array/latest/)**
     - which uses [bounded-nat](https://package.elm-lang.org/packages/lue-bird/elm-bounded-nat/latest/)
-- just as an extra: [typed-value](https://package.elm-lang.org/packages/lue-bird/elm-typed-value/latest/)
+- just an extra: [typed-value](https://package.elm-lang.org/packages/lue-bird/elm-typed-value/latest/)
 
 → type-safety & a cleaner way of storing information
 
-Bits – as a universal way of representing information – could then be
+Bits, as a universal way of representing information, could then be
 
 - represented in a varienty of ways (→ [in action](https://lue-bird.github.io/elm-bits/try/))
 
