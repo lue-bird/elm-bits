@@ -86,11 +86,11 @@ bytesTest =
                 \() ->
                     Bits.toBytes
                         (Arr.from3 I I I
-                            |> InArr.extendOnly nat24
+                            |> InArr.extend nat24
                                 (Arr.from8 O I I I O I O O
-                                    |> InArr.extendOnly nat8
+                                    |> InArr.extend nat8
                                         (Arr.from8 O I I I O I O O)
-                                    |> InArr.extendOnly nat8
+                                    |> InArr.extend nat8
                                         (Arr.from8 O I I I O I O O)
                                 )
                         )
@@ -102,7 +102,7 @@ bytesTest =
                             )
                         |> Expect.equal
                             (Arr.from1 (Arr.from3 I I I |> Bits.padToByte)
-                                |> InArr.extendOnly nat3
+                                |> InArr.extend nat3
                                     (Arr.repeat nat3 (Arr.from8 O I I I O I O O))
                                 |> Arr.toArray
                                 |> Array.toList
