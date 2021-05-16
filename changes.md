@@ -17,3 +17,7 @@
 
 - updated `typesafe-array` to 12.0.0
 - updated bit representation website
+
+#### 2.0.4
+
+- corrected old `Arr.extendOnly`s to `extend`s in the readme
