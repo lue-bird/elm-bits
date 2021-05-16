@@ -65,7 +65,8 @@ import Nat exposing (Only)
 import Typed exposing (tag) -- from typed-value
 
 type alias Uuid =
-    Typed Tagged UuidTag Public (Arr (Only Nat128) Bit)
+    Typed Tagged UuidTag
+        Public (Arr (Only Nat128) Bit)
 
 type UuidTag = UuidTag Never
 
@@ -106,9 +107,9 @@ viewUuid uuid =
 
 uuidFromAllBits : Uuid
 uuidFromAllBits =
-    -- raw bits
+    -- raw bits (could be in a seperate package)
     Arr.from16 O I O I I I I O I I I I I O O O
-        |> Arr.extendOnly nat16
+        |> Arr.extend nat16
             (Arr.from16 I I I O O O O I O I I I I O I I)
         -- ...
         |> tag
@@ -117,14 +118,14 @@ uuidFromChars : Uuid
 uuidFromChars =
     let
         c char =
-            Arr.extendOnly nat20 (charToBits char)
+            Arr.extend nat20 (charToBits char)
     in
     Arr.empty
         -- the first 120 bits
         |> c '骖' |> c '򥔤' |> c '򚔤'
         |> c '򒒔' |> c '񉉉' |> c '𥩒'
         -- the last 8 bits
-        |> Arr.extendOnly nat8
+        |> Arr.extend nat8
             (Arr.from8 O I O I I I I O)
         |> tag
 
