@@ -12,3 +12,8 @@
 #### 2.0.2
 
 - updated `bounded-nat` to 15.0.0 & `typesafe-array` to 10.0.0
+
+#### 2.0.3
+
+- updated `typesafe-array` to 12.0.0
+- updated bit representation website
