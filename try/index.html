@@ -5301,7 +5301,7 @@ var $lue_bird$elm_bounded_nat$I$add = function (natToAdd) {
 			$lue_bird$elm_typed_value$Typed$tag,
 			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_bounded_nat$I$Nat)));
 };
-var $lue_bird$elm_bounded_nat$InNat$addN = function (nNatToAdd) {
+var $lue_bird$elm_bounded_nat$InNat$add = function (nNatToAdd) {
 	return $lue_bird$elm_bounded_nat$I$add(nNatToAdd);
 };
 var $lue_bird$elm_bounded_nat$I$nat1 = A2(
@@ -5322,7 +5322,8 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$mapArrayAndLength = F2(
 			function (v) {
 				return {
 					array: mapArray_(v.array),
-					length: mapLength_(v.length)
+					length: $lue_bird$elm_bounded_nat$InNat$value(
+						mapLength_(v.length))
 				};
 			});
 	});
@@ -5425,7 +5426,7 @@ var $lue_bird$elm_typesafe_array$Arr$push = function (element) {
 	return A2(
 		$lue_bird$elm_typesafe_array$Internal$Arr$push,
 		element,
-		$lue_bird$elm_bounded_nat$InNat$addN($lue_bird$elm_bounded_nat$NNats$nat1));
+		$lue_bird$elm_bounded_nat$InNat$add($lue_bird$elm_bounded_nat$NNats$nat1));
 };
 var $lue_bird$elm_typesafe_array$Arr$from1 = function (a) {
 	return A2($lue_bird$elm_typesafe_array$Arr$push, a, $lue_bird$elm_typesafe_array$Arr$empty);
@@ -5478,7 +5479,8 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$mapLength = function (mapLength_) 
 		function (v) {
 			return {
 				array: v.array,
-				length: mapLength_(v.length)
+				length: $lue_bird$elm_bounded_nat$InNat$value(
+					mapLength_(v.length))
 			};
 		});
 };
@@ -5492,7 +5494,8 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$lowerMinLength = function (validMi
 var $lue_bird$elm_typesafe_array$Arr$lowerMinLength = $lue_bird$elm_typesafe_array$Internal$Arr$lowerMinLength;
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $lue_bird$elm_bounded_nat$MinNat$value = $lue_bird$elm_bounded_nat$I$newRange;
+var $lue_bird$elm_bounded_nat$I$minValue = $lue_bird$elm_bounded_nat$I$newRange;
+var $lue_bird$elm_bounded_nat$MinNat$value = $lue_bird$elm_bounded_nat$I$minValue;
 var $lue_bird$elm_typesafe_array$Internal$MinArr$value = A2(
 	$elm$core$Basics$composeR,
 	$lue_bird$elm_typesafe_array$Internal$Arr$mapLength($lue_bird$elm_bounded_nat$MinNat$value),
@@ -5509,52 +5512,354 @@ var $author$project$Try$init = _Utils_Tuple2(
 	$elm$core$Platform$Cmd$none);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $author$project$Util$last = function (list) {
-	last:
-	while (true) {
-		if (!list.b) {
-			return $elm$core$Maybe$Nothing;
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (_v0.$ === 'Just') {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
 		} else {
-			if (!list.b.b) {
-				var one = list.a;
-				return $elm$core$Maybe$Just(one);
-			} else {
-				var more = list.b;
-				var $temp$list = more;
-				list = $temp$list;
-				continue last;
-			}
+			return xs;
 		}
-	}
-};
-var $lue_bird$elm_bounded_nat$MinNat$addN = function (nNatToAdd) {
-	return $lue_bird$elm_bounded_nat$I$add(nNatToAdd);
-};
-var $lue_bird$elm_typesafe_array$Internal$MinArr$push = function (element) {
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
+var $lue_bird$elm_bounded_nat$I$isIntAtLeast = F2(
+	function (minimum, _int) {
+		return (_Utils_cmp(
+			_int,
+			$lue_bird$elm_typed_value$Typed$val(minimum)) > -1) ? $elm$core$Maybe$Just(
+			A2(
+				$lue_bird$elm_typed_value$Typed$isChecked,
+				$lue_bird$elm_bounded_nat$I$Nat,
+				$lue_bird$elm_typed_value$Typed$tag(_int))) : $elm$core$Maybe$Nothing;
+	});
+var $lue_bird$elm_bounded_nat$Nat$isIntAtLeast = F2(
+	function (minimum, _int) {
+		return A2($lue_bird$elm_bounded_nat$I$isIntAtLeast, minimum, _int);
+	});
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $lue_bird$elm_bounded_nat$Nat$intAtLeast = function (minimum) {
 	return A2(
-		$lue_bird$elm_typesafe_array$Internal$Arr$push,
-		element,
-		$lue_bird$elm_bounded_nat$MinNat$addN($lue_bird$elm_bounded_nat$NNats$nat1));
+		$elm$core$Basics$composeR,
+		$lue_bird$elm_bounded_nat$Nat$isIntAtLeast(minimum),
+		$elm$core$Maybe$withDefault(
+			$lue_bird$elm_bounded_nat$I$minValue(minimum)));
 };
-var $lue_bird$elm_typesafe_array$MinArr$push = function (element) {
-	return $lue_bird$elm_typesafe_array$Internal$MinArr$push(element);
-};
-var $lue_bird$elm_linear_direction$LinearDirection$LastToFirst = {$: 'LastToFirst'};
 var $elm$core$Array$length = function (_v0) {
 	var len = _v0.a;
 	return len;
 };
-var $lue_bird$elm_linear_direction$LinearDirection$FirstToLast = {$: 'FirstToLast'};
-var $lue_bird$elm_linear_direction$LinearDirection$opposite = function (direction) {
-	if (direction.$ === 'FirstToLast') {
-		return $lue_bird$elm_linear_direction$LinearDirection$LastToFirst;
+var $lue_bird$elm_typesafe_array$Internal$Arr$fromArray = function (array) {
+	return A2(
+		$lue_bird$elm_typed_value$Typed$isChecked,
+		$lue_bird$elm_typesafe_array$Internal$Arr$Arr,
+		$lue_bird$elm_typed_value$Typed$tag(
+			{
+				array: array,
+				length: A2(
+					$lue_bird$elm_bounded_nat$Nat$intAtLeast,
+					$lue_bird$elm_bounded_nat$NNats$nat0,
+					$elm$core$Array$length(array))
+			}));
+};
+var $lue_bird$elm_typesafe_array$Arr$fromArray = $lue_bird$elm_typesafe_array$Internal$Arr$fromArray;
+var $elm$core$Array$fromListHelp = F3(
+	function (list, nodeList, nodeListSize) {
+		fromListHelp:
+		while (true) {
+			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
+			var jsArray = _v0.a;
+			var remainingItems = _v0.b;
+			if (_Utils_cmp(
+				$elm$core$Elm$JsArray$length(jsArray),
+				$elm$core$Array$branchFactor) < 0) {
+				return A2(
+					$elm$core$Array$builderToArray,
+					true,
+					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
+			} else {
+				var $temp$list = remainingItems,
+					$temp$nodeList = A2(
+					$elm$core$List$cons,
+					$elm$core$Array$Leaf(jsArray),
+					nodeList),
+					$temp$nodeListSize = nodeListSize + 1;
+				list = $temp$list;
+				nodeList = $temp$nodeList;
+				nodeListSize = $temp$nodeListSize;
+				continue fromListHelp;
+			}
+		}
+	});
+var $elm$core$Array$fromList = function (list) {
+	if (!list.b) {
+		return $elm$core$Array$empty;
 	} else {
-		return $lue_bird$elm_linear_direction$LinearDirection$FirstToLast;
+		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
 	}
 };
-var $elm$core$Basics$negate = function (n) {
-	return -n;
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
 };
+var $author$project$Try$update = F2(
+	function (msg, model) {
+		var string = msg.a;
+		return _Utils_Tuple2(
+			_Utils_update(
+				model,
+				{
+					inputBits: $lue_bird$elm_typesafe_array$Arr$fromArray(
+						$elm$core$Array$fromList(
+							A2(
+								$elm$core$List$filterMap,
+								function (_char) {
+									switch (_char.valueOf()) {
+										case '0':
+											return $elm$core$Maybe$Just($author$project$Lue$Bit$O);
+										case '1':
+											return $elm$core$Maybe$Just($author$project$Lue$Bit$I);
+										default:
+											return $elm$core$Maybe$Nothing;
+									}
+								},
+								$elm$core$List$reverse(
+									$elm$core$String$toList(string)))))
+				}),
+			$elm$core$Platform$Cmd$none);
+	});
+var $author$project$Try$InputText = function (a) {
+	return {$: 'InputText', a: a};
+};
+var $lue_bird$elm_linear_direction$LinearDirection$FirstToLast = {$: 'FirstToLast'};
+var $elm$core$Elm$JsArray$foldl = _JsArray_foldl;
+var $elm$core$Array$foldl = F3(
+	function (func, baseCase, _v0) {
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = F2(
+			function (node, acc) {
+				if (node.$ === 'SubTree') {
+					var subTree = node.a;
+					return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
+				} else {
+					var values = node.a;
+					return A3($elm$core$Elm$JsArray$foldl, func, acc, values);
+				}
+			});
+		return A3(
+			$elm$core$Elm$JsArray$foldl,
+			func,
+			A3($elm$core$Elm$JsArray$foldl, helper, baseCase, tree),
+			tail);
+	});
+var $lue_bird$elm_linear_direction$Array$LinearDirection$fold = F4(
+	function (direction, reduce, initial, array) {
+		if (direction.$ === 'FirstToLast') {
+			return A3($elm$core$Array$foldl, reduce, initial, array);
+		} else {
+			return A3($elm$core$Array$foldr, reduce, initial, array);
+		}
+	});
+var $lue_bird$elm_typed_value$Typed$internalVal = function (_v0) {
+	return function (_v1) {
+		var value_ = _v1.a;
+		return value_;
+	};
+};
+var $lue_bird$elm_typesafe_array$Internal$Arr$toArray = A2(
+	$elm$core$Basics$composeR,
+	$lue_bird$elm_typed_value$Typed$internalVal($lue_bird$elm_typesafe_array$Internal$Arr$Arr),
+	function ($) {
+		return $.array;
+	});
+var $lue_bird$elm_typesafe_array$Arr$toArray = $lue_bird$elm_typesafe_array$Internal$Arr$toArray;
+var $lue_bird$elm_typesafe_array$Arr$fold = F3(
+	function (direction, reduce, initial) {
+		return A2(
+			$elm$core$Basics$composeR,
+			$lue_bird$elm_typesafe_array$Arr$toArray,
+			A3($lue_bird$elm_linear_direction$Array$LinearDirection$fold, direction, reduce, initial));
+	});
+var $elm$core$Elm$JsArray$map = _JsArray_map;
+var $elm$core$Array$map = F2(
+	function (func, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		var helper = function (node) {
+			if (node.$ === 'SubTree') {
+				var subTree = node.a;
+				return $elm$core$Array$SubTree(
+					A2($elm$core$Elm$JsArray$map, helper, subTree));
+			} else {
+				var values = node.a;
+				return $elm$core$Array$Leaf(
+					A2($elm$core$Elm$JsArray$map, func, values));
+			}
+		};
+		return A4(
+			$elm$core$Array$Array_elm_builtin,
+			len,
+			startShift,
+			A2($elm$core$Elm$JsArray$map, helper, tree),
+			A2($elm$core$Elm$JsArray$map, func, tail));
+	});
+var $lue_bird$elm_typesafe_array$Internal$Arr$mapArray = function (mapArray_) {
+	return $lue_bird$elm_typed_value$Typed$map(
+		function (v) {
+			return {
+				array: mapArray_(v.array),
+				length: v.length
+			};
+		});
+};
+var $lue_bird$elm_typesafe_array$Internal$Arr$map = function (alter) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$lue_bird$elm_typesafe_array$Internal$Arr$mapArray(
+			$elm$core$Array$map(alter)),
+		$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr$Arr));
+};
+var $lue_bird$elm_typesafe_array$Arr$map = function (alter) {
+	return $lue_bird$elm_typesafe_array$Internal$Arr$map(alter);
+};
+var $author$project$Lue$Bit$toNat = function (bit) {
+	if (bit.$ === 'O') {
+		return $lue_bird$elm_bounded_nat$InNat$value($lue_bird$elm_bounded_nat$NNats$nat0);
+	} else {
+		return A2($lue_bird$elm_bounded_nat$Nat$lowerMin, $lue_bird$elm_bounded_nat$NNats$nat0, $lue_bird$elm_bounded_nat$NNats$nat1);
+	}
+};
+var $author$project$Bits$Represent$as01String = function (bits) {
+	return A4(
+		$lue_bird$elm_typesafe_array$Arr$fold,
+		$lue_bird$elm_linear_direction$LinearDirection$FirstToLast,
+		$elm$core$Basics$append,
+		'',
+		A2(
+			$lue_bird$elm_typesafe_array$Arr$map,
+			A2(
+				$elm$core$Basics$composeR,
+				$author$project$Lue$Bit$toNat,
+				A2($elm$core$Basics$composeR, $lue_bird$elm_typed_value$Typed$val, $elm$core$String$fromInt)),
+			bits));
+};
+var $lue_bird$elm_linear_direction$LinearDirection$LastToFirst = {$: 'LastToFirst'};
+var $bburdette$toop$Toop$T4 = F4(
+	function (a, b, c, d) {
+		return {$: 'T4', a: a, b: b, c: c, d: d};
+	});
+var $elm$core$Array$getHelp = F3(
+	function (shift, index, tree) {
+		getHelp:
+		while (true) {
+			var pos = $elm$core$Array$bitMask & (index >>> shift);
+			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
+			if (_v0.$ === 'SubTree') {
+				var subTree = _v0.a;
+				var $temp$shift = shift - $elm$core$Array$shiftStep,
+					$temp$index = index,
+					$temp$tree = subTree;
+				shift = $temp$shift;
+				index = $temp$index;
+				tree = $temp$tree;
+				continue getHelp;
+			} else {
+				var values = _v0.a;
+				return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
+			}
+		}
+	});
+var $elm$core$Array$tailIndex = function (len) {
+	return (len >>> 5) << 5;
+};
+var $elm$core$Array$get = F2(
+	function (index, _v0) {
+		var len = _v0.a;
+		var startShift = _v0.b;
+		var tree = _v0.c;
+		var tail = _v0.d;
+		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? $elm$core$Maybe$Nothing : ((_Utils_cmp(
+			index,
+			$elm$core$Array$tailIndex(len)) > -1) ? $elm$core$Maybe$Just(
+			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
+			A3($elm$core$Array$getHelp, startShift, index, tree)));
+	});
+var $lue_bird$elm_linear_direction$LinearDirection$toFirstToLast = F3(
+	function (direction, _v0, n) {
+		var length = _v0.length;
+		if (direction.$ === 'FirstToLast') {
+			return n;
+		} else {
+			return (length - 1) - n;
+		}
+	});
+var $lue_bird$elm_linear_direction$Array$LinearDirection$at = F3(
+	function (index, direction, array) {
+		return A2(
+			$elm$core$Array$get,
+			A3(
+				$lue_bird$elm_linear_direction$LinearDirection$toFirstToLast,
+				direction,
+				{
+					length: $elm$core$Array$length(array)
+				},
+				index),
+			array);
+	});
+var $lue_bird$elm_typesafe_array$Internal$Arr$at = F2(
+	function (index, direction) {
+		return function (arr) {
+			var _v0 = A3(
+				$lue_bird$elm_linear_direction$Array$LinearDirection$at,
+				$lue_bird$elm_typed_value$Typed$val(index),
+				direction,
+				$lue_bird$elm_typesafe_array$Internal$Arr$toArray(arr));
+			if (_v0.$ === 'Just') {
+				var element = _v0.a;
+				return element;
+			} else {
+				return A3($lue_bird$elm_typesafe_array$Internal$Arr$at, index, direction, arr);
+			}
+		};
+	});
+var $lue_bird$elm_typesafe_array$Arr$at = F2(
+	function (index, direction) {
+		return A2($lue_bird$elm_typesafe_array$Internal$Arr$at, index, direction);
+	});
+var $lue_bird$elm_bounded_nat$I$nat2 = A2(
+	$lue_bird$elm_typed_value$Typed$isChecked,
+	$lue_bird$elm_bounded_nat$I$Nat,
+	$lue_bird$elm_typed_value$Typed$tag(2));
+var $lue_bird$elm_bounded_nat$NNats$nat2 = $lue_bird$elm_bounded_nat$I$nat2;
+var $lue_bird$elm_bounded_nat$I$nat3 = A2(
+	$lue_bird$elm_typed_value$Typed$isChecked,
+	$lue_bird$elm_bounded_nat$I$Nat,
+	$lue_bird$elm_typed_value$Typed$tag(3));
+var $lue_bird$elm_bounded_nat$NNats$nat3 = $lue_bird$elm_bounded_nat$I$nat3;
+var $lue_bird$elm_bounded_nat$I$nat4 = A2(
+	$lue_bird$elm_typed_value$Typed$isChecked,
+	$lue_bird$elm_bounded_nat$I$Nat,
+	$lue_bird$elm_typed_value$Typed$tag(4));
+var $lue_bird$elm_bounded_nat$NNats$nat4 = $lue_bird$elm_bounded_nat$I$nat4;
+var $elm$core$Basics$compare = _Utils_compare;
 var $elm$core$Elm$JsArray$appendN = _JsArray_appendN;
 var $elm$core$Elm$JsArray$slice = _JsArray_slice;
 var $elm$core$Array$appendHelpBuilder = F2(
@@ -5578,6 +5883,118 @@ var $elm$core$Array$appendHelpBuilder = F2(
 			tail: $elm$core$Elm$JsArray$empty
 		} : {nodeList: builder.nodeList, nodeListSize: builder.nodeListSize, tail: appended});
 	});
+var $elm$core$Array$appendHelpTree = F2(
+	function (toAppend, array) {
+		var len = array.a;
+		var tree = array.c;
+		var tail = array.d;
+		var itemsToAppend = $elm$core$Elm$JsArray$length(toAppend);
+		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(tail)) - itemsToAppend;
+		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, tail, toAppend);
+		var newArray = A2($elm$core$Array$unsafeReplaceTail, appended, array);
+		if (notAppended < 0) {
+			var nextTail = A3($elm$core$Elm$JsArray$slice, notAppended, itemsToAppend, toAppend);
+			return A2($elm$core$Array$unsafeReplaceTail, nextTail, newArray);
+		} else {
+			return newArray;
+		}
+	});
+var $elm$core$Array$builderFromArray = function (_v0) {
+	var len = _v0.a;
+	var tree = _v0.c;
+	var tail = _v0.d;
+	var helper = F2(
+		function (node, acc) {
+			if (node.$ === 'SubTree') {
+				var subTree = node.a;
+				return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
+			} else {
+				return A2($elm$core$List$cons, node, acc);
+			}
+		});
+	return {
+		nodeList: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
+		nodeListSize: (len / $elm$core$Array$branchFactor) | 0,
+		tail: tail
+	};
+};
+var $elm$core$Array$append = F2(
+	function (a, _v0) {
+		var aTail = a.d;
+		var bLen = _v0.a;
+		var bTree = _v0.c;
+		var bTail = _v0.d;
+		if (_Utils_cmp(bLen, $elm$core$Array$branchFactor * 4) < 1) {
+			var foldHelper = F2(
+				function (node, array) {
+					if (node.$ === 'SubTree') {
+						var tree = node.a;
+						return A3($elm$core$Elm$JsArray$foldl, foldHelper, array, tree);
+					} else {
+						var leaf = node.a;
+						return A2($elm$core$Array$appendHelpTree, leaf, array);
+					}
+				});
+			return A2(
+				$elm$core$Array$appendHelpTree,
+				bTail,
+				A3($elm$core$Elm$JsArray$foldl, foldHelper, a, bTree));
+		} else {
+			var foldHelper = F2(
+				function (node, builder) {
+					if (node.$ === 'SubTree') {
+						var tree = node.a;
+						return A3($elm$core$Elm$JsArray$foldl, foldHelper, builder, tree);
+					} else {
+						var leaf = node.a;
+						return A2($elm$core$Array$appendHelpBuilder, leaf, builder);
+					}
+				});
+			return A2(
+				$elm$core$Array$builderToArray,
+				true,
+				A2(
+					$elm$core$Array$appendHelpBuilder,
+					bTail,
+					A3(
+						$elm$core$Elm$JsArray$foldl,
+						foldHelper,
+						$elm$core$Array$builderFromArray(a),
+						bTree)));
+		}
+	});
+var $lue_bird$elm_linear_direction$List$LinearDirection$fold = F4(
+	function (direction, reduce, initial, list) {
+		if (direction.$ === 'FirstToLast') {
+			return A3($elm$core$List$foldl, reduce, initial, list);
+		} else {
+			return A3($elm$core$List$foldr, reduce, initial, list);
+		}
+	});
+var $lue_bird$elm_linear_direction$Array$LinearDirection$concat = F2(
+	function (direction, arrays) {
+		return A4(
+			$lue_bird$elm_linear_direction$List$LinearDirection$fold,
+			direction,
+			F2(
+				function (current, soFar) {
+					return A2($elm$core$Array$append, soFar, current);
+				}),
+			$elm$core$Array$empty,
+			arrays);
+	});
+var $elm$core$Array$repeat = F2(
+	function (n, e) {
+		return A2(
+			$elm$core$Array$initialize,
+			n,
+			function (_v0) {
+				return e;
+			});
+	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
 var $elm$core$List$drop = F2(
 	function (n, list) {
 		drop:
@@ -5599,9 +6016,6 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
-var $elm$core$Array$tailIndex = function (len) {
-	return (len >>> 5) << 5;
-};
 var $elm$core$Array$sliceLeft = F2(
 	function (from, array) {
 		var len = array.a;
@@ -5797,492 +6211,6 @@ var $lue_bird$elm_linear_direction$Array$LinearDirection$take = F3(
 			return $elm$core$Array$empty;
 		}
 	});
-var $lue_bird$elm_linear_direction$Array$LinearDirection$drop = F3(
-	function (amount, direction, array) {
-		return A3(
-			$lue_bird$elm_linear_direction$Array$LinearDirection$take,
-			$elm$core$Array$length(array) - amount,
-			$lue_bird$elm_linear_direction$LinearDirection$opposite(direction),
-			array);
-	});
-var $lue_bird$elm_typesafe_array$Internal$Arr$drop = F3(
-	function (droppedAmount, direction, subDropped) {
-		return A2(
-			$elm$core$Basics$composeR,
-			A2(
-				$lue_bird$elm_typesafe_array$Internal$Arr$mapArrayAndLength,
-				A2(
-					$lue_bird$elm_linear_direction$Array$LinearDirection$drop,
-					$lue_bird$elm_typed_value$Typed$val(droppedAmount),
-					direction),
-				function (len) {
-					return A2(subDropped, droppedAmount, len);
-				}),
-			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr$Arr));
-	});
-var $lue_bird$elm_bounded_nat$I$sub = function (natToSubtract) {
-	return A2(
-		$elm$core$Basics$composeR,
-		A2(
-			$lue_bird$elm_typed_value$Typed$val2,
-			F2(
-				function (toSub, x) {
-					return x - toSub;
-				}),
-			natToSubtract),
-		A2(
-			$elm$core$Basics$composeR,
-			$lue_bird$elm_typed_value$Typed$tag,
-			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_bounded_nat$I$Nat)));
-};
-var $lue_bird$elm_bounded_nat$MinNat$subN = function (nNatToSubtract) {
-	return $lue_bird$elm_bounded_nat$I$sub(nNatToSubtract);
-};
-var $lue_bird$elm_typesafe_array$Internal$MinArr$drop = F2(
-	function (droppedAmount, direction) {
-		return A3($lue_bird$elm_typesafe_array$Internal$Arr$drop, droppedAmount, direction, $lue_bird$elm_bounded_nat$MinNat$subN);
-	});
-var $lue_bird$elm_typesafe_array$MinArr$drop = F2(
-	function (droppedAmount, direction) {
-		return A2($lue_bird$elm_typesafe_array$Internal$MinArr$drop, droppedAmount, direction);
-	});
-var $lue_bird$elm_bounded_nat$MinNat$isAtLeast = F3(
-	function (triedLowerBound, min, cases) {
-		return function (minNat) {
-			return A3($lue_bird$elm_typed_value$Typed$val2, $elm$core$Basics$ge, minNat, triedLowerBound) ? A2(
-				function ($) {
-					return $.equalOrGreater;
-				},
-				cases,
-				$lue_bird$elm_bounded_nat$I$newRange(minNat)) : A2(
-				function ($) {
-					return $.less;
-				},
-				cases,
-				$lue_bird$elm_bounded_nat$I$newRange(minNat));
-		};
-	});
-var $lue_bird$elm_typed_value$Typed$internalVal = function (_v0) {
-	return function (_v1) {
-		var value_ = _v1.a;
-		return value_;
-	};
-};
-var $lue_bird$elm_typesafe_array$Internal$Arr$length = A2(
-	$elm$core$Basics$composeR,
-	$lue_bird$elm_typed_value$Typed$internalVal($lue_bird$elm_typesafe_array$Internal$Arr$Arr),
-	function ($) {
-		return $.length;
-	});
-var $lue_bird$elm_typesafe_array$Arr$length = $lue_bird$elm_typesafe_array$Internal$Arr$length;
-var $lue_bird$elm_typesafe_array$Internal$Arr$toArray = A2(
-	$elm$core$Basics$composeR,
-	$lue_bird$elm_typed_value$Typed$internalVal($lue_bird$elm_typesafe_array$Internal$Arr$Arr),
-	function ($) {
-		return $.array;
-	});
-var $lue_bird$elm_typesafe_array$Arr$toArray = $lue_bird$elm_typesafe_array$Internal$Arr$toArray;
-var $lue_bird$elm_typesafe_array$Internal$MinArr$isLengthAtLeast = F3(
-	function (lowerBound, min, cases) {
-		return function (arr) {
-			var withLength = function (len) {
-				return A2(
-					$lue_bird$elm_typed_value$Typed$isChecked,
-					$lue_bird$elm_typesafe_array$Internal$Arr$Arr,
-					$lue_bird$elm_typed_value$Typed$tag(
-						{
-							array: $lue_bird$elm_typesafe_array$Arr$toArray(arr),
-							length: len
-						}));
-			};
-			return A4(
-				$lue_bird$elm_bounded_nat$MinNat$isAtLeast,
-				lowerBound,
-				min,
-				{
-					equalOrGreater: A2(
-						$elm$core$Basics$composeR,
-						withLength,
-						function ($) {
-							return $.equalOrGreater;
-						}(cases)),
-					less: A2(
-						$elm$core$Basics$composeR,
-						withLength,
-						function ($) {
-							return $.less;
-						}(cases))
-				},
-				$lue_bird$elm_typesafe_array$Arr$length(arr));
-		};
-	});
-var $lue_bird$elm_typesafe_array$MinArr$isLengthAtLeast = F3(
-	function (lowerBound, min, cases) {
-		return A3($lue_bird$elm_typesafe_array$Internal$MinArr$isLengthAtLeast, lowerBound, min, cases);
-	});
-var $author$project$Util$removeLast = function (arr) {
-	return A4(
-		$lue_bird$elm_typesafe_array$MinArr$isLengthAtLeast,
-		$lue_bird$elm_bounded_nat$NNats$nat1,
-		{min: $lue_bird$elm_bounded_nat$NNats$nat0},
-		{
-			equalOrGreater: A2($lue_bird$elm_typesafe_array$MinArr$drop, $lue_bird$elm_bounded_nat$NNats$nat1, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst),
-			less: $lue_bird$elm_typesafe_array$MinArr$value
-		},
-		A2($lue_bird$elm_typesafe_array$Arr$lowerMinLength, $lue_bird$elm_bounded_nat$NNats$nat0, arr));
-};
-var $elm$core$String$foldr = _String_foldr;
-var $elm$core$String$toList = function (string) {
-	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
-};
-var $author$project$Try$update = F2(
-	function (msg, model) {
-		var string = msg.a;
-		return _Utils_Tuple2(
-			function () {
-				var _v1 = $author$project$Util$last(
-					$elm$core$String$toList(string));
-				if (_v1.$ === 'Nothing') {
-					return _Utils_update(
-						model,
-						{
-							inputBits: $author$project$Util$removeLast(model.inputBits)
-						});
-				} else {
-					switch (_v1.a.valueOf()) {
-						case '0':
-							return _Utils_update(
-								model,
-								{
-									inputBits: A2(
-										$lue_bird$elm_typesafe_array$Arr$lowerMinLength,
-										$lue_bird$elm_bounded_nat$NNats$nat0,
-										A2($lue_bird$elm_typesafe_array$MinArr$push, $author$project$Lue$Bit$O, model.inputBits))
-								});
-						case '1':
-							return _Utils_update(
-								model,
-								{
-									inputBits: A2(
-										$lue_bird$elm_typesafe_array$Arr$lowerMinLength,
-										$lue_bird$elm_bounded_nat$NNats$nat0,
-										A2($lue_bird$elm_typesafe_array$MinArr$push, $author$project$Lue$Bit$I, model.inputBits))
-								});
-						default:
-							return model;
-					}
-				}
-			}(),
-			$elm$core$Platform$Cmd$none);
-	});
-var $author$project$Try$InputText = function (a) {
-	return {$: 'InputText', a: a};
-};
-var $elm$core$Elm$JsArray$foldl = _JsArray_foldl;
-var $elm$core$Array$foldl = F3(
-	function (func, baseCase, _v0) {
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = F2(
-			function (node, acc) {
-				if (node.$ === 'SubTree') {
-					var subTree = node.a;
-					return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
-				} else {
-					var values = node.a;
-					return A3($elm$core$Elm$JsArray$foldl, func, acc, values);
-				}
-			});
-		return A3(
-			$elm$core$Elm$JsArray$foldl,
-			func,
-			A3($elm$core$Elm$JsArray$foldl, helper, baseCase, tree),
-			tail);
-	});
-var $lue_bird$elm_linear_direction$Array$LinearDirection$fold = F4(
-	function (direction, reduce, initial, array) {
-		if (direction.$ === 'FirstToLast') {
-			return A3($elm$core$Array$foldl, reduce, initial, array);
-		} else {
-			return A3($elm$core$Array$foldr, reduce, initial, array);
-		}
-	});
-var $lue_bird$elm_typesafe_array$Arr$fold = F3(
-	function (direction, reduce, initial) {
-		return A2(
-			$elm$core$Basics$composeR,
-			$lue_bird$elm_typesafe_array$Arr$toArray,
-			A3($lue_bird$elm_linear_direction$Array$LinearDirection$fold, direction, reduce, initial));
-	});
-var $elm$core$Elm$JsArray$map = _JsArray_map;
-var $elm$core$Array$map = F2(
-	function (func, _v0) {
-		var len = _v0.a;
-		var startShift = _v0.b;
-		var tree = _v0.c;
-		var tail = _v0.d;
-		var helper = function (node) {
-			if (node.$ === 'SubTree') {
-				var subTree = node.a;
-				return $elm$core$Array$SubTree(
-					A2($elm$core$Elm$JsArray$map, helper, subTree));
-			} else {
-				var values = node.a;
-				return $elm$core$Array$Leaf(
-					A2($elm$core$Elm$JsArray$map, func, values));
-			}
-		};
-		return A4(
-			$elm$core$Array$Array_elm_builtin,
-			len,
-			startShift,
-			A2($elm$core$Elm$JsArray$map, helper, tree),
-			A2($elm$core$Elm$JsArray$map, func, tail));
-	});
-var $lue_bird$elm_typesafe_array$Internal$Arr$mapArray = function (mapArray_) {
-	return $lue_bird$elm_typed_value$Typed$map(
-		function (v) {
-			return {
-				array: mapArray_(v.array),
-				length: v.length
-			};
-		});
-};
-var $lue_bird$elm_typesafe_array$Internal$Arr$map = function (alter) {
-	return A2(
-		$elm$core$Basics$composeR,
-		$lue_bird$elm_typesafe_array$Internal$Arr$mapArray(
-			$elm$core$Array$map(alter)),
-		$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr$Arr));
-};
-var $lue_bird$elm_typesafe_array$Arr$map = function (alter) {
-	return $lue_bird$elm_typesafe_array$Internal$Arr$map(alter);
-};
-var $author$project$Lue$Bit$to0or1 = function (bit) {
-	if (bit.$ === 'O') {
-		return $lue_bird$elm_bounded_nat$InNat$value($lue_bird$elm_bounded_nat$NNats$nat0);
-	} else {
-		return A2($lue_bird$elm_bounded_nat$Nat$lowerMin, $lue_bird$elm_bounded_nat$NNats$nat0, $lue_bird$elm_bounded_nat$NNats$nat1);
-	}
-};
-var $author$project$Bits$Represent$as01String = function (bits) {
-	return A4(
-		$lue_bird$elm_typesafe_array$Arr$fold,
-		$lue_bird$elm_linear_direction$LinearDirection$FirstToLast,
-		$elm$core$Basics$append,
-		'',
-		A2(
-			$lue_bird$elm_typesafe_array$Arr$map,
-			A2(
-				$elm$core$Basics$composeR,
-				$author$project$Lue$Bit$to0or1,
-				A2($elm$core$Basics$composeR, $lue_bird$elm_typed_value$Typed$val, $elm$core$String$fromInt)),
-			bits));
-};
-var $bburdette$toop$Toop$T4 = F4(
-	function (a, b, c, d) {
-		return {$: 'T4', a: a, b: b, c: c, d: d};
-	});
-var $elm$core$Array$getHelp = F3(
-	function (shift, index, tree) {
-		getHelp:
-		while (true) {
-			var pos = $elm$core$Array$bitMask & (index >>> shift);
-			var _v0 = A2($elm$core$Elm$JsArray$unsafeGet, pos, tree);
-			if (_v0.$ === 'SubTree') {
-				var subTree = _v0.a;
-				var $temp$shift = shift - $elm$core$Array$shiftStep,
-					$temp$index = index,
-					$temp$tree = subTree;
-				shift = $temp$shift;
-				index = $temp$index;
-				tree = $temp$tree;
-				continue getHelp;
-			} else {
-				var values = _v0.a;
-				return A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, values);
-			}
-		}
-	});
-var $elm$core$Array$get = F2(
-	function (index, _v0) {
-		var len = _v0.a;
-		var startShift = _v0.b;
-		var tree = _v0.c;
-		var tail = _v0.d;
-		return ((index < 0) || (_Utils_cmp(index, len) > -1)) ? $elm$core$Maybe$Nothing : ((_Utils_cmp(
-			index,
-			$elm$core$Array$tailIndex(len)) > -1) ? $elm$core$Maybe$Just(
-			A2($elm$core$Elm$JsArray$unsafeGet, $elm$core$Array$bitMask & index, tail)) : $elm$core$Maybe$Just(
-			A3($elm$core$Array$getHelp, startShift, index, tree)));
-	});
-var $lue_bird$elm_linear_direction$LinearDirection$toFirstToLast = F3(
-	function (direction, _v0, n) {
-		var length = _v0.length;
-		if (direction.$ === 'FirstToLast') {
-			return n;
-		} else {
-			return (length - 1) - n;
-		}
-	});
-var $lue_bird$elm_linear_direction$Array$LinearDirection$at = F3(
-	function (index, direction, array) {
-		return A2(
-			$elm$core$Array$get,
-			A3(
-				$lue_bird$elm_linear_direction$LinearDirection$toFirstToLast,
-				direction,
-				{
-					length: $elm$core$Array$length(array)
-				},
-				index),
-			array);
-	});
-var $lue_bird$elm_typesafe_array$Internal$Arr$at = F2(
-	function (index, direction) {
-		return function (arr) {
-			var _v0 = A3(
-				$lue_bird$elm_linear_direction$Array$LinearDirection$at,
-				$lue_bird$elm_typed_value$Typed$val(index),
-				direction,
-				$lue_bird$elm_typesafe_array$Internal$Arr$toArray(arr));
-			if (_v0.$ === 'Just') {
-				var element = _v0.a;
-				return element;
-			} else {
-				return A3($lue_bird$elm_typesafe_array$Internal$Arr$at, index, direction, arr);
-			}
-		};
-	});
-var $lue_bird$elm_typesafe_array$Arr$at = F2(
-	function (index, direction) {
-		return A2($lue_bird$elm_typesafe_array$Internal$Arr$at, index, direction);
-	});
-var $lue_bird$elm_bounded_nat$I$nat2 = A2(
-	$lue_bird$elm_typed_value$Typed$isChecked,
-	$lue_bird$elm_bounded_nat$I$Nat,
-	$lue_bird$elm_typed_value$Typed$tag(2));
-var $lue_bird$elm_bounded_nat$NNats$nat2 = $lue_bird$elm_bounded_nat$I$nat2;
-var $lue_bird$elm_bounded_nat$I$nat3 = A2(
-	$lue_bird$elm_typed_value$Typed$isChecked,
-	$lue_bird$elm_bounded_nat$I$Nat,
-	$lue_bird$elm_typed_value$Typed$tag(3));
-var $lue_bird$elm_bounded_nat$NNats$nat3 = $lue_bird$elm_bounded_nat$I$nat3;
-var $lue_bird$elm_bounded_nat$I$nat4 = A2(
-	$lue_bird$elm_typed_value$Typed$isChecked,
-	$lue_bird$elm_bounded_nat$I$Nat,
-	$lue_bird$elm_typed_value$Typed$tag(4));
-var $lue_bird$elm_bounded_nat$NNats$nat4 = $lue_bird$elm_bounded_nat$I$nat4;
-var $elm$core$Basics$compare = _Utils_compare;
-var $elm$core$Array$appendHelpTree = F2(
-	function (toAppend, array) {
-		var len = array.a;
-		var tree = array.c;
-		var tail = array.d;
-		var itemsToAppend = $elm$core$Elm$JsArray$length(toAppend);
-		var notAppended = ($elm$core$Array$branchFactor - $elm$core$Elm$JsArray$length(tail)) - itemsToAppend;
-		var appended = A3($elm$core$Elm$JsArray$appendN, $elm$core$Array$branchFactor, tail, toAppend);
-		var newArray = A2($elm$core$Array$unsafeReplaceTail, appended, array);
-		if (notAppended < 0) {
-			var nextTail = A3($elm$core$Elm$JsArray$slice, notAppended, itemsToAppend, toAppend);
-			return A2($elm$core$Array$unsafeReplaceTail, nextTail, newArray);
-		} else {
-			return newArray;
-		}
-	});
-var $elm$core$Array$builderFromArray = function (_v0) {
-	var len = _v0.a;
-	var tree = _v0.c;
-	var tail = _v0.d;
-	var helper = F2(
-		function (node, acc) {
-			if (node.$ === 'SubTree') {
-				var subTree = node.a;
-				return A3($elm$core$Elm$JsArray$foldl, helper, acc, subTree);
-			} else {
-				return A2($elm$core$List$cons, node, acc);
-			}
-		});
-	return {
-		nodeList: A3($elm$core$Elm$JsArray$foldl, helper, _List_Nil, tree),
-		nodeListSize: (len / $elm$core$Array$branchFactor) | 0,
-		tail: tail
-	};
-};
-var $elm$core$Array$append = F2(
-	function (a, _v0) {
-		var aTail = a.d;
-		var bLen = _v0.a;
-		var bTree = _v0.c;
-		var bTail = _v0.d;
-		if (_Utils_cmp(bLen, $elm$core$Array$branchFactor * 4) < 1) {
-			var foldHelper = F2(
-				function (node, array) {
-					if (node.$ === 'SubTree') {
-						var tree = node.a;
-						return A3($elm$core$Elm$JsArray$foldl, foldHelper, array, tree);
-					} else {
-						var leaf = node.a;
-						return A2($elm$core$Array$appendHelpTree, leaf, array);
-					}
-				});
-			return A2(
-				$elm$core$Array$appendHelpTree,
-				bTail,
-				A3($elm$core$Elm$JsArray$foldl, foldHelper, a, bTree));
-		} else {
-			var foldHelper = F2(
-				function (node, builder) {
-					if (node.$ === 'SubTree') {
-						var tree = node.a;
-						return A3($elm$core$Elm$JsArray$foldl, foldHelper, builder, tree);
-					} else {
-						var leaf = node.a;
-						return A2($elm$core$Array$appendHelpBuilder, leaf, builder);
-					}
-				});
-			return A2(
-				$elm$core$Array$builderToArray,
-				true,
-				A2(
-					$elm$core$Array$appendHelpBuilder,
-					bTail,
-					A3(
-						$elm$core$Elm$JsArray$foldl,
-						foldHelper,
-						$elm$core$Array$builderFromArray(a),
-						bTree)));
-		}
-	});
-var $lue_bird$elm_linear_direction$List$LinearDirection$fold = F4(
-	function (direction, reduce, initial, list) {
-		if (direction.$ === 'FirstToLast') {
-			return A3($elm$core$List$foldl, reduce, initial, list);
-		} else {
-			return A3($elm$core$List$foldr, reduce, initial, list);
-		}
-	});
-var $lue_bird$elm_linear_direction$Array$LinearDirection$concat = F2(
-	function (direction, arrays) {
-		return A4(
-			$lue_bird$elm_linear_direction$List$LinearDirection$fold,
-			direction,
-			F2(
-				function (current, soFar) {
-					return A2($elm$core$Array$append, soFar, current);
-				}),
-			$elm$core$Array$empty,
-			arrays);
-	});
-var $elm$core$Array$repeat = F2(
-	function (n, e) {
-		return A2(
-			$elm$core$Array$initialize,
-			n,
-			function (_v0) {
-				return e;
-			});
-	});
 var $lue_bird$elm_linear_direction$Array$LinearDirection$resize = F4(
 	function (direction, newLength, defaultValue, array) {
 		if (newLength <= 0) {
@@ -6319,7 +6247,7 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$resize = F3(
 					$lue_bird$elm_typed_value$Typed$val(newLength),
 					defaultElement),
 				function (_v0) {
-					return $lue_bird$elm_bounded_nat$InNat$value(newLength);
+					return newLength;
 				}),
 			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr$Arr));
 	});
@@ -6464,28 +6392,24 @@ var $author$project$Bits$Represent$asHexChar = function (hexBits) {
 		}
 	}
 };
-var $lue_bird$elm_bounded_nat$Nat$restoreMax = function (_v0) {
-	return $lue_bird$elm_bounded_nat$I$newRange;
-};
-var $lue_bird$elm_typesafe_array$Internal$Arr$take = F3(
-	function (amount, maxTakenAmount, direction) {
+var $lue_bird$elm_typesafe_array$Internal$Arr$take = F2(
+	function (takenAmount, direction) {
 		return A2(
 			$elm$core$Basics$composeR,
 			A2(
 				$lue_bird$elm_typesafe_array$Internal$Arr$mapArrayAndLength,
 				A2(
 					$lue_bird$elm_linear_direction$Array$LinearDirection$take,
-					$lue_bird$elm_typed_value$Typed$val(amount),
+					$lue_bird$elm_typed_value$Typed$val(takenAmount),
 					direction),
 				function (_v0) {
-					return $lue_bird$elm_bounded_nat$InNat$value(
-						A2($lue_bird$elm_bounded_nat$Nat$restoreMax, maxTakenAmount, amount));
+					return takenAmount;
 				}),
 			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr$Arr));
 	});
-var $lue_bird$elm_typesafe_array$Arr$take = F3(
-	function (takenAmount, maxAmount, direction) {
-		return A3($lue_bird$elm_typesafe_array$Internal$Arr$take, takenAmount, maxAmount, direction);
+var $lue_bird$elm_typesafe_array$Arr$take = F2(
+	function (takenAmount, direction) {
+		return A2($lue_bird$elm_typesafe_array$Internal$Arr$take, takenAmount, direction);
 	});
 var $author$project$Bits$Represent$as09avChar = function (bits) {
 	var paddedBits = A4($lue_bird$elm_typesafe_array$Arr$resize, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, $lue_bird$elm_bounded_nat$NNats$nat4, $author$project$Lue$Bit$O, bits);
@@ -6495,7 +6419,7 @@ var $author$project$Bits$Represent$as09avChar = function (bits) {
 	var _v0 = at($lue_bird$elm_bounded_nat$NNats$nat0);
 	if (_v0.$ === 'O') {
 		return $author$project$Bits$Represent$asHexChar(
-			A4($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_linear_direction$LinearDirection$FirstToLast, paddedBits));
+			A3($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_linear_direction$LinearDirection$FirstToLast, paddedBits));
 	} else {
 		var _v1 = A4(
 			$bburdette$toop$Toop$T4,
@@ -6631,10 +6555,9 @@ var $author$project$Bits$Represent$as09avChar = function (bits) {
 	}
 };
 var $elm$core$String$fromList = _String_fromList;
-var $lue_bird$elm_bounded_nat$MinNat$add = F2(
-	function (inNatToAdd, minAdded) {
-		return $lue_bird$elm_bounded_nat$I$add(inNatToAdd);
-	});
+var $lue_bird$elm_bounded_nat$MinNat$add = function (nNatToAdd) {
+	return $lue_bird$elm_bounded_nat$I$add(nNatToAdd);
+};
 var $lue_bird$elm_typed_value$Typed$internalVal2 = F5(
 	function (binOp, aTag, aTyped, bTag, bTyped) {
 		return A2(
@@ -6660,17 +6583,17 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$extend = F2(
 				$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr$Arr)));
 	});
 var $lue_bird$elm_typesafe_array$Internal$MinArr$extend = F2(
-	function (added, minAdded) {
+	function (minAddedLength, extension) {
 		return A2(
 			$lue_bird$elm_typesafe_array$Internal$Arr$extend,
-			added,
-			function (addedLen) {
-				return A2($lue_bird$elm_bounded_nat$MinNat$add, addedLen, minAdded);
+			extension,
+			function (_v0) {
+				return $lue_bird$elm_bounded_nat$MinNat$add(minAddedLength);
 			});
 	});
 var $lue_bird$elm_typesafe_array$MinArr$extend = F2(
-	function (extension, extensionMin) {
-		return A2($lue_bird$elm_typesafe_array$Internal$MinArr$extend, extension, extensionMin);
+	function (minAddedLength, extension) {
+		return A2($lue_bird$elm_typesafe_array$Internal$MinArr$extend, minAddedLength, extension);
 	});
 var $lue_bird$elm_bounded_nat$I$div = function (divNat) {
 	return A2(
@@ -6684,41 +6607,21 @@ var $lue_bird$elm_bounded_nat$I$div = function (divNat) {
 var $lue_bird$elm_bounded_nat$Nat$div = function (divNat) {
 	return $lue_bird$elm_bounded_nat$I$div(divNat);
 };
-var $elm$core$Array$fromListHelp = F3(
-	function (list, nodeList, nodeListSize) {
-		fromListHelp:
-		while (true) {
-			var _v0 = A2($elm$core$Elm$JsArray$initializeFromList, $elm$core$Array$branchFactor, list);
-			var jsArray = _v0.a;
-			var remainingItems = _v0.b;
-			if (_Utils_cmp(
-				$elm$core$Elm$JsArray$length(jsArray),
-				$elm$core$Array$branchFactor) < 0) {
-				return A2(
-					$elm$core$Array$builderToArray,
-					true,
-					{nodeList: nodeList, nodeListSize: nodeListSize, tail: jsArray});
-			} else {
-				var $temp$list = remainingItems,
-					$temp$nodeList = A2(
-					$elm$core$List$cons,
-					$elm$core$Array$Leaf(jsArray),
-					nodeList),
-					$temp$nodeListSize = nodeListSize + 1;
-				list = $temp$list;
-				nodeList = $temp$nodeList;
-				nodeListSize = $temp$nodeListSize;
-				continue fromListHelp;
-			}
-		}
-	});
-var $elm$core$Array$fromList = function (list) {
-	if (!list.b) {
-		return $elm$core$Array$empty;
+var $lue_bird$elm_linear_direction$LinearDirection$opposite = function (direction) {
+	if (direction.$ === 'FirstToLast') {
+		return $lue_bird$elm_linear_direction$LinearDirection$LastToFirst;
 	} else {
-		return A3($elm$core$Array$fromListHelp, list, _List_Nil, 0);
+		return $lue_bird$elm_linear_direction$LinearDirection$FirstToLast;
 	}
 };
+var $lue_bird$elm_linear_direction$Array$LinearDirection$drop = F3(
+	function (amount, direction, array) {
+		return A3(
+			$lue_bird$elm_linear_direction$Array$LinearDirection$take,
+			$elm$core$Array$length(array) - amount,
+			$lue_bird$elm_linear_direction$LinearDirection$opposite(direction),
+			array);
+	});
 var $lue_bird$elm_linear_direction$Array$LinearDirection$insertAt = F4(
 	function (index, direction, element, array) {
 		if ((index >= 0) && (_Utils_cmp(
@@ -6767,6 +6670,12 @@ var $lue_bird$elm_linear_direction$Array$LinearDirection$group = F3(
 			return {groups: $elm$core$Array$empty, less: array};
 		}
 	});
+var $lue_bird$elm_typesafe_array$Internal$Arr$length = A2(
+	$elm$core$Basics$composeR,
+	$lue_bird$elm_typed_value$Typed$internalVal($lue_bird$elm_typesafe_array$Internal$Arr$Arr),
+	function ($) {
+		return $.length;
+	});
 var $lue_bird$elm_bounded_nat$I$remainderBy = function (divNat) {
 	return A2(
 		$elm$core$Basics$composeR,
@@ -6789,6 +6698,7 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$groupsOf = F2(
 				$lue_bird$elm_typesafe_array$Internal$Arr$toArray(arr));
 			var groups = _v0.groups;
 			var less = _v0.less;
+			var remaining = less;
 			return {
 				groups: A2(
 					$lue_bird$elm_typed_value$Typed$isChecked,
@@ -6813,12 +6723,12 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$groupsOf = F2(
 								groupSize,
 								$lue_bird$elm_typesafe_array$Internal$Arr$length(arr))
 						})),
-				less: A2(
+				remaining: A2(
 					$lue_bird$elm_typed_value$Typed$isChecked,
 					$lue_bird$elm_typesafe_array$Internal$Arr$Arr,
 					$lue_bird$elm_typed_value$Typed$tag(
 						{
-							array: less,
+							array: remaining,
 							length: A2(
 								$lue_bird$elm_bounded_nat$Nat$remainderBy,
 								groupSize,
@@ -6839,17 +6749,17 @@ var $author$project$ArrExtra$groupPaddingLeft = F3(
 	function (groupSize, defaultElement, bitArr) {
 		var _v0 = A3($lue_bird$elm_typesafe_array$Arr$groupsOf, groupSize, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, bitArr);
 		var groups = _v0.groups;
-		var less = _v0.less;
+		var remaining = _v0.remaining;
 		return $elm$core$Array$isEmpty(
-			$lue_bird$elm_typesafe_array$Arr$toArray(less)) ? $lue_bird$elm_typesafe_array$MinArr$value(groups) : A2(
+			$lue_bird$elm_typesafe_array$Arr$toArray(remaining)) ? $lue_bird$elm_typesafe_array$MinArr$value(groups) : A2(
 			$lue_bird$elm_typesafe_array$Arr$lowerMinLength,
 			$lue_bird$elm_bounded_nat$NNats$nat0,
 			A3(
 				$lue_bird$elm_typesafe_array$MinArr$extend,
-				groups,
 				$lue_bird$elm_bounded_nat$NNats$nat0,
+				groups,
 				$lue_bird$elm_typesafe_array$Arr$from1(
-					A4($lue_bird$elm_typesafe_array$Arr$resize, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, groupSize, defaultElement, less))));
+					A4($lue_bird$elm_typesafe_array$Arr$resize, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, groupSize, defaultElement, remaining))));
 	});
 var $lue_bird$elm_bounded_nat$I$nat5 = A2(
 	$lue_bird$elm_typed_value$Typed$isChecked,
@@ -7192,14 +7102,14 @@ var $author$project$Bits$Represent$asReadableWord = function (bits) {
 		_List_fromArray(
 			[
 				$author$project$Bits$Represent$asFirstLetterInWord(
-				A4($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_linear_direction$LinearDirection$FirstToLast, paddedBits)),
+				A3($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_linear_direction$LinearDirection$FirstToLast, paddedBits)),
 				$author$project$Bits$Represent$asVocal(
 				A2(
 					$lue_bird$elm_typesafe_array$Arr$from2,
 					at($lue_bird$elm_bounded_nat$NNats$nat4),
 					at($lue_bird$elm_bounded_nat$NNats$nat5))),
 				$author$project$Bits$Represent$asThirdLetterInWord(
-				A4($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, paddedBits))
+				A3($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat4, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, paddedBits))
 			]));
 };
 var $author$project$Bits$Represent$asReadableWordsString = function (bits) {
@@ -7226,39 +7136,23 @@ var $avh4$elm_color$Color$rgb = F3(
 	function (r, g, b) {
 		return A4($avh4$elm_color$Color$RgbaSpace, r, g, b, 1.0);
 	});
-var $lue_bird$elm_bounded_nat$InNat$isAtLeast = F3(
-	function (triedLowerBound, min, cases) {
+var $lue_bird$elm_bounded_nat$MinNat$addMin = F2(
+	function (minAdded, inNatToAdd) {
+		return $lue_bird$elm_bounded_nat$I$add(inNatToAdd);
+	});
+var $lue_bird$elm_bounded_nat$Nat$Below = function (a) {
+	return {$: 'Below', a: a};
+};
+var $lue_bird$elm_bounded_nat$Nat$EqualOrGreater = function (a) {
+	return {$: 'EqualOrGreater', a: a};
+};
+var $lue_bird$elm_bounded_nat$InNat$isAtLeast = F2(
+	function (lowerBound, lowest) {
 		return function (inNat) {
-			return A3($lue_bird$elm_typed_value$Typed$val2, $elm$core$Basics$ge, inNat, triedLowerBound) ? A2(
-				function ($) {
-					return $.equalOrGreater;
-				},
-				cases,
-				$lue_bird$elm_bounded_nat$I$newRange(inNat)) : A2(
-				function ($) {
-					return $.less;
-				},
-				cases,
+			return A3($lue_bird$elm_typed_value$Typed$val2, $elm$core$Basics$ge, inNat, lowerBound) ? $lue_bird$elm_bounded_nat$Nat$EqualOrGreater(
+				$lue_bird$elm_bounded_nat$I$newRange(inNat)) : $lue_bird$elm_bounded_nat$Nat$Below(
 				$lue_bird$elm_bounded_nat$I$newRange(inNat));
 		};
-	});
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (_v0.$ === 'Just') {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
 	});
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
@@ -7342,26 +7236,87 @@ var $lue_bird$elm_bounded_nat$I$nat53 = A2(
 	$lue_bird$elm_bounded_nat$I$Nat,
 	$lue_bird$elm_typed_value$Typed$tag(53));
 var $lue_bird$elm_bounded_nat$NNats$nat53 = $lue_bird$elm_bounded_nat$I$nat53;
-var $lue_bird$elm_bounded_nat$I$intInRange = F2(
-	function (lowerBound, upperBound) {
-		return A2(
-			$elm$core$Basics$composeR,
-			$elm$core$Basics$min(
-				$lue_bird$elm_typed_value$Typed$val(upperBound)),
+var $lue_bird$elm_bounded_nat$Nat$AboveRange = function (a) {
+	return {$: 'AboveRange', a: a};
+};
+var $lue_bird$elm_bounded_nat$Nat$BelowRange = function (a) {
+	return {$: 'BelowRange', a: a};
+};
+var $lue_bird$elm_bounded_nat$Nat$InRange = function (a) {
+	return {$: 'InRange', a: a};
+};
+var $lue_bird$elm_bounded_nat$Nat$fromInternalBelowOrInOrAboveRange = function (compared) {
+	switch (compared.$) {
+		case 'BelowRange':
+			var lt = compared.a;
+			return $lue_bird$elm_bounded_nat$Nat$BelowRange(lt);
+		case 'InRange':
+			var inRange = compared.a;
+			return $lue_bird$elm_bounded_nat$Nat$InRange(inRange);
+		default:
+			var gt = compared.a;
+			return $lue_bird$elm_bounded_nat$Nat$AboveRange(gt);
+	}
+};
+var $lue_bird$elm_bounded_nat$I$AboveRange = function (a) {
+	return {$: 'AboveRange', a: a};
+};
+var $lue_bird$elm_bounded_nat$I$BelowRange = function (a) {
+	return {$: 'BelowRange', a: a};
+};
+var $lue_bird$elm_bounded_nat$I$InRange = function (a) {
+	return {$: 'InRange', a: a};
+};
+var $lue_bird$elm_bounded_nat$I$isIntInRange = F3(
+	function (lowerBound, upperBound, _int) {
+		return (_Utils_cmp(
+			_int,
+			$lue_bird$elm_typed_value$Typed$val(lowerBound)) < 0) ? $lue_bird$elm_bounded_nat$I$BelowRange(_Utils_Tuple0) : ((_Utils_cmp(
+			_int,
+			$lue_bird$elm_typed_value$Typed$val(upperBound)) > 0) ? $lue_bird$elm_bounded_nat$I$AboveRange(
 			A2(
-				$elm$core$Basics$composeR,
-				$elm$core$Basics$max(
-					$lue_bird$elm_typed_value$Typed$val(lowerBound)),
-				A2(
-					$elm$core$Basics$composeR,
-					$lue_bird$elm_typed_value$Typed$tag,
-					$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_bounded_nat$I$Nat))));
+				$lue_bird$elm_typed_value$Typed$isChecked,
+				$lue_bird$elm_bounded_nat$I$Nat,
+				$lue_bird$elm_typed_value$Typed$tag(_int))) : $lue_bird$elm_bounded_nat$I$InRange(
+			A2(
+				$lue_bird$elm_typed_value$Typed$isChecked,
+				$lue_bird$elm_bounded_nat$I$Nat,
+				$lue_bird$elm_typed_value$Typed$tag(_int))));
 	});
-var $lue_bird$elm_bounded_nat$Nat$intInRange = F2(
-	function (lowerBound, upperBound) {
-		return A2($lue_bird$elm_bounded_nat$I$intInRange, lowerBound, upperBound);
+var $lue_bird$elm_bounded_nat$Nat$isIntInRange = F3(
+	function (lowerBound, upperBound, _int) {
+		return $lue_bird$elm_bounded_nat$Nat$fromInternalBelowOrInOrAboveRange(
+			A3($lue_bird$elm_bounded_nat$I$isIntInRange, lowerBound, upperBound, _int));
 	});
-var $lue_bird$elm_bounded_nat$InNat$subN = function (nNatToSubtract) {
+var $lue_bird$elm_bounded_nat$Nat$intInRange = F3(
+	function (lowerBound, upperBound, _int) {
+		var _v0 = A3($lue_bird$elm_bounded_nat$Nat$isIntInRange, lowerBound, upperBound, _int);
+		switch (_v0.$) {
+			case 'InRange':
+				var inRange = _v0.a;
+				return inRange;
+			case 'BelowRange':
+				return $lue_bird$elm_bounded_nat$I$newRange(lowerBound);
+			default:
+				return A2($lue_bird$elm_bounded_nat$Nat$lowerMin, lowerBound, upperBound);
+		}
+	});
+var $lue_bird$elm_bounded_nat$I$sub = function (natToSubtract) {
+	return A2(
+		$elm$core$Basics$composeR,
+		A2(
+			$lue_bird$elm_typed_value$Typed$val2,
+			F2(
+				function (toSub, x) {
+					return x - toSub;
+				}),
+			natToSubtract),
+		A2(
+			$elm$core$Basics$composeR,
+			$lue_bird$elm_typed_value$Typed$tag,
+			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_bounded_nat$I$Nat)));
+};
+var $lue_bird$elm_bounded_nat$InNat$sub = function (nNatToSubtract) {
 	return $lue_bird$elm_bounded_nat$I$sub(nNatToSubtract);
 };
 var $lue_bird$elm_typesafe_array$Internal$Arr$nats = function (length_) {
@@ -7370,17 +7325,29 @@ var $lue_bird$elm_typesafe_array$Internal$Arr$nats = function (length_) {
 		$lue_bird$elm_typesafe_array$Internal$Arr$Arr,
 		$lue_bird$elm_typed_value$Typed$tag(
 			{
-				array: $elm$core$Array$fromList(
-					A2(
-						$elm$core$List$map,
-						A2(
-							$lue_bird$elm_bounded_nat$Nat$intInRange,
-							$lue_bird$elm_bounded_nat$NNats$nat0,
-							A2($lue_bird$elm_bounded_nat$InNat$subN, $lue_bird$elm_bounded_nat$NNats$nat1, length_)),
-						A2(
-							$elm$core$List$range,
-							0,
-							$lue_bird$elm_typed_value$Typed$val(length_) - 1))),
+				array: function () {
+					var _v0 = A3(
+						$lue_bird$elm_bounded_nat$InNat$isAtLeast,
+						$lue_bird$elm_bounded_nat$NNats$nat1,
+						{lowest: $lue_bird$elm_bounded_nat$NNats$nat0},
+						length_);
+					if (_v0.$ === 'EqualOrGreater') {
+						var lengthAtLeast1 = _v0.a;
+						return $elm$core$Array$fromList(
+							A2(
+								$elm$core$List$map,
+								A2(
+									$lue_bird$elm_bounded_nat$Nat$intInRange,
+									$lue_bird$elm_bounded_nat$NNats$nat0,
+									A2($lue_bird$elm_bounded_nat$InNat$sub, $lue_bird$elm_bounded_nat$NNats$nat1, lengthAtLeast1)),
+								A2(
+									$elm$core$List$range,
+									0,
+									$lue_bird$elm_typed_value$Typed$val(length_) - 1)));
+					} else {
+						return $elm$core$Array$empty;
+					}
+				}(),
 				length: $lue_bird$elm_bounded_nat$InNat$value(length_)
 			}));
 };
@@ -7418,29 +7385,27 @@ var $author$project$Common$bitsToNat = function (bits) {
 		$lue_bird$elm_linear_direction$LinearDirection$FirstToLast,
 		F2(
 			function (a, b) {
-				return A3($lue_bird$elm_bounded_nat$MinNat$add, b, $lue_bird$elm_bounded_nat$NNats$nat0, a);
+				return A3($lue_bird$elm_bounded_nat$MinNat$addMin, $lue_bird$elm_bounded_nat$NNats$nat0, b, a);
 			}),
 		$lue_bird$elm_bounded_nat$MinNat$value($lue_bird$elm_bounded_nat$NNats$nat0),
 		A3(
 			$lue_bird$elm_typesafe_array$Arr$map2,
 			function (power) {
-				return A4(
+				var _v0 = A3(
 					$lue_bird$elm_bounded_nat$InNat$isAtLeast,
 					$lue_bird$elm_bounded_nat$NNats$nat1,
-					{min: $lue_bird$elm_bounded_nat$NNats$nat0},
-					{
-						equalOrGreater: function (powAtLeast1) {
-							return A2(
-								$elm$core$Basics$composeR,
-								$author$project$Lue$Bit$to0or1,
-								$lue_bird$elm_bounded_nat$Nat$mul(
-									A2($lue_bird$elm_bounded_nat$Nat$toPower, powAtLeast1, $lue_bird$elm_bounded_nat$NNats$nat2)));
-						},
-						less: function (_v0) {
-							return A2($elm$core$Basics$composeR, $author$project$Lue$Bit$to0or1, $lue_bird$elm_bounded_nat$MinNat$value);
-						}
-					},
+					{lowest: $lue_bird$elm_bounded_nat$NNats$nat0},
 					power);
+				if (_v0.$ === 'EqualOrGreater') {
+					var powAtLeast1 = _v0.a;
+					return A2(
+						$elm$core$Basics$composeR,
+						$author$project$Lue$Bit$toNat,
+						$lue_bird$elm_bounded_nat$Nat$mul(
+							A2($lue_bird$elm_bounded_nat$Nat$toPower, powAtLeast1, $lue_bird$elm_bounded_nat$NNats$nat2)));
+				} else {
+					return A2($elm$core$Basics$composeR, $author$project$Lue$Bit$toNat, $lue_bird$elm_bounded_nat$MinNat$value);
+				}
 			},
 			A2(
 				$lue_bird$elm_typesafe_array$Arr$lowerMinLength,
@@ -7690,9 +7655,9 @@ var $author$project$Bits$Represent$asCollage = function (bits) {
 		colorShape,
 		$timjs$elm_collage$Collage$uniform(
 			$author$project$Bits$Represent$asColor(
-				A4($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat6, $lue_bird$elm_bounded_nat$NNats$nat6, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, paddedBits))),
+				A3($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat6, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, paddedBits))),
 		$author$project$Bits$Represent$asShape(
-			A4($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat3, $lue_bird$elm_bounded_nat$NNats$nat3, $lue_bird$elm_linear_direction$LinearDirection$FirstToLast, paddedBits)));
+			A3($lue_bird$elm_typesafe_array$Arr$take, $lue_bird$elm_bounded_nat$NNats$nat3, $lue_bird$elm_linear_direction$LinearDirection$FirstToLast, paddedBits)));
 };
 var $timjs$elm_collage$Collage$rotate = F2(
 	function (t, collage) {
@@ -8044,15 +8009,6 @@ var $mdgriffith$elm_ui$Internal$Model$transformClass = function (transform) {
 				'tfrm-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(tx) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(ty) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(tz) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sx) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sy) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(sz) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(ox) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(oy) + ('-' + ($mdgriffith$elm_ui$Internal$Model$floatClass(oz) + ('-' + $mdgriffith$elm_ui$Internal$Model$floatClass(angle))))))))))))))))))));
 	}
 };
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $mdgriffith$elm_ui$Internal$Model$getStyleName = function (style) {
 	switch (style.$) {
 		case 'Shadows':
@@ -13540,6 +13496,48 @@ var $elm$core$Basics$always = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$unstyled = A2($elm$core$Basics$composeL, $mdgriffith$elm_ui$Internal$Model$Unstyled, $elm$core$Basics$always);
 var $mdgriffith$elm_ui$Element$html = $mdgriffith$elm_ui$Internal$Model$unstyled;
+var $lue_bird$elm_bounded_nat$MinNat$isAtLeast = F2(
+	function (lowerBound, lowest) {
+		return function (minNat) {
+			return A3($lue_bird$elm_typed_value$Typed$val2, $elm$core$Basics$ge, minNat, lowerBound) ? $lue_bird$elm_bounded_nat$Nat$EqualOrGreater(
+				$lue_bird$elm_bounded_nat$I$newRange(minNat)) : $lue_bird$elm_bounded_nat$Nat$Below(
+				$lue_bird$elm_bounded_nat$I$newRange(minNat));
+		};
+	});
+var $lue_bird$elm_typesafe_array$Arr$length = $lue_bird$elm_typesafe_array$Internal$Arr$length;
+var $lue_bird$elm_typesafe_array$Internal$MinArr$isLengthAtLeast = F2(
+	function (lowerBound, lowest) {
+		return function (arr) {
+			var withLength = function (len) {
+				return A2(
+					$lue_bird$elm_typed_value$Typed$isChecked,
+					$lue_bird$elm_typesafe_array$Internal$Arr$Arr,
+					$lue_bird$elm_typed_value$Typed$tag(
+						{
+							array: $lue_bird$elm_typesafe_array$Arr$toArray(arr),
+							length: len
+						}));
+			};
+			var _v0 = A3(
+				$lue_bird$elm_bounded_nat$MinNat$isAtLeast,
+				lowerBound,
+				lowest,
+				$lue_bird$elm_typesafe_array$Arr$length(arr));
+			if (_v0.$ === 'Below') {
+				var less = _v0.a;
+				return $lue_bird$elm_bounded_nat$Nat$Below(
+					withLength(less));
+			} else {
+				var atLeast = _v0.a;
+				return $lue_bird$elm_bounded_nat$Nat$EqualOrGreater(
+					withLength(atLeast));
+			}
+		};
+	});
+var $lue_bird$elm_typesafe_array$MinArr$isLengthAtLeast = F2(
+	function (lowerBound, lowest) {
+		return A2($lue_bird$elm_typesafe_array$Internal$MinArr$isLengthAtLeast, lowerBound, lowest);
+	});
 var $mdgriffith$elm_ui$Element$Input$HiddenLabel = function (a) {
 	return {$: 'HiddenLabel', a: a};
 };
@@ -13760,6 +13758,8 @@ var $mdgriffith$elm_ui$Element$layoutWith = F3(
 	});
 var $mdgriffith$elm_ui$Internal$Model$Monospace = {$: 'Monospace'};
 var $mdgriffith$elm_ui$Element$Font$monospace = $mdgriffith$elm_ui$Internal$Model$Monospace;
+var $mdgriffith$elm_ui$Internal$Model$Empty = {$: 'Empty'};
+var $mdgriffith$elm_ui$Element$none = $mdgriffith$elm_ui$Internal$Model$Empty;
 var $mdgriffith$elm_ui$Internal$Model$PaddingStyle = F5(
 	function (a, b, c, d, e) {
 		return {$: 'PaddingStyle', a: a, b: b, c: c, d: d, e: e};
@@ -13807,10 +13807,21 @@ var $mdgriffith$elm_ui$Element$paddingXY = F2(
 					xFloat));
 		}
 	});
-var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
-	return {$: 'Describe', a: a};
+var $mdgriffith$elm_ui$Internal$Model$Px = function (a) {
+	return {$: 'Px', a: a};
 };
-var $mdgriffith$elm_ui$Internal$Model$Paragraph = {$: 'Paragraph'};
+var $mdgriffith$elm_ui$Element$px = $mdgriffith$elm_ui$Internal$Model$Px;
+var $mdgriffith$elm_ui$Element$rgb = F3(
+	function (r, g, b) {
+		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
+	});
+var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
+var $mdgriffith$elm_ui$Element$Font$size = function (i) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$fontSize,
+		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
+};
 var $mdgriffith$elm_ui$Internal$Model$SpacingStyle = F3(
 	function (a, b, c) {
 		return {$: 'SpacingStyle', a: a, b: b, c: c};
@@ -13829,66 +13840,6 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, x),
 			x,
 			x));
-};
-var $mdgriffith$elm_ui$Element$paragraph = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asParagraph,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$Paragraph),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$spacing(5),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $mdgriffith$elm_ui$Element$rgb = F3(
-	function (r, g, b) {
-		return A4($mdgriffith$elm_ui$Internal$Model$Rgba, r, g, b, 1);
-	});
-var $mdgriffith$elm_ui$Element$rgba = $mdgriffith$elm_ui$Internal$Model$Rgba;
-var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
-var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$borderRound,
-		A3(
-			$mdgriffith$elm_ui$Internal$Model$Single,
-			'br-' + $elm$core$String$fromInt(radius),
-			'border-radius',
-			$elm$core$String$fromInt(radius) + 'px'));
-};
-var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
-var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
-var $mdgriffith$elm_ui$Element$row = F2(
-	function (attrs, children) {
-		return A4(
-			$mdgriffith$elm_ui$Internal$Model$element,
-			$mdgriffith$elm_ui$Internal$Model$asRow,
-			$mdgriffith$elm_ui$Internal$Model$div,
-			A2(
-				$elm$core$List$cons,
-				$mdgriffith$elm_ui$Internal$Model$htmlClass($mdgriffith$elm_ui$Internal$Style$classes.contentLeft + (' ' + $mdgriffith$elm_ui$Internal$Style$classes.contentCenterY)),
-				A2(
-					$elm$core$List$cons,
-					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$shrink),
-					A2(
-						$elm$core$List$cons,
-						$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$shrink),
-						attrs))),
-			$mdgriffith$elm_ui$Internal$Model$Unkeyed(children));
-	});
-var $mdgriffith$elm_ui$Element$Font$size = function (i) {
-	return A2(
-		$mdgriffith$elm_ui$Internal$Model$StyleClass,
-		$mdgriffith$elm_ui$Internal$Flag$fontSize,
-		$mdgriffith$elm_ui$Internal$Model$FontSize(i));
 };
 var $timjs$elm_collage$Collage$opposite = function (_v0) {
 	var x = _v0.a;
@@ -14767,8 +14718,13 @@ var $mdgriffith$elm_ui$Internal$Model$Class = F2(
 	});
 var $mdgriffith$elm_ui$Internal$Model$NoAttribute = {$: 'NoAttribute'};
 var $mdgriffith$elm_ui$Element$Input$TextArea = {$: 'TextArea'};
+var $mdgriffith$elm_ui$Internal$Model$Describe = function (a) {
+	return {$: 'Describe', a: a};
+};
 var $mdgriffith$elm_ui$Internal$Model$LivePolite = {$: 'LivePolite'};
 var $mdgriffith$elm_ui$Element$Region$announce = $mdgriffith$elm_ui$Internal$Model$Describe($mdgriffith$elm_ui$Internal$Model$LivePolite);
+var $mdgriffith$elm_ui$Internal$Model$AsRow = {$: 'AsRow'};
+var $mdgriffith$elm_ui$Internal$Model$asRow = $mdgriffith$elm_ui$Internal$Model$AsRow;
 var $mdgriffith$elm_ui$Element$Input$applyLabel = F3(
 	function (attrs, label, input) {
 		if (label.$ === 'HiddenLabel') {
@@ -14910,6 +14866,17 @@ var $mdgriffith$elm_ui$Element$clip = A2($mdgriffith$elm_ui$Internal$Model$Class
 var $mdgriffith$elm_ui$Internal$Flag$cursor = $mdgriffith$elm_ui$Internal$Flag$flag(21);
 var $mdgriffith$elm_ui$Element$Input$darkGrey = A3($mdgriffith$elm_ui$Element$rgb, 186 / 255, 189 / 255, 182 / 255);
 var $mdgriffith$elm_ui$Element$Input$defaultTextPadding = A2($mdgriffith$elm_ui$Element$paddingXY, 12, 12);
+var $mdgriffith$elm_ui$Internal$Flag$borderRound = $mdgriffith$elm_ui$Internal$Flag$flag(17);
+var $mdgriffith$elm_ui$Element$Border$rounded = function (radius) {
+	return A2(
+		$mdgriffith$elm_ui$Internal$Model$StyleClass,
+		$mdgriffith$elm_ui$Internal$Flag$borderRound,
+		A3(
+			$mdgriffith$elm_ui$Internal$Model$Single,
+			'br-' + $elm$core$String$fromInt(radius),
+			'border-radius',
+			$elm$core$String$fromInt(radius) + 'px'));
+};
 var $mdgriffith$elm_ui$Element$Input$white = A3($mdgriffith$elm_ui$Element$rgb, 1, 1, 1);
 var $mdgriffith$elm_ui$Internal$Model$BorderWidth = F5(
 	function (a, b, c, d, e) {
@@ -15682,18 +15649,7 @@ var $author$project$Try$view = function (model) {
 			options: _List_fromArray(
 				[
 					$mdgriffith$elm_ui$Element$focusStyle(
-					{
-						backgroundColor: $elm$core$Maybe$Nothing,
-						borderColor: $elm$core$Maybe$Just(
-							A4($mdgriffith$elm_ui$Element$rgba, 0, 1, 1, 0.38)),
-						shadow: $elm$core$Maybe$Just(
-							{
-								blur: 1,
-								color: A4($mdgriffith$elm_ui$Element$rgba, 0, 1, 1, 0.13),
-								offset: _Utils_Tuple2(0, 0),
-								size: 1
-							})
-					})
+					{backgroundColor: $elm$core$Maybe$Nothing, borderColor: $elm$core$Maybe$Nothing, shadow: $elm$core$Maybe$Nothing})
 				])
 		},
 		_List_Nil,
@@ -15717,146 +15673,160 @@ var $author$project$Try$view = function (model) {
 						[
 							$mdgriffith$elm_ui$Element$Font$size(40)
 						]),
-					$mdgriffith$elm_ui$Element$text('Try out some bit stuff')),
-					A2(
-					$mdgriffith$elm_ui$Element$row,
-					_List_fromArray(
-						[
-							A2($mdgriffith$elm_ui$Element$paddingXY, 16, 24)
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$mdgriffith$elm_ui$Element$paragraph,
-							_List_Nil,
-							_List_fromArray(
-								[
-									$mdgriffith$elm_ui$Element$text(
-									$author$project$Bits$Represent$as01String(
-										$author$project$Util$removeLast(model.inputBits))),
-									A2(
-									$mdgriffith$elm_ui$Element$Input$text,
-									_List_fromArray(
-										[
-											$mdgriffith$elm_ui$Element$Border$color(
-											A4($mdgriffith$elm_ui$Element$rgba, 0, 1, 1, 0.2)),
-											$mdgriffith$elm_ui$Element$Border$rounded(20),
-											$mdgriffith$elm_ui$Element$padding(3),
-											$mdgriffith$elm_ui$Element$Background$color(
-											A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
-											$mdgriffith$elm_ui$Element$Font$size(20)
-										]),
-									{
-										label: $mdgriffith$elm_ui$Element$Input$labelHidden('enter 0 or 1'),
-										onChange: $author$project$Try$InputText,
-										placeholder: $elm$core$Maybe$Nothing,
-										text: A4(
-											$lue_bird$elm_typesafe_array$MinArr$isLengthAtLeast,
-											$lue_bird$elm_bounded_nat$NNats$nat1,
-											{min: $lue_bird$elm_bounded_nat$NNats$nat0},
-											{
-												equalOrGreater: function (atLeast1) {
-													return $elm$core$String$fromInt(
-														$lue_bird$elm_typed_value$Typed$val(
-															$author$project$Lue$Bit$to0or1(
-																A3($lue_bird$elm_typesafe_array$Arr$at, $lue_bird$elm_bounded_nat$NNats$nat0, $lue_bird$elm_linear_direction$LinearDirection$LastToFirst, atLeast1))));
-												},
-												less: function (_v0) {
-													return 'enter 0 or 1 > ';
-												}
-											},
-											model.inputBits)
-									})
-								]))
-						])),
+					$mdgriffith$elm_ui$Element$text('Representing bits')),
 					A2(
 					$mdgriffith$elm_ui$Element$column,
 					_List_fromArray(
 						[
-							$mdgriffith$elm_ui$Element$spacing(40),
-							A2($mdgriffith$elm_ui$Element$paddingXY, 48, 28)
+							$mdgriffith$elm_ui$Element$padding(32),
+							$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 						]),
-					function () {
-						var text = A2(
-							$elm$core$Basics$composeR,
-							$mdgriffith$elm_ui$Element$text,
-							$mdgriffith$elm_ui$Element$el(
-								_List_fromArray(
-									[
-										$mdgriffith$elm_ui$Element$Font$color(
-										A3($mdgriffith$elm_ui$Element$rgb, 1, 0.5, 0.5)),
-										$mdgriffith$elm_ui$Element$Font$family(
-										_List_fromArray(
-											[$mdgriffith$elm_ui$Element$Font$monospace])),
-										$mdgriffith$elm_ui$Element$Font$size(24)
-									])));
-						var svg = A2(
-							$elm$core$Basics$composeR,
-							$timjs$elm_collage$Collage$Render$svg,
+					_List_fromArray(
+						[
 							A2(
-								$elm$core$Basics$composeR,
-								$mdgriffith$elm_ui$Element$html,
-								$mdgriffith$elm_ui$Element$el(
-									_List_fromArray(
-										[
-											A2($mdgriffith$elm_ui$Element$paddingXY, 0, 8)
-										]))));
-						return A2(
-							$elm$core$List$map,
-							function (_v1) {
-								var description = _v1.a;
-								var representation = _v1.b;
-								return A2(
+							$mdgriffith$elm_ui$Element$column,
+							_List_fromArray(
+								[
+									$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+									$mdgriffith$elm_ui$Element$spacing(3)
+								]),
+							_List_fromArray(
+								[
+									A2(
 									$mdgriffith$elm_ui$Element$column,
 									_List_fromArray(
 										[
-											$mdgriffith$elm_ui$Element$spacing(4)
+											$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
 										]),
 									_List_fromArray(
 										[
 											A2(
+											$mdgriffith$elm_ui$Element$Input$text,
+											_List_fromArray(
+												[
+													$mdgriffith$elm_ui$Element$padding(3),
+													$mdgriffith$elm_ui$Element$Background$color(
+													A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0)),
+													$mdgriffith$elm_ui$Element$Font$size(20),
+													$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+													$mdgriffith$elm_ui$Element$Border$color(
+													A4($mdgriffith$elm_ui$Element$rgba, 0, 0, 0, 0))
+												]),
+											{
+												label: $mdgriffith$elm_ui$Element$Input$labelHidden('enter 0s & 1s'),
+												onChange: $author$project$Try$InputText,
+												placeholder: $elm$core$Maybe$Nothing,
+												text: function () {
+													var _v0 = A3(
+														$lue_bird$elm_typesafe_array$MinArr$isLengthAtLeast,
+														$lue_bird$elm_bounded_nat$NNats$nat1,
+														{lowest: $lue_bird$elm_bounded_nat$NNats$nat0},
+														model.inputBits);
+													if (_v0.$ === 'EqualOrGreater') {
+														var atLeast1 = _v0.a;
+														return $author$project$Bits$Represent$as01String(atLeast1);
+													} else {
+														return 'enter zeros & ones > ';
+													}
+												}()
+											}),
+											A2(
 											$mdgriffith$elm_ui$Element$el,
 											_List_fromArray(
 												[
-													$mdgriffith$elm_ui$Element$Font$family(
+													$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+													$mdgriffith$elm_ui$Element$Background$color(
+													A3($mdgriffith$elm_ui$Element$rgb, 1, 0.7, 0)),
+													$mdgriffith$elm_ui$Element$height(
+													$mdgriffith$elm_ui$Element$px(2))
+												]),
+											$mdgriffith$elm_ui$Element$none)
+										])),
+									$mdgriffith$elm_ui$Element$text(
+									$elm$core$String$fromInt(
+										$lue_bird$elm_typed_value$Typed$val(
+											$lue_bird$elm_typesafe_array$Arr$length(model.inputBits))) + ' bits')
+								])),
+							function () {
+							var text = A2(
+								$elm$core$Basics$composeR,
+								$mdgriffith$elm_ui$Element$text,
+								$mdgriffith$elm_ui$Element$el(
+									_List_fromArray(
+										[
+											$mdgriffith$elm_ui$Element$Font$color(
+											A3($mdgriffith$elm_ui$Element$rgb, 1, 0.5, 0.5)),
+											$mdgriffith$elm_ui$Element$Font$family(
+											_List_fromArray(
+												[$mdgriffith$elm_ui$Element$Font$monospace])),
+											$mdgriffith$elm_ui$Element$Font$size(24)
+										])));
+							var svg = A2(
+								$elm$core$Basics$composeR,
+								$timjs$elm_collage$Collage$Render$svg,
+								A2(
+									$elm$core$Basics$composeR,
+									$mdgriffith$elm_ui$Element$html,
+									$mdgriffith$elm_ui$Element$el(
+										_List_fromArray(
+											[
+												A2($mdgriffith$elm_ui$Element$paddingXY, 0, 8)
+											]))));
+							return A2(
+								$mdgriffith$elm_ui$Element$column,
+								_List_fromArray(
+									[
+										$mdgriffith$elm_ui$Element$spacing(40),
+										A2($mdgriffith$elm_ui$Element$paddingXY, 48, 28)
+									]),
+								A2(
+									$elm$core$List$map,
+									function (_v1) {
+										var description = _v1.a;
+										var representation = _v1.b;
+										return A2(
+											$mdgriffith$elm_ui$Element$column,
+											_List_fromArray(
+												[
+													$mdgriffith$elm_ui$Element$spacing(4)
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$mdgriffith$elm_ui$Element$el,
 													_List_fromArray(
 														[
-															$mdgriffith$elm_ui$Element$Font$typeface('Noto Sans')
-														])),
-													$mdgriffith$elm_ui$Element$Font$size(24)
-												]),
-											$mdgriffith$elm_ui$Element$text(description)),
-											representation(model.inputBits)
-										]));
-							},
-							_List_fromArray(
-								[
-									_Utils_Tuple2(
-									'bit count',
-									A2(
-										$elm$core$Basics$composeL,
-										text,
-										A2(
-											$elm$core$Basics$composeR,
-											$lue_bird$elm_typesafe_array$Arr$length,
-											A2($elm$core$Basics$composeR, $lue_bird$elm_typed_value$Typed$val, $elm$core$String$fromInt)))),
-									_Utils_Tuple2(
-									'as recognizable collage',
-									A2($elm$core$Basics$composeL, svg, $author$project$Bits$Represent$asRecognizableCollage)),
-									_Utils_Tuple2(
-									'as short unicode string',
-									A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asShortUnicodeString)),
-									_Utils_Tuple2(
-									'as hex (0-9 then a-f) string',
-									A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asHexString)),
-									_Utils_Tuple2(
-									'as 0-9 then a-v string',
-									A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$as09avString)),
-									_Utils_Tuple2(
-									'as readable string from words',
-									A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asReadableWordsString))
-								]));
-					}())
+															$mdgriffith$elm_ui$Element$Font$family(
+															_List_fromArray(
+																[
+																	$mdgriffith$elm_ui$Element$Font$typeface('Noto Sans')
+																])),
+															$mdgriffith$elm_ui$Element$Font$size(24)
+														]),
+													$mdgriffith$elm_ui$Element$text(description)),
+													representation(model.inputBits)
+												]));
+									},
+									_List_fromArray(
+										[
+											_Utils_Tuple2(
+											'as recognizable collage',
+											A2($elm$core$Basics$composeL, svg, $author$project$Bits$Represent$asRecognizableCollage)),
+											_Utils_Tuple2(
+											'as short unicode string',
+											A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asShortUnicodeString)),
+											_Utils_Tuple2(
+											'as hex (0-9 then a-f) string',
+											A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asHexString)),
+											_Utils_Tuple2(
+											'as 0-9 then a-v string',
+											A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$as09avString)),
+											_Utils_Tuple2(
+											'as readable string from words',
+											A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asReadableWordsString))
+										])));
+						}()
+						]))
 				])));
 };
 var $author$project$Try$main = $elm$browser$Browser$element(
