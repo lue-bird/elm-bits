@@ -38,11 +38,10 @@ last list =
 
 removeLast : Arr (In min max) element -> Arr (Min Nat0) element
 removeLast arr =
-    arr
-        |> Arr.lowerMinLength nat0
-        |> MinArr.isLengthAtLeast nat1
-            { min = nat0 }
-            { less = MinArr.value
-            , equalOrGreater =
-                MinArr.drop nat1 LastToFirst
-            }
+    case arr |> MinArr.isLengthAtLeast nat1 { lowest = nat0 } of
+        Nat.Below below ->
+            MinArr.value below
+            
+        Nat.EqualOrGreater atLeast1 ->
+            atLeast1 |> MinArr.drop nat1 LastToFirst
+            

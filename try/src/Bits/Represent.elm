@@ -34,13 +34,13 @@ import Typed exposing (val)
 
 {-| Convert to a string: `O`s are shown as `0`, `1`s as `I`s.
 
-    as01String (Arr.from4 I O I O )
+    as01String (Arr.from4 I O I O)
     --> "1010"
 
 -}
 as01String : Arr (In min max) Bit -> String
 as01String bits =
-    Arr.map (Bit.to0or1 >> val >> String.fromInt) bits
+    Arr.map (Bit.toNat >> val >> String.fromInt) bits
         |> Arr.fold FirstToLast (++) ""
 
 
@@ -144,7 +144,7 @@ as09avChar bits =
     in
     case at nat0 of
         O ->
-            asHexChar (Arr.take nat4 nat4 FirstToLast paddedBits)
+            asHexChar (Arr.take nat4 FirstToLast paddedBits)
 
         I ->
             case Toop.T4 (at nat0) (at nat1) (at nat2) (at nat3) of
@@ -360,9 +360,9 @@ asReadableWord bits =
     in
     String.fromList
         [ asFirstLetterInWord
-            (Arr.take nat4 nat4 FirstToLast paddedBits)
+            (Arr.take nat4 FirstToLast paddedBits)
         , asVocal (Arr.from2 (at nat4) (at nat5))
-        , asThirdLetterInWord (Arr.take nat4 nat4 LastToFirst paddedBits)
+        , asThirdLetterInWord (Arr.take nat4 LastToFirst paddedBits)
         ]
 
 
@@ -444,9 +444,9 @@ asCollage bits =
     in
     colorShape
         (Collage.uniform
-            (asColor (Arr.take nat6 nat6 LastToFirst paddedBits))
+            (asColor (Arr.take nat6 LastToFirst paddedBits))
         )
-        (asShape (Arr.take nat3 nat3 FirstToLast paddedBits))
+        (asShape (Arr.take nat3 FirstToLast paddedBits))
 
 
 asRecognizableCollage : Arr (In min max) Bit -> Collage msg

@@ -1,6 +1,7 @@
 module Try exposing (main)
 
 import Arr exposing (Arr)
+import Array
 import Bits.Represent as RepresentBits
 import Browser
 import Collage exposing (Collage)
@@ -18,7 +19,6 @@ import NNats exposing (..)
 import Nat exposing (Min)
 import TypeNats exposing (..)
 import Typed exposing (val)
-import Util exposing (last, removeLast)
 
 
 main : Program () Model Msg
@@ -55,30 +55,26 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         InputText string ->
-            ( case last (String.toList string) of
-                Just '0' ->
-                    { model
-                        | inputBits =
-                            model.inputBits
-                                |> MinArr.push O
-                                |> Arr.lowerMinLength nat0
-                    }
+            ( { model
+                | inputBits =
+                    string
+                        |> String.toList
+                        |> List.reverse
+                        |> List.filterMap
+                            (\char ->
+                                case char of
+                                    '0' ->
+                                        Just O
 
-                Just '1' ->
-                    { model
-                        | inputBits =
-                            model.inputBits
-                                |> MinArr.push I
-                                |> Arr.lowerMinLength nat0
-                    }
+                                    '1' ->
+                                        Just I
 
-                Nothing ->
-                    { model
-                        | inputBits = removeLast model.inputBits
-                    }
-
-                Just _ ->
-                    model
+                                    _ ->
+                                        Nothing
+                            )
+                        |> Array.fromList
+                        |> Arr.fromArray
+              }
             , Cmd.none
             )
 
@@ -88,15 +84,9 @@ view model =
     Ui.layoutWith
         { options =
             [ Ui.focusStyle
-                { borderColor = Just (Ui.rgba 0 1 1 0.38)
+                { borderColor = Nothing
                 , backgroundColor = Nothing
-                , shadow =
-                    Just
-                        { color = Ui.rgba 0 1 1 0.13
-                        , blur = 1
-                        , size = 1
-                        , offset = ( 0, 0 )
-                        }
+                , shadow = Nothing
                 }
             ]
         }
@@ -108,46 +98,59 @@ view model =
             , UiBg.color (Ui.rgb 0 0 0)
             , UiFont.color (Ui.rgb 1 1 1)
             ]
-            [ Ui.text "Try out some bit stuff"
+            [ Ui.text "Representing bits"
                 |> Ui.el
                     [ UiFont.size 40
                     ]
-            , Ui.row [ Ui.paddingXY 16 24 ]
-                [ Ui.paragraph []
-                    [ Ui.text
-                        (RepresentBits.as01String
-                            (model.inputBits |> removeLast)
-                        )
-
-                    -- editable bit: delete or write 0 or 1
-                    , UiInput.text
-                        [ UiBorder.color (Ui.rgba 0 1 1 0.2)
-                        , UiBorder.rounded 20
-                        , Ui.padding 3
-                        , UiBg.color (Ui.rgba 0 0 0 0)
-                        , UiFont.size 20
-                        ]
-                        { label = UiInput.labelHidden "enter 0 or 1"
-                        , onChange = InputText
-                        , placeholder = Nothing
-                        , text =
-                            model.inputBits
-                                |> MinArr.isLengthAtLeast nat1
-                                    { min = nat0 }
-                                    { equalOrGreater =
-                                        \atLeast1 ->
-                                            String.fromInt
-                                                (Bit.to0or1
-                                                    (atLeast1 |> Arr.at nat0 LastToFirst)
-                                                    |> val
-                                                )
-                                    , less = \_ -> "enter 0 or 1 > "
-                                    }
-                        }
-                    ]
+            , Ui.column
+                [ Ui.padding 32
+                , Ui.width Ui.fill
                 ]
-            , Ui.column [ Ui.spacing 40, Ui.paddingXY 48 28 ]
-                (let
+                [ Ui.column
+                    [ Ui.width Ui.fill
+                    , Ui.spacing 3
+                    ]
+                    [ Ui.column
+                        [ Ui.width Ui.fill ]
+                        [ UiInput.text
+                            [ Ui.padding 3
+                            , UiBg.color (Ui.rgba 0 0 0 0)
+                            , UiFont.size 20
+                            , Ui.width Ui.fill
+                            , UiBorder.color (Ui.rgba 0 0 0 0)
+                            ]
+                            { label = UiInput.labelHidden "enter 0s & 1s"
+                            , onChange = InputText
+                            , placeholder = Nothing
+                            , text =
+                                case
+                                    model.inputBits
+                                        |> MinArr.isLengthAtLeast nat1
+                                            { lowest = nat0 }
+                                of
+                                    Nat.EqualOrGreater atLeast1 ->
+                                        RepresentBits.as01String atLeast1
+
+                                    Nat.Below _ ->
+                                        "enter zeros & ones > "
+                            }
+                        , Ui.el
+                            [ Ui.width Ui.fill
+                            , UiBg.color (Ui.rgb 1 0.7 0)
+                            , Ui.height (Ui.px 2)
+                            ]
+                            Ui.none
+                        ]
+                    , Ui.text
+                        ((model.inputBits
+                            |> Arr.length
+                            |> val
+                            |> String.fromInt
+                         )
+                            ++ " bits"
+                        )
+                    ]
+                , let
                     text =
                         Ui.text
                             >> Ui.el
@@ -160,26 +163,23 @@ view model =
                         Collage.Render.svg
                             >> Ui.html
                             >> Ui.el [ Ui.paddingXY 0 8 ]
-                 in
-                 [ ( "bit count"
-                   , text << (Arr.length >> val >> String.fromInt)
-                   )
-                 , ( "as recognizable collage"
-                   , svg << RepresentBits.asRecognizableCollage
-                   )
-                 , ( "as short unicode string"
-                   , text << RepresentBits.asShortUnicodeString
-                   )
-                 , ( "as hex (0-9 then a-f) string"
-                   , text << RepresentBits.asHexString
-                   )
-                 , ( "as 0-9 then a-v string"
-                   , text << RepresentBits.as09avString
-                   )
-                 , ( "as readable string from words"
-                   , text << RepresentBits.asReadableWordsString
-                   )
-                 ]
+                  in
+                  [ ( "as recognizable collage"
+                    , svg << RepresentBits.asRecognizableCollage
+                    )
+                  , ( "as short unicode string"
+                    , text << RepresentBits.asShortUnicodeString
+                    )
+                  , ( "as hex (0-9 then a-f) string"
+                    , text << RepresentBits.asHexString
+                    )
+                  , ( "as 0-9 then a-v string"
+                    , text << RepresentBits.as09avString
+                    )
+                  , ( "as readable string from words"
+                    , text << RepresentBits.asReadableWordsString
+                    )
+                  ]
                     |> List.map
                         (\( description, representation ) ->
                             Ui.column [ Ui.spacing 4 ]
@@ -191,6 +191,8 @@ view model =
                                 , representation model.inputBits
                                 ]
                         )
-                )
+                    |> Ui.column
+                        [ Ui.spacing 40, Ui.paddingXY 48 28 ]
+                ]
             ]
         )
