@@ -21,3 +21,7 @@
 #### 2.0.4
 
 - corrected old `Arr.extendOnly`s to `extend`s in the readme
+
+#### 2.0.5
+
+- updated `bounded-nat` to 17.0.0 & `typesafe-array` to 13.0.0
