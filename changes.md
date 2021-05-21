@@ -25,3 +25,7 @@
 #### 2.0.5
 
 - updated `bounded-nat` to 17.0.0 & `typesafe-array` to 13.0.0
+
+#### 2.0.6
+
+- updated `bounded-nat` to 18.0.0
