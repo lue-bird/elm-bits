@@ -27,5 +27,5 @@ groupPaddingLeft groupSize defaultElement bitArr =
         remaining
             |> Arr.resize LastToFirst groupSize defaultElement
             |> Arr.from1
-            |> MinArr.extend nat0 groups
+            |> MinArr.append nat0 groups
             |> Arr.lowerMinLength nat0
