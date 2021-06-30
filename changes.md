@@ -33,3 +33,7 @@
 #### 2.0.7
 
 - updated `typesafe-array` to 14.0.0
+
+#### 2.0.8
+
+- updated `typesafe-array` to 15.0.0
