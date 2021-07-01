@@ -24,7 +24,6 @@ import Color exposing (Color)
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
 import Lue.Bits as Bits
-import Lue.Byte as Byte
 import NNats exposing (..)
 import Nat exposing (In)
 import Toop
@@ -38,7 +37,7 @@ import Typed exposing (val)
     --> "1010"
 
 -}
-as01String : Arr (In min max) Bit -> String
+as01String : Arr (In min_ max_) Bit -> String
 as01String bits =
     Arr.map (Bit.toNat >> val >> String.fromInt) bits
         |> Arr.fold FirstToLast (++) ""
@@ -53,7 +52,7 @@ as01String bits =
 `String` from unicode `Char`s.
 
 -}
-asShortUnicodeString : Arr (In min max) Bit -> String
+asShortUnicodeString : Arr (In min_ max_) Bit -> String
 asShortUnicodeString bits =
     Arr.groupPaddingLeft nat20 O bits
         |> Arr.map
@@ -65,7 +64,7 @@ asShortUnicodeString bits =
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f).
 -}
-asHexChar : Arr (In min Nat4) Bit -> Char
+asHexChar : Arr (In min_ Nat4) Bit -> Char
 asHexChar hexBits =
     let
         paddedHexBits =
@@ -124,7 +123,7 @@ asHexChar hexBits =
             'f'
 
 
-asHexString : Arr (In min max) Bit -> String
+asHexString : Arr (In min_ max_) Bit -> String
 asHexString bits =
     Arr.groupPaddingLeft nat4 O bits
         |> Arr.map asHexChar
@@ -133,7 +132,7 @@ asHexString bits =
         |> String.fromList
 
 
-as09avChar : Arr (In min Nat5) Bit -> Char
+as09avChar : Arr (In min_ Nat5) Bit -> Char
 as09avChar bits =
     let
         paddedBits =
@@ -197,7 +196,7 @@ as09avChar bits =
                     'v'
 
 
-as09avString : Arr (In min max) Bit -> String
+as09avString : Arr (In min_ max_) Bit -> String
 as09avString bits =
     Arr.groupPaddingLeft nat5 O bits
         |> Arr.map as09avChar
@@ -208,7 +207,7 @@ as09avString bits =
 
 {-| Four bits represented in a `Char` of multiple uniquely identifiable symbols
 -}
-asFirstLetterInWord : Arr (In min Nat4) Bit -> Char
+asFirstLetterInWord : Arr (In min_ Nat4) Bit -> Char
 asFirstLetterInWord bits =
     let
         paddedBits =
@@ -267,7 +266,7 @@ asFirstLetterInWord bits =
             'y'
 
 
-asThirdLetterInWord : Arr (In min Nat4) Bit -> Char
+asThirdLetterInWord : Arr (In min_ Nat4) Bit -> Char
 asThirdLetterInWord bits =
     let
         paddedBits =
@@ -326,7 +325,7 @@ asThirdLetterInWord bits =
             ','
 
 
-asVocal : Arr (In min Nat2) Bit -> Char
+asVocal : Arr (In min_ Nat2) Bit -> Char
 asVocal bits =
     let
         paddedBits =
@@ -349,7 +348,7 @@ asVocal bits =
             'u'
 
 
-asReadableWord : Arr (In min Nat10) Bit -> String
+asReadableWord : Arr (In min_ Nat10) Bit -> String
 asReadableWord bits =
     let
         paddedBits =
@@ -375,7 +374,7 @@ asReadableWordsString bits =
         |> String.join " "
 
 
-asColor : Arr (In min Nat6) Bit -> Color
+asColor : Arr (In min_ Nat6) Bit -> Color
 asColor bits =
     let
         paddedBits =
@@ -393,7 +392,7 @@ asColor bits =
         (component (Arr.from2 (at nat4) (at nat5)))
 
 
-asShape : Arr (In min Nat3) Bit -> Collage.Shape
+asShape : Arr (In min_ Nat3) Bit -> Collage.Shape
 asShape bits =
     let
         paddedBits =
@@ -419,7 +418,7 @@ asShape bits =
                 1
 
 
-asCollage : Arr (In min Nat11) Bit -> Collage msg
+asCollage : Arr (In min_ Nat11) Bit -> Collage msg
 asCollage bits =
     let
         paddedBits =
@@ -449,7 +448,7 @@ asCollage bits =
         (asShape (Arr.take nat3 FirstToLast paddedBits))
 
 
-asRecognizableCollage : Arr (In min max) Bit -> Collage msg
+asRecognizableCollage : Arr (In min_ max_) Bit -> Collage msg_
 asRecognizableCollage bits =
     let
         collages =
