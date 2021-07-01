@@ -1,4 +1,4 @@
-module Try exposing (main)
+module Main exposing (main)
 
 import Arr exposing (Arr)
 import Array
@@ -132,7 +132,7 @@ view model =
                                         RepresentBits.as01String atLeast1
 
                                     Nat.Below _ ->
-                                        "enter zeros & ones > "
+                                        "enter 0s & 1s > "
                             }
                         , Ui.el
                             [ Ui.width Ui.fill
