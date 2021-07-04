@@ -13,9 +13,13 @@ when inside the directory containing this file.
 
 import Review.Rule exposing (Rule)
 import NoUnused.Dependencies
+import SingleUseTypeVarsEndWith_
+import NoMultiUseTypeVarsEndWith_
 
 
 config : List Rule
 config =
     [ NoUnused.Dependencies.rule
+    , SingleUseTypeVarsEndWith_.rule
+    , NoMultiUseTypeVarsEndWith_.rule
     ]
