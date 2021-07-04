@@ -42,12 +42,27 @@ import Typed exposing (val)
 
 
 {-| A [`Codec`](https://package.elm-lang.org/packages/MartinSStewart/elm-serialize/latest/) for an `Arr` of `Bit`s.
+
+To get a `Codec` with a string error:
+
+import Serialize exposing (Codec)
+
+    bit128 : Codec String (Arr (In Nat128 (Nat128Plus a\_)) Bit)
+    bit128 =
+        Bits.serialize nat128 Arr.serializeErrorToString
+
 -}
 serialize :
-    Nat (ArgIn min max maybeN)
-    -> Codec String (Arr (In min max) Bit)
-serialize length =
-    Arr.serialize length Bit.serialize
+    Nat (ArgIn min max ifN)
+    ->
+        ({ actualLength : Int
+         , expectedLength : Nat (ArgIn min max ifN)
+         }
+         -> serializeError
+        )
+    -> Codec serializeError (Arr (In min max) Bit)
+serialize length toSerializeError =
+    Arr.serialize length toSerializeError Bit.serialize
 
 
 {-| A `Random.Generator` for an `Arr` of `Bit`s.
