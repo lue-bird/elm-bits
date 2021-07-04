@@ -33,7 +33,7 @@ import Typed exposing (val)
 serialize : Serialize.Codec String (Arr (Only Nat8) Bit)
 serialize =
     let
-        fromInt : Int -> Arr (In Nat8 (Nat8Plus a)) Bit
+        fromInt : Int -> Arr (In Nat8 (Nat8Plus a_)) Bit
         fromInt int =
             Arr.nats nat8
                 |> Arr.reverse

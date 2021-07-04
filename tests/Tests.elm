@@ -13,12 +13,12 @@ import TypeNats exposing (..)
 import Typed exposing (val)
 
 
-byte116 : Arr (In Nat8 (Nat8Plus a)) Bit
+byte116 : Arr (In Nat8 (Nat8Plus a_)) Bit
 byte116 =
     Arr.from7 I I I O I O O |> Bits.padToByte
 
 
-byte138 : Arr (In Nat8 (Nat8Plus a)) Bit
+byte138 : Arr (In Nat8 (Nat8Plus a_)) Bit
 byte138 =
     Arr.from8 I O O O I O I O
 

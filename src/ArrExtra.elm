@@ -11,9 +11,9 @@ import TypeNats exposing (..)
 
 
 groupPaddingLeft :
-    Nat (ArgIn (Nat1Plus minGroupSizeMinus1) maxGroupSize maybeN)
+    Nat (ArgIn (Nat1Plus minGroupSizeMinus1) maxGroupSize ifN_)
     -> element
-    -> Arr (In min max) element
+    -> Arr (In min_ max_) element
     -> Arr (Min Nat0) (Arr (In (Nat1Plus minGroupSizeMinus1) maxGroupSize) element)
 groupPaddingLeft groupSize defaultElement bitArr =
     let

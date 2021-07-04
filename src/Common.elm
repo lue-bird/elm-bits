@@ -11,7 +11,7 @@ import TypeNats exposing (..)
 import Typed exposing (val)
 
 
-bitsToNat : Arr (In min Nat53) Bit -> Nat (Min Nat0)
+bitsToNat : Arr (In min_ Nat53) Bit -> Nat (Min Nat0)
 bitsToNat bits =
     Arr.map2
         (\power ->

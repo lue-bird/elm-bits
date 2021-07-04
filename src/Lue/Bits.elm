@@ -70,7 +70,7 @@ serialize length toSerializeError =
 To use it effectively, you will need some [extra bits of randomness](https://package.elm-lang.org/packages/NoRedInk/elm-random-pcg-extended/latest/).
 
 -}
-random : Nat (ArgIn min max maybeN) -> Random.Generator (Arr (In min max) Bit)
+random : Nat (ArgIn min max ifN_) -> Random.Generator (Arr (In min max) Bit)
 random bitCount =
     Arr.random bitCount Bit.random
 
@@ -83,7 +83,7 @@ Bits from the [53](https://package.elm-lang.org/packages/elm-community/basics-ex
     --> Nat 138
 
 -}
-toNat : Arr (In min Nat53) Bit -> Nat (Min Nat0)
+toNat : Arr (In min_ Nat53) Bit -> Nat (Min Nat0)
 toNat bits =
     Common.bitsToNat bits
 
@@ -108,8 +108,8 @@ toNat bits =
 
 -}
 toBytes :
-    Arr (In min max) Bit
-    -> Arr (Min Nat0) (Arr (In Nat8 (Nat8Plus a)) Bit)
+    Arr (In min_ max_) Bit
+    -> Arr (Min Nat0) (Arr (In Nat8 (Nat8Plus a_)) Bit)
 toBytes =
     Arr.groupPaddingLeft nat8 O
 
@@ -120,6 +120,6 @@ toBytes =
     --> Arr.from8 O O O O O I I I
 
 -}
-padToByte : Arr (In min Nat8) Bit -> Arr (In Nat8 (Nat8Plus a)) Bit
+padToByte : Arr (In min_ Nat8) Bit -> Arr (In Nat8 (Nat8Plus a_)) Bit
 padToByte bitArr =
     Arr.resize LastToFirst nat8 O bitArr

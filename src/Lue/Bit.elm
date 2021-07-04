@@ -57,7 +57,7 @@ type Bit
 `val` is from [`Typed`](https://package.elm-lang.org/packages/lue-bird/elm-typed-value/latest/Typed).
 
 -}
-toNat : Bit -> Nat (In Nat0 (Nat1Plus a))
+toNat : Bit -> Nat (In Nat0 (Nat1Plus a_))
 toNat =
     \bit ->
         case bit of
@@ -77,6 +77,6 @@ random =
 
 {-| A [`Codec`](https://package.elm-lang.org/packages/MartinSStewart/elm-serialize/latest/) to serialize 1 `Bit`.
 -}
-serialize : Serialize.Codec error Bit
+serialize : Serialize.Codec error_ Bit
 serialize =
     Serialize.enum O [ I ]
