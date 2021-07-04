@@ -37,3 +37,8 @@
 #### 2.0.8
 
 - updated `typesafe-array` to 15.0.0
+
+## 3.0.0
+
+- updated `typesafe-array` to 16.0.0
+    - `Bits.serialize` now uses a custom error instead of a `String`
