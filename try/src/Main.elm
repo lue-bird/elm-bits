@@ -100,10 +100,9 @@ viewDocument model =
 
 view : Model -> Ui.Element Msg
 view model =
-    [ Ui.text "Representing bits"
-        |> Ui.el
-            [ Font.size 40 ]
-    , [ [ [ UiInput.text
+    [ [ Ui.text "Representing bits"
+            |> Ui.el [ Font.size 40 ]
+      , [ [ UiInput.text
                 [ Ui.padding 3
                 , UiBg.color (Ui.rgba 0 0 0 0)
                 , Font.size 20
@@ -151,57 +150,65 @@ view model =
                 [ Ui.width Ui.fill
                 , Ui.spacing 3
                 ]
-      , let
-            text =
-                Ui.text
-                    >> Ui.el
-                        [ Font.color (Ui.rgb 1 0.5 0.5)
-                        , Font.family [ Font.monospace ]
-                        , Font.size 24
-                        ]
+      ]
+        |> Ui.column [ Ui.spacing 30 ]
+    , let
+        text =
+            Ui.text
+                >> Ui.el
+                    [ Font.color (Ui.rgb 1 0.5 0.5)
+                    , Font.family [ Font.monospace ]
+                    , Font.size 24
+                    ]
 
-            svg =
-                Collage.Render.svg
-                    >> Ui.html
-                    >> Ui.el [ Ui.paddingXY 0 8 ]
-        in
-        [ ( "as recognizable collage"
-          , svg << RepresentBits.asRecognizableCollage
-          )
-        , ( "as short unicode string"
-          , text << RepresentBits.asShortUnicodeString
-          )
-        , ( "as hex (0-9 then a-f) string"
-          , text << RepresentBits.asHexString
-          )
-        , ( "as 0-9 then a-v string"
-          , text << RepresentBits.as09avString
-          )
-        , ( "as readable string from words"
-          , text << RepresentBits.asReadableWordsString
-          )
-        ]
-            |> List.map
-                (\( description, representation ) ->
-                    Ui.column [ Ui.spacing 4 ]
-                        [ Ui.el
+        svg =
+            Collage.Render.svg
+                >> Ui.html
+                >> Ui.el [ Ui.paddingXY 0 8 ]
+      in
+      Ui.table [ Ui.spacingXY 19 4 ]
+        { data =
+            [ ( "recognizable collage"
+              , svg << RepresentBits.asRecognizableCollage
+              )
+            , ( "short unicode string"
+              , text << RepresentBits.asShortUnicodeString
+              )
+            , ( "hex (0-9 then a-f) string"
+              , text << RepresentBits.asHexString
+              )
+            , ( "0-9 then a-v string"
+              , text << RepresentBits.as09avString
+              )
+            , ( "readable string from words"
+              , text << RepresentBits.asReadableWordsString
+              )
+            ]
+        , columns =
+            [ { header =
+                    Ui.text "as"
+                        |> Ui.el [ Font.size 24 ]
+              , width = Ui.shrink
+              , view =
+                    \( description, _ ) ->
+                        Ui.el
                             [ Font.family [ Font.typeface "Noto Sans" ]
                             , Font.size 24
                             ]
                             (Ui.text description)
-                        , representation model.inputBits
-                        ]
-                )
-            |> Ui.column
-                [ Ui.spacing 40, Ui.paddingXY 48 28 ]
-      ]
-        |> Ui.column
-            [ Ui.padding 32
-            , Ui.width Ui.fill
+              }
+            , { header = Ui.none
+              , width = Ui.shrink
+              , view =
+                    \( _, representation ) ->
+                        representation model.inputBits
+              }
             ]
+        }
     ]
         |> Ui.column
-            [ Ui.paddingXY 40 60
+            [ Ui.paddingXY 62 60
+            , Ui.spacing 40
             , Ui.width Ui.fill
             , Ui.height Ui.fill
             , UiBg.color (Ui.rgb 0 0 0)

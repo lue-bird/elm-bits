@@ -5244,26 +5244,21 @@ var $lue_bird$elm_typesafe_array$Internal$Arr = {$: 'Arr'};
 var $lue_bird$elm_typed_value$Typed$Typed = function (a) {
 	return {$: 'Typed', a: a};
 };
+var $lue_bird$elm_typed_value$Typed$tag = function (value_) {
+	return $lue_bird$elm_typed_value$Typed$Typed(value_);
+};
+var $lue_bird$elm_bounded_nat$I$Nat = {$: 'Nat'};
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var $lue_bird$elm_typed_value$Typed$isChecked = function (_v0) {
 	return function (_v1) {
 		var value_ = _v1.a;
 		return $lue_bird$elm_typed_value$Typed$Typed(value_);
 	};
 };
-var $lue_bird$elm_bounded_nat$I$Nat = {$: 'Nat'};
-var $lue_bird$elm_typed_value$Typed$tag = function (value_) {
-	return $lue_bird$elm_typed_value$Typed$Typed(value_);
-};
-var $lue_bird$elm_bounded_nat$I$nat0 = A2(
-	$lue_bird$elm_typed_value$Typed$isChecked,
-	$lue_bird$elm_bounded_nat$I$Nat,
-	$lue_bird$elm_typed_value$Typed$tag(0));
-var $lue_bird$elm_bounded_nat$NNats$nat0 = $lue_bird$elm_bounded_nat$I$nat0;
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
 var $lue_bird$elm_typed_value$Typed$val = function (_v0) {
 	var value_ = _v0.a;
 	return value_;
@@ -5276,14 +5271,26 @@ var $lue_bird$elm_bounded_nat$I$newRange = A2(
 		$lue_bird$elm_typed_value$Typed$tag,
 		$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_bounded_nat$I$Nat)));
 var $lue_bird$elm_bounded_nat$InNat$value = $lue_bird$elm_bounded_nat$I$newRange;
+var $lue_bird$elm_typesafe_array$Internal$from = F2(
+	function (array, length_) {
+		return $lue_bird$elm_typed_value$Typed$tag(
+			{
+				array: array,
+				length: $lue_bird$elm_bounded_nat$InNat$value(length_.length)
+			});
+	});
+var $lue_bird$elm_bounded_nat$I$nat0 = A2(
+	$lue_bird$elm_typed_value$Typed$isChecked,
+	$lue_bird$elm_bounded_nat$I$Nat,
+	$lue_bird$elm_typed_value$Typed$tag(0));
+var $lue_bird$elm_bounded_nat$NNats$nat0 = $lue_bird$elm_bounded_nat$I$nat0;
 var $lue_bird$elm_typesafe_array$Internal$empty = A2(
 	$lue_bird$elm_typed_value$Typed$isChecked,
 	$lue_bird$elm_typesafe_array$Internal$Arr,
-	$lue_bird$elm_typed_value$Typed$tag(
-		{
-			array: $elm$core$Array$empty,
-			length: $lue_bird$elm_bounded_nat$InNat$value($lue_bird$elm_bounded_nat$NNats$nat0)
-		}));
+	A2(
+		$lue_bird$elm_typesafe_array$Internal$from,
+		$elm$core$Array$empty,
+		{length: $lue_bird$elm_bounded_nat$NNats$nat0}));
 var $lue_bird$elm_typesafe_array$Arr$empty = $lue_bird$elm_typesafe_array$Internal$empty;
 var $lue_bird$elm_typed_value$Typed$val2 = F3(
 	function (binOp, aTyped, bTyped) {
@@ -5415,18 +5422,18 @@ var $elm$core$Array$push = F2(
 var $lue_bird$elm_typesafe_array$Internal$push = F2(
 	function (elementToPush, add1) {
 		return A2(
-			$elm$core$Basics$composeR,
-			A2(
-				$lue_bird$elm_typesafe_array$Internal$mapArrayAndLength,
-				$elm$core$Array$push(elementToPush),
-				add1),
-			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
+			$lue_bird$elm_typesafe_array$Internal$mapArrayAndLength,
+			$elm$core$Array$push(elementToPush),
+			add1);
 	});
 var $lue_bird$elm_typesafe_array$Internal$inPush = function (element) {
 	return A2(
-		$lue_bird$elm_typesafe_array$Internal$push,
-		element,
-		$lue_bird$elm_bounded_nat$InNat$add($lue_bird$elm_bounded_nat$NNats$nat1));
+		$elm$core$Basics$composeR,
+		A2(
+			$lue_bird$elm_typesafe_array$Internal$push,
+			element,
+			$lue_bird$elm_bounded_nat$InNat$add($lue_bird$elm_bounded_nat$NNats$nat1)),
+		$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
 };
 var $lue_bird$elm_typesafe_array$Arr$from1 = function (a) {
 	return A2($lue_bird$elm_typesafe_array$Internal$inPush, a, $lue_bird$elm_typesafe_array$Arr$empty);
@@ -5475,14 +5482,7 @@ var $lue_bird$elm_bounded_nat$Nat$lowerMin = function (_v0) {
 	return $lue_bird$elm_bounded_nat$I$newRange;
 };
 var $lue_bird$elm_typesafe_array$Internal$mapLength = function (mapLength_) {
-	return $lue_bird$elm_typed_value$Typed$map(
-		function (v) {
-			return {
-				array: v.array,
-				length: $lue_bird$elm_bounded_nat$InNat$value(
-					mapLength_(v.length))
-			};
-		});
+	return A2($lue_bird$elm_typesafe_array$Internal$mapArrayAndLength, $elm$core$Basics$identity, mapLength_);
 };
 var $lue_bird$elm_typesafe_array$Internal$lowerMinLength = function (newMinimumLength) {
 	return A2(
@@ -5568,9 +5568,10 @@ var $lue_bird$elm_typesafe_array$Internal$fromArray = function (array) {
 	return A2(
 		$lue_bird$elm_typed_value$Typed$isChecked,
 		$lue_bird$elm_typesafe_array$Internal$Arr,
-		$lue_bird$elm_typed_value$Typed$tag(
+		A2(
+			$lue_bird$elm_typesafe_array$Internal$from,
+			array,
 			{
-				array: array,
 				length: A2(
 					$lue_bird$elm_bounded_nat$Nat$intAtLeast,
 					$lue_bird$elm_bounded_nat$NNats$nat0,
@@ -12111,7 +12112,7 @@ var $lue_bird$elm_typesafe_array$Internal$resize = F3(
 					$lue_bird$elm_typed_value$Typed$val(newLength),
 					paddingValue),
 				function (_v0) {
-					return $lue_bird$elm_bounded_nat$InNat$value(newLength);
+					return newLength;
 				}),
 			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
 	});
@@ -12256,19 +12257,23 @@ var $author$project$Bits$Represent$asHexChar = function (hexBits) {
 		}
 	}
 };
+var $lue_bird$elm_typesafe_array$Internal$takeTemplate = F2(
+	function (amountToTake, direction) {
+		return A2(
+			$lue_bird$elm_typesafe_array$Internal$mapArrayAndLength,
+			A2(
+				$lue_bird$elm_linear_direction$Array$LinearDirection$take,
+				$lue_bird$elm_typed_value$Typed$val(amountToTake),
+				direction),
+			function (_v0) {
+				return amountToTake;
+			});
+	});
 var $lue_bird$elm_typesafe_array$Internal$take = F2(
-	function (takenAmount, direction) {
+	function (amountToTake, direction) {
 		return A2(
 			$elm$core$Basics$composeR,
-			A2(
-				$lue_bird$elm_typesafe_array$Internal$mapArrayAndLength,
-				A2(
-					$lue_bird$elm_linear_direction$Array$LinearDirection$take,
-					$lue_bird$elm_typed_value$Typed$val(takenAmount),
-					direction),
-				function (_v0) {
-					return takenAmount;
-				}),
+			A2($lue_bird$elm_typesafe_array$Internal$takeTemplate, amountToTake, direction),
 			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
 	});
 var $lue_bird$elm_typesafe_array$Arr$take = F2(
@@ -12429,31 +12434,42 @@ var $lue_bird$elm_typed_value$Typed$internalVal2 = F5(
 			A2($lue_bird$elm_typed_value$Typed$internalVal, aTag, aTyped),
 			A2($lue_bird$elm_typed_value$Typed$internalVal, bTag, bTyped));
 	});
-var $lue_bird$elm_typesafe_array$Internal$append = F2(
-	function (extension, addLength) {
+var $lue_bird$elm_typesafe_array$Internal$glue = F3(
+	function (direction, extension, addLength) {
 		var appendVal = F2(
 			function (a, b) {
 				return {
-					array: A2($elm$core$Array$append, b.array, a.array),
+					array: A3(direction, $elm$core$Array$append, b.array, a.array),
 					length: A2(addLength, a.length, b.length)
 				};
 			});
 		return A2(
 			$elm$core$Basics$composeR,
 			A4($lue_bird$elm_typed_value$Typed$internalVal2, appendVal, $lue_bird$elm_typesafe_array$Internal$Arr, extension, $lue_bird$elm_typesafe_array$Internal$Arr),
-			A2(
-				$elm$core$Basics$composeR,
-				$lue_bird$elm_typed_value$Typed$tag,
-				$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr)));
+			$lue_bird$elm_typed_value$Typed$tag);
+	});
+var $lue_bird$elm_typesafe_array$Internal$append = F2(
+	function (extension, addLength) {
+		return A3(
+			$lue_bird$elm_typesafe_array$Internal$glue,
+			F3(
+				function (app, a, b) {
+					return A2(app, a, b);
+				}),
+			extension,
+			addLength);
 	});
 var $lue_bird$elm_typesafe_array$Internal$minAppend = F2(
 	function (minAddedLength, extension) {
 		return A2(
-			$lue_bird$elm_typesafe_array$Internal$append,
-			extension,
-			function (_v0) {
-				return $lue_bird$elm_bounded_nat$MinNat$add(minAddedLength);
-			});
+			$elm$core$Basics$composeR,
+			A2(
+				$lue_bird$elm_typesafe_array$Internal$append,
+				extension,
+				function (_v0) {
+					return $lue_bird$elm_bounded_nat$MinNat$add(minAddedLength);
+				}),
+			$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
 	});
 var $lue_bird$elm_typesafe_array$MinArr$append = F2(
 	function (minAddedLength, extension) {
@@ -12562,26 +12578,25 @@ var $lue_bird$elm_typesafe_array$Internal$groupsOf = F2(
 				$lue_bird$elm_typesafe_array$Internal$toArray(arr));
 			var groups = _v0.groups;
 			var less = _v0.less;
-			var remaining = less;
 			return {
 				groups: A2(
 					$lue_bird$elm_typed_value$Typed$isChecked,
 					$lue_bird$elm_typesafe_array$Internal$Arr,
-					$lue_bird$elm_typed_value$Typed$tag(
+					A2(
+						$lue_bird$elm_typesafe_array$Internal$from,
+						A2(
+							$elm$core$Array$map,
+							function (array) {
+								return A2(
+									$lue_bird$elm_typed_value$Typed$isChecked,
+									$lue_bird$elm_typesafe_array$Internal$Arr,
+									A2(
+										$lue_bird$elm_typesafe_array$Internal$from,
+										array,
+										{length: groupSize}));
+							},
+							groups),
 						{
-							array: A2(
-								$elm$core$Array$map,
-								function (array) {
-									return A2(
-										$lue_bird$elm_typed_value$Typed$isChecked,
-										$lue_bird$elm_typesafe_array$Internal$Arr,
-										$lue_bird$elm_typed_value$Typed$tag(
-											{
-												array: array,
-												length: $lue_bird$elm_bounded_nat$InNat$value(groupSize)
-											}));
-								},
-								groups),
 							length: A2(
 								$lue_bird$elm_bounded_nat$Nat$div,
 								groupSize,
@@ -12590,9 +12605,10 @@ var $lue_bird$elm_typesafe_array$Internal$groupsOf = F2(
 				remaining: A2(
 					$lue_bird$elm_typed_value$Typed$isChecked,
 					$lue_bird$elm_typesafe_array$Internal$Arr,
-					$lue_bird$elm_typed_value$Typed$tag(
+					A2(
+						$lue_bird$elm_typesafe_array$Internal$from,
+						less,
 						{
-							array: remaining,
 							length: A2(
 								$lue_bird$elm_bounded_nat$Nat$remainderBy,
 								groupSize,
@@ -13173,46 +13189,57 @@ var $lue_bird$elm_typesafe_array$Internal$nats = function (length_) {
 	return A2(
 		$lue_bird$elm_typed_value$Typed$isChecked,
 		$lue_bird$elm_typesafe_array$Internal$Arr,
-		$lue_bird$elm_typed_value$Typed$tag(
-			{
-				array: function () {
-					var _v0 = A3(
-						$lue_bird$elm_bounded_nat$InNat$isAtLeast,
-						$lue_bird$elm_bounded_nat$NNats$nat1,
-						{lowest: $lue_bird$elm_bounded_nat$NNats$nat0},
-						length_);
-					if (_v0.$ === 'EqualOrGreater') {
-						var lengthAtLeast1 = _v0.a;
-						return $elm$core$Array$fromList(
+		A2(
+			$lue_bird$elm_typesafe_array$Internal$from,
+			function () {
+				var _v0 = A3(
+					$lue_bird$elm_bounded_nat$InNat$isAtLeast,
+					$lue_bird$elm_bounded_nat$NNats$nat1,
+					{lowest: $lue_bird$elm_bounded_nat$NNats$nat0},
+					length_);
+				if (_v0.$ === 'EqualOrGreater') {
+					var lengthAtLeast1 = _v0.a;
+					return $elm$core$Array$fromList(
+						A2(
+							$elm$core$List$map,
 							A2(
-								$elm$core$List$map,
-								A2(
-									$lue_bird$elm_bounded_nat$Nat$intInRange,
-									$lue_bird$elm_bounded_nat$NNats$nat0,
-									A2($lue_bird$elm_bounded_nat$InNat$sub, $lue_bird$elm_bounded_nat$NNats$nat1, lengthAtLeast1)),
-								A2(
-									$elm$core$List$range,
-									0,
-									$lue_bird$elm_typed_value$Typed$val(length_) - 1)));
-					} else {
-						return $elm$core$Array$empty;
-					}
-				}(),
-				length: $lue_bird$elm_bounded_nat$InNat$value(length_)
-			}));
+								$lue_bird$elm_bounded_nat$Nat$intInRange,
+								$lue_bird$elm_bounded_nat$NNats$nat0,
+								A2($lue_bird$elm_bounded_nat$InNat$sub, $lue_bird$elm_bounded_nat$NNats$nat1, lengthAtLeast1)),
+							A2(
+								$elm$core$List$range,
+								0,
+								$lue_bird$elm_typed_value$Typed$val(length_) - 1)));
+				} else {
+					return $elm$core$Array$empty;
+				}
+			}(),
+			{length: length_}));
 };
 var $lue_bird$elm_typesafe_array$Arr$nats = function (length_) {
 	return $lue_bird$elm_typesafe_array$Internal$nats(length_);
 };
-var $lue_bird$elm_typesafe_array$ArrayExtra$reverse = A2(
-	$elm$core$Basics$composeR,
-	$elm$core$Array$toList,
-	A2($elm$core$Basics$composeR, $elm$core$List$reverse, $elm$core$Array$fromList));
-var $lue_bird$elm_typesafe_array$Internal$reverse = A2(
-	$elm$core$Basics$composeR,
-	$lue_bird$elm_typesafe_array$Internal$mapArray($lue_bird$elm_typesafe_array$ArrayExtra$reverse),
-	$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
-var $lue_bird$elm_typesafe_array$Arr$reverse = $lue_bird$elm_typesafe_array$Internal$reverse;
+var $lue_bird$elm_linear_direction$Array$LinearDirection$order = F2(
+	function (direction, array) {
+		if (direction.$ === 'FirstToLast') {
+			return array;
+		} else {
+			return $elm$core$Array$fromList(
+				$elm$core$List$reverse(
+					$elm$core$Array$toList(array)));
+		}
+	});
+var $lue_bird$elm_typesafe_array$Internal$order = function (direction) {
+	return A2(
+		$elm$core$Basics$composeR,
+		$lue_bird$elm_typesafe_array$Internal$mapArray(
+			$lue_bird$elm_linear_direction$Array$LinearDirection$order(direction)),
+		$lue_bird$elm_typed_value$Typed$isChecked($lue_bird$elm_typesafe_array$Internal$Arr));
+};
+var $lue_bird$elm_typesafe_array$Arr$order = function (direction) {
+	return $lue_bird$elm_typesafe_array$Internal$order(direction);
+};
+var $lue_bird$elm_typesafe_array$Arr$reverse = $lue_bird$elm_typesafe_array$Arr$order($lue_bird$elm_linear_direction$LinearDirection$LastToFirst);
 var $elm$core$Basics$pow = _Basics_pow;
 var $lue_bird$elm_bounded_nat$I$toPower = function (power) {
 	return A2(
@@ -13725,13 +13752,9 @@ var $lue_bird$elm_typesafe_array$Internal$minIsLengthAtLeast = F2(
 		return function (arr) {
 			var withLength = function (len) {
 				return A2(
-					$lue_bird$elm_typed_value$Typed$isChecked,
-					$lue_bird$elm_typesafe_array$Internal$Arr,
-					$lue_bird$elm_typed_value$Typed$tag(
-						{
-							array: $lue_bird$elm_typesafe_array$Internal$toArray(arr),
-							length: len
-						}));
+					$lue_bird$elm_typesafe_array$Internal$from,
+					$lue_bird$elm_typesafe_array$Internal$toArray(arr),
+					{length: len});
 			};
 			var _v0 = A3(
 				$lue_bird$elm_bounded_nat$MinNat$isAtLeast,
@@ -13741,11 +13764,17 @@ var $lue_bird$elm_typesafe_array$Internal$minIsLengthAtLeast = F2(
 			if (_v0.$ === 'Below') {
 				var less = _v0.a;
 				return $lue_bird$elm_bounded_nat$Nat$Below(
-					withLength(less));
+					A2(
+						$lue_bird$elm_typed_value$Typed$isChecked,
+						$lue_bird$elm_typesafe_array$Internal$Arr,
+						withLength(less)));
 			} else {
 				var atLeast = _v0.a;
 				return $lue_bird$elm_bounded_nat$Nat$EqualOrGreater(
-					withLength(atLeast));
+					A2(
+						$lue_bird$elm_typed_value$Typed$isChecked,
+						$lue_bird$elm_typesafe_array$Internal$Arr,
+						withLength(atLeast)));
 			}
 		};
 	});
@@ -13843,6 +13872,17 @@ var $mdgriffith$elm_ui$Element$spacing = function (x) {
 			x,
 			x));
 };
+var $mdgriffith$elm_ui$Element$spacingXY = F2(
+	function (x, y) {
+		return A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$spacing,
+			A3(
+				$mdgriffith$elm_ui$Internal$Model$SpacingStyle,
+				A2($mdgriffith$elm_ui$Internal$Model$spacingName, x, y),
+				x,
+				y));
+	});
 var $timjs$elm_collage$Collage$opposite = function (_v0) {
 	var x = _v0.a;
 	var y = _v0.b;
@@ -14705,6 +14745,230 @@ var $timjs$elm_collage$Collage$Render$svg = function (collage) {
 			$timjs$elm_collage$Collage$Layout$height(collage)),
 		A2($timjs$elm_collage$Collage$Layout$align, $timjs$elm_collage$Collage$Layout$topLeft, collage));
 };
+var $mdgriffith$elm_ui$Element$InternalColumn = function (a) {
+	return {$: 'InternalColumn', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$GridPosition = function (a) {
+	return {$: 'GridPosition', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$GridTemplateStyle = function (a) {
+	return {$: 'GridTemplateStyle', a: a};
+};
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $mdgriffith$elm_ui$Internal$Model$AsGrid = {$: 'AsGrid'};
+var $mdgriffith$elm_ui$Internal$Model$asGrid = $mdgriffith$elm_ui$Internal$Model$AsGrid;
+var $mdgriffith$elm_ui$Internal$Model$getSpacing = F2(
+	function (attrs, _default) {
+		return A2(
+			$elm$core$Maybe$withDefault,
+			_default,
+			A3(
+				$elm$core$List$foldr,
+				F2(
+					function (attr, acc) {
+						if (acc.$ === 'Just') {
+							var x = acc.a;
+							return $elm$core$Maybe$Just(x);
+						} else {
+							if ((attr.$ === 'StyleClass') && (attr.b.$ === 'SpacingStyle')) {
+								var _v2 = attr.b;
+								var x = _v2.b;
+								var y = _v2.c;
+								return $elm$core$Maybe$Just(
+									_Utils_Tuple2(x, y));
+							} else {
+								return $elm$core$Maybe$Nothing;
+							}
+						}
+					}),
+				$elm$core$Maybe$Nothing,
+				attrs));
+	});
+var $mdgriffith$elm_ui$Internal$Flag$gridPosition = $mdgriffith$elm_ui$Internal$Flag$flag(35);
+var $mdgriffith$elm_ui$Internal$Flag$gridTemplate = $mdgriffith$elm_ui$Internal$Flag$flag(34);
+var $elm$core$List$repeatHelp = F3(
+	function (result, n, value) {
+		repeatHelp:
+		while (true) {
+			if (n <= 0) {
+				return result;
+			} else {
+				var $temp$result = A2($elm$core$List$cons, value, result),
+					$temp$n = n - 1,
+					$temp$value = value;
+				result = $temp$result;
+				n = $temp$n;
+				value = $temp$value;
+				continue repeatHelp;
+			}
+		}
+	});
+var $elm$core$List$repeat = F2(
+	function (n, value) {
+		return A3($elm$core$List$repeatHelp, _List_Nil, n, value);
+	});
+var $mdgriffith$elm_ui$Element$tableHelper = F2(
+	function (attrs, config) {
+		var onGrid = F3(
+			function (rowLevel, columnLevel, elem) {
+				return A4(
+					$mdgriffith$elm_ui$Internal$Model$element,
+					$mdgriffith$elm_ui$Internal$Model$asEl,
+					$mdgriffith$elm_ui$Internal$Model$div,
+					_List_fromArray(
+						[
+							A2(
+							$mdgriffith$elm_ui$Internal$Model$StyleClass,
+							$mdgriffith$elm_ui$Internal$Flag$gridPosition,
+							$mdgriffith$elm_ui$Internal$Model$GridPosition(
+								{col: columnLevel, height: 1, row: rowLevel, width: 1}))
+						]),
+					$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+						_List_fromArray(
+							[elem])));
+			});
+		var columnWidth = function (col) {
+			if (col.$ === 'InternalIndexedColumn') {
+				var colConfig = col.a;
+				return colConfig.width;
+			} else {
+				var colConfig = col.a;
+				return colConfig.width;
+			}
+		};
+		var columnHeader = function (col) {
+			if (col.$ === 'InternalIndexedColumn') {
+				var colConfig = col.a;
+				return colConfig.header;
+			} else {
+				var colConfig = col.a;
+				return colConfig.header;
+			}
+		};
+		var maybeHeaders = function (headers) {
+			return A2(
+				$elm$core$List$all,
+				$elm$core$Basics$eq($mdgriffith$elm_ui$Internal$Model$Empty),
+				headers) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+				A2(
+					$elm$core$List$indexedMap,
+					F2(
+						function (col, header) {
+							return A3(onGrid, 1, col + 1, header);
+						}),
+					headers));
+		}(
+			A2($elm$core$List$map, columnHeader, config.columns));
+		var add = F3(
+			function (cell, columnConfig, cursor) {
+				if (columnConfig.$ === 'InternalIndexedColumn') {
+					var col = columnConfig.a;
+					return _Utils_update(
+						cursor,
+						{
+							column: cursor.column + 1,
+							elements: A2(
+								$elm$core$List$cons,
+								A3(
+									onGrid,
+									cursor.row,
+									cursor.column,
+									A2(
+										col.view,
+										_Utils_eq(maybeHeaders, $elm$core$Maybe$Nothing) ? (cursor.row - 1) : (cursor.row - 2),
+										cell)),
+								cursor.elements)
+						});
+				} else {
+					var col = columnConfig.a;
+					return {
+						column: cursor.column + 1,
+						elements: A2(
+							$elm$core$List$cons,
+							A3(
+								onGrid,
+								cursor.row,
+								cursor.column,
+								col.view(cell)),
+							cursor.elements),
+						row: cursor.row
+					};
+				}
+			});
+		var build = F3(
+			function (columns, rowData, cursor) {
+				var newCursor = A3(
+					$elm$core$List$foldl,
+					add(rowData),
+					cursor,
+					columns);
+				return {column: 1, elements: newCursor.elements, row: cursor.row + 1};
+			});
+		var children = A3(
+			$elm$core$List$foldl,
+			build(config.columns),
+			{
+				column: 1,
+				elements: _List_Nil,
+				row: _Utils_eq(maybeHeaders, $elm$core$Maybe$Nothing) ? 1 : 2
+			},
+			config.data);
+		var _v0 = A2(
+			$mdgriffith$elm_ui$Internal$Model$getSpacing,
+			attrs,
+			_Utils_Tuple2(0, 0));
+		var sX = _v0.a;
+		var sY = _v0.b;
+		var template = A2(
+			$mdgriffith$elm_ui$Internal$Model$StyleClass,
+			$mdgriffith$elm_ui$Internal$Flag$gridTemplate,
+			$mdgriffith$elm_ui$Internal$Model$GridTemplateStyle(
+				{
+					columns: A2($elm$core$List$map, columnWidth, config.columns),
+					rows: A2(
+						$elm$core$List$repeat,
+						$elm$core$List$length(config.data),
+						$mdgriffith$elm_ui$Internal$Model$Content),
+					spacing: _Utils_Tuple2(
+						$mdgriffith$elm_ui$Element$px(sX),
+						$mdgriffith$elm_ui$Element$px(sY))
+				}));
+		return A4(
+			$mdgriffith$elm_ui$Internal$Model$element,
+			$mdgriffith$elm_ui$Internal$Model$asGrid,
+			$mdgriffith$elm_ui$Internal$Model$div,
+			A2(
+				$elm$core$List$cons,
+				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+				A2($elm$core$List$cons, template, attrs)),
+			$mdgriffith$elm_ui$Internal$Model$Unkeyed(
+				function () {
+					if (maybeHeaders.$ === 'Nothing') {
+						return children.elements;
+					} else {
+						var renderedHeaders = maybeHeaders.a;
+						return _Utils_ap(
+							renderedHeaders,
+							$elm$core$List$reverse(children.elements));
+					}
+				}()));
+	});
+var $mdgriffith$elm_ui$Element$table = F2(
+	function (attrs, config) {
+		return A2(
+			$mdgriffith$elm_ui$Element$tableHelper,
+			attrs,
+			{
+				columns: A2($elm$core$List$map, $mdgriffith$elm_ui$Element$InternalColumn, config.columns),
+				data: config.data
+			});
+	});
 var $mdgriffith$elm_ui$Internal$Model$Text = function (a) {
 	return {$: 'Text', a: a};
 };
@@ -15649,7 +15913,8 @@ var $author$project$Main$view = function (model) {
 		$mdgriffith$elm_ui$Element$column,
 		_List_fromArray(
 			[
-				A2($mdgriffith$elm_ui$Element$paddingXY, 40, 60),
+				A2($mdgriffith$elm_ui$Element$paddingXY, 62, 60),
+				$mdgriffith$elm_ui$Element$spacing(40),
 				$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill),
 				$mdgriffith$elm_ui$Element$Background$color(
@@ -15660,21 +15925,20 @@ var $author$project$Main$view = function (model) {
 		_List_fromArray(
 			[
 				A2(
-				$mdgriffith$elm_ui$Element$el,
-				_List_fromArray(
-					[
-						$mdgriffith$elm_ui$Element$Font$size(40)
-					]),
-				$mdgriffith$elm_ui$Element$text('Representing bits')),
-				A2(
 				$mdgriffith$elm_ui$Element$column,
 				_List_fromArray(
 					[
-						$mdgriffith$elm_ui$Element$padding(32),
-						$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill)
+						$mdgriffith$elm_ui$Element$spacing(30)
 					]),
 				_List_fromArray(
 					[
+						A2(
+						$mdgriffith$elm_ui$Element$el,
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$size(40)
+							]),
+						$mdgriffith$elm_ui$Element$text('Representing bits')),
 						A2(
 						$mdgriffith$elm_ui$Element$column,
 						_List_fromArray(
@@ -15746,87 +16010,96 @@ var $author$project$Main$view = function (model) {
 									$elm$core$String$fromInt(
 										$lue_bird$elm_typed_value$Typed$val(
 											$lue_bird$elm_typesafe_array$Arr$length(model.inputBits))) + ' bits'))
-							])),
-						function () {
-						var text = A2(
-							$elm$core$Basics$composeR,
-							$mdgriffith$elm_ui$Element$text,
-							$mdgriffith$elm_ui$Element$el(
+							]))
+					])),
+				function () {
+				var text = A2(
+					$elm$core$Basics$composeR,
+					$mdgriffith$elm_ui$Element$text,
+					$mdgriffith$elm_ui$Element$el(
+						_List_fromArray(
+							[
+								$mdgriffith$elm_ui$Element$Font$color(
+								A3($mdgriffith$elm_ui$Element$rgb, 1, 0.5, 0.5)),
+								$mdgriffith$elm_ui$Element$Font$family(
 								_List_fromArray(
-									[
-										$mdgriffith$elm_ui$Element$Font$color(
-										A3($mdgriffith$elm_ui$Element$rgb, 1, 0.5, 0.5)),
-										$mdgriffith$elm_ui$Element$Font$family(
-										_List_fromArray(
-											[$mdgriffith$elm_ui$Element$Font$monospace])),
-										$mdgriffith$elm_ui$Element$Font$size(24)
-									])));
-						var svg = A2(
-							$elm$core$Basics$composeR,
-							$timjs$elm_collage$Collage$Render$svg,
-							A2(
-								$elm$core$Basics$composeR,
-								$mdgriffith$elm_ui$Element$html,
-								$mdgriffith$elm_ui$Element$el(
-									_List_fromArray(
-										[
-											A2($mdgriffith$elm_ui$Element$paddingXY, 0, 8)
-										]))));
-						return A2(
-							$mdgriffith$elm_ui$Element$column,
+									[$mdgriffith$elm_ui$Element$Font$monospace])),
+								$mdgriffith$elm_ui$Element$Font$size(24)
+							])));
+				var svg = A2(
+					$elm$core$Basics$composeR,
+					$timjs$elm_collage$Collage$Render$svg,
+					A2(
+						$elm$core$Basics$composeR,
+						$mdgriffith$elm_ui$Element$html,
+						$mdgriffith$elm_ui$Element$el(
 							_List_fromArray(
 								[
-									$mdgriffith$elm_ui$Element$spacing(40),
-									A2($mdgriffith$elm_ui$Element$paddingXY, 48, 28)
-								]),
-							A2(
-								$elm$core$List$map,
-								function (_v1) {
+									A2($mdgriffith$elm_ui$Element$paddingXY, 0, 8)
+								]))));
+				return A2(
+					$mdgriffith$elm_ui$Element$table,
+					_List_fromArray(
+						[
+							A2($mdgriffith$elm_ui$Element$spacingXY, 19, 4)
+						]),
+					{
+						columns: _List_fromArray(
+							[
+								{
+								header: A2(
+									$mdgriffith$elm_ui$Element$el,
+									_List_fromArray(
+										[
+											$mdgriffith$elm_ui$Element$Font$size(24)
+										]),
+									$mdgriffith$elm_ui$Element$text('as')),
+								view: function (_v1) {
 									var description = _v1.a;
-									var representation = _v1.b;
 									return A2(
-										$mdgriffith$elm_ui$Element$column,
+										$mdgriffith$elm_ui$Element$el,
 										_List_fromArray(
 											[
-												$mdgriffith$elm_ui$Element$spacing(4)
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$mdgriffith$elm_ui$Element$el,
+												$mdgriffith$elm_ui$Element$Font$family(
 												_List_fromArray(
 													[
-														$mdgriffith$elm_ui$Element$Font$family(
-														_List_fromArray(
-															[
-																$mdgriffith$elm_ui$Element$Font$typeface('Noto Sans')
-															])),
-														$mdgriffith$elm_ui$Element$Font$size(24)
-													]),
-												$mdgriffith$elm_ui$Element$text(description)),
-												representation(model.inputBits)
-											]));
+														$mdgriffith$elm_ui$Element$Font$typeface('Noto Sans')
+													])),
+												$mdgriffith$elm_ui$Element$Font$size(24)
+											]),
+										$mdgriffith$elm_ui$Element$text(description));
 								},
-								_List_fromArray(
-									[
-										_Utils_Tuple2(
-										'as recognizable collage',
-										A2($elm$core$Basics$composeL, svg, $author$project$Bits$Represent$asRecognizableCollage)),
-										_Utils_Tuple2(
-										'as short unicode string',
-										A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asShortUnicodeString)),
-										_Utils_Tuple2(
-										'as hex (0-9 then a-f) string',
-										A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asHexString)),
-										_Utils_Tuple2(
-										'as 0-9 then a-v string',
-										A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$as09avString)),
-										_Utils_Tuple2(
-										'as readable string from words',
-										A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asReadableWordsString))
-									])));
-					}()
-					]))
+								width: $mdgriffith$elm_ui$Element$shrink
+							},
+								{
+								header: $mdgriffith$elm_ui$Element$none,
+								view: function (_v2) {
+									var representation = _v2.b;
+									return representation(model.inputBits);
+								},
+								width: $mdgriffith$elm_ui$Element$shrink
+							}
+							]),
+						data: _List_fromArray(
+							[
+								_Utils_Tuple2(
+								'recognizable collage',
+								A2($elm$core$Basics$composeL, svg, $author$project$Bits$Represent$asRecognizableCollage)),
+								_Utils_Tuple2(
+								'short unicode string',
+								A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asShortUnicodeString)),
+								_Utils_Tuple2(
+								'hex (0-9 then a-f) string',
+								A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asHexString)),
+								_Utils_Tuple2(
+								'0-9 then a-v string',
+								A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$as09avString)),
+								_Utils_Tuple2(
+								'readable string from words',
+								A2($elm$core$Basics$composeL, text, $author$project$Bits$Represent$asReadableWordsString))
+							])
+					});
+			}()
 			]));
 };
 var $author$project$Main$viewDocument = function (model) {
