@@ -122,7 +122,7 @@ toBytes =
 
 {-| Fill `O`s to the begin of the `Arr` until it has 8 elements.
 
-    Arr.from3 I I I |> Bits.toBytes
+    Arr.from3 I I I |> Bits.padToByte
     --> Arr.from8 O O O O O I I I
 
 -}
