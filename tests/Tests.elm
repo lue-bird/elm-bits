@@ -8,7 +8,7 @@ import Lue.Bit exposing (Bit(..))
 import Lue.Bits as Bits
 import NNats exposing (..)
 import Nat exposing (In)
-import Test exposing (..)
+import Test exposing (Test, describe, test)
 import TypeNats exposing (..)
 import Typed exposing (val)
 
@@ -29,10 +29,11 @@ suite =
         [ byteTest
         , bytesTest
         , bitsTest
-        , test "remainderBy doesn't crash elm" <|
-            \() ->
+        , test "remainderBy 0 doesn't crash elm"
+            (\() ->
                 isNaN (toFloat (remainderBy 0 10))
                     |> Expect.equal True
+            )
         ]
 
 
@@ -70,20 +71,22 @@ bytesTest : Test
 bytesTest =
     describe "bytes"
         [ describe "fromBits"
-            [ test "no bits is no bytes" <|
-                \() ->
+            [ test "no bits is no bytes"
+                (\() ->
                     Bits.toBytes Arr.empty
                         |> Expect.equal Arr.empty
-            , test "4 bits is a 4bit byte" <|
-                \() ->
+                )
+            , test "4 bits is a 4bit byte"
+                (\() ->
                     Bits.toBytes (Arr.from4 O I I I)
                         |> Arr.toArray
                         |> Expect.equal
                             (Array.fromList
                                 [ Arr.from4 O I I I |> Bits.padToByte ]
                             )
-            , test "27 bits is 3 8bit bytes & a 3bit byte" <|
-                \() ->
+                )
+            , test "27 bits is 3 8bit bytes & a 3bit byte"
+                (\() ->
                     Bits.toBytes
                         (Arr.from3 I I I
                             |> InArr.append nat24
@@ -111,6 +114,7 @@ bytesTest =
                                         >> Array.toList
                                     )
                             )
+                )
             ]
         ]
 
