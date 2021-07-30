@@ -47,9 +47,13 @@ To get a `Codec` with a string error:
 
 import Serialize exposing (Codec)
 
-    bit128 : Codec String (Arr (In Nat128 (Nat128Plus a\_)) Bit)
+    bit128 :
+        Codec
+            String
+            (Arr (In Nat128 (Nat128Plus a_)) Bit)
     bit128 =
-        Bits.serialize nat128 Arr.serializeErrorToString
+        Bits.serialize nat128
+            Arr.serializeErrorToString
 
 -}
 serialize :
@@ -70,7 +74,9 @@ serialize length toSerializeError =
 To use it effectively, you will need some [extra bits of randomness](https://package.elm-lang.org/packages/NoRedInk/elm-random-pcg-extended/latest/).
 
 -}
-random : Nat (ArgIn min max ifN_) -> Random.Generator (Arr (In min max) Bit)
+random :
+    Nat (ArgIn min max ifN_)
+    -> Random.Generator (Arr (In min max) Bit)
 random bitCount =
     Arr.random bitCount Bit.random
 
@@ -94,9 +100,9 @@ toNat bits =
     --> Arr.from1 (Arr.from8 O O O O O O O O)
 
     Arr.from3 I I I
-        |> Arr.extendOnly nat8 (Arr.from8 O I I I O I O O)
-        |> Arr.extendOnly nat8 (Arr.from8 O I I I O I O O)
-        |> Arr.extendOnly nat8 (Arr.from8 O I I I O I O O)
+        |> Arr.extend nat8 (Arr.from8 O I I I O I O O)
+        |> Arr.extend nat8 (Arr.from8 O I I I O I O O)
+        |> Arr.extend nat8 (Arr.from8 O I I I O I O O)
         |> Bits.toBytes
     --> (Arr.from8 O O O O O I I I
     -->     |> Arr.push (Arr.from8 O I I I O I O O)
@@ -120,6 +126,8 @@ toBytes =
     --> Arr.from8 O O O O O I I I
 
 -}
-padToByte : Arr (In min_ Nat8) Bit -> Arr (In Nat8 (Nat8Plus a_)) Bit
+padToByte :
+    Arr (In min_ Nat8) Bit
+    -> Arr (In Nat8 (Nat8Plus a_)) Bit
 padToByte bitArr =
     Arr.resize LastToFirst nat8 O bitArr
