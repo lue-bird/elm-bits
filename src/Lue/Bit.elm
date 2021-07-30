@@ -5,7 +5,7 @@ module Lue.Bit exposing
     , serialize
     )
 
-{-|
+{-| To `import as Bit exposing (Bit(..))`
 
 @docs Bit
 

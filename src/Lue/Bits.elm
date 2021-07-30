@@ -4,7 +4,7 @@ module Lue.Bits exposing
     , serialize
     )
 
-{-| Working with an [`Arr`](https://package.elm-lang.org/packages/lue-bird/elm-typesafe-array/latest/) of `Bit`s.
+{-| Working with an [`Arr`](https://package.elm-lang.org/packages/lue-bird/elm-typesafe-array/latest/) of `Bit`s. To `import as Bits`
 
 
 ## create
