@@ -100,9 +100,9 @@ toNat bits =
     --> Arr.from1 (Arr.from8 O O O O O O O O)
 
     Arr.from3 I I I
-        |> Arr.extend nat8 (Arr.from8 O I I I O I O O)
-        |> Arr.extend nat8 (Arr.from8 O I I I O I O O)
-        |> Arr.extend nat8 (Arr.from8 O I I I O I O O)
+        |> InArr.append nat8 (Arr.from8 O I I I O I O O)
+        |> InArr.append nat8 (Arr.from8 O I I I O I O O)
+        |> InArr.append nat8 (Arr.from8 O I I I O I O O)
         |> Bits.toBytes
     --> (Arr.from8 O O O O O I I I
     -->     |> Arr.push (Arr.from8 O I I I O I O O)
