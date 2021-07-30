@@ -3,7 +3,7 @@ Bits are a good way of storing information. The goal of this package is to enabl
 
 ## Example: id
 
-Current id packages have different ways of showing the contained information. This is for example how [danyx23's Uuid][danyx23/elm-uuid#toString] does it:
+Current id packages have different ways of showing the contained information. This is for example how [danyx23's Uuid][danyx23/elm-uuid] does it:
 
 ```elm
 module CurrentUuid exposing (CurrentUuid, toString, fromString)
@@ -141,4 +141,4 @@ Notice how all of these can build `Uuid`s **safely** & from different sources of
 [coinop-logan/phace]: https://package.elm-lang.org/packages/coinop-logan/phace/latest/
 [pukkamustard/elm-identicon]: https://github.com/pukkamustard/elm-identicon
 [dividat/elm-identicon]: https://package.elm-lang.org/packages/dividat/elm-identicon/latest/
-[danyx23/elm-uuid#toString]: https://package.elm-lang.org/packages/danyx23/elm-uuid/latest/Uuid#toString
+[danyx23/elm-uuid]: https://package.elm-lang.org/packages/danyx23/elm-uuid/latest/Uuid
