@@ -1,4 +1,4 @@
-## elm-bits
+## bits
 Bits are a good way of storing information. The goal of this package is to enable transporting information as bits in elm.
 
 ## Example: id
@@ -85,7 +85,7 @@ package links:
 
 Bits, as a universal way of representing information, could then be
 
-- represented in a varienty of ways (→ [in action](https://lue-bird.github.io/elm-bits/try/))
+- represented in a variety of ways (→ [in action](https://lue-bird.github.io/elm-bits/try/))
 
     - different string formats (human readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal, ...)
     - colors, shapes, identicons ([coinop-logan/phace][coinop-logan/phace] or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon])), ...
@@ -99,7 +99,7 @@ import Uuid exposing (Uuid)
 import Lue.Bit exposing (Bit(..))
 import Typed exposing (tag, val)
 
-viewUuid : Uuid -> Html msg
+viewUuid : Uuid -> Html msg_
 viewUuid uuid =
     val uuid -- our bits
         |> bitsToReadableString
@@ -109,7 +109,7 @@ uuidFromAllBits : Uuid
 uuidFromAllBits =
     -- raw bits (could be in a seperate package)
     Arr.from16 O I O I I I I O I I I I I O O O
-        |> Arr.extend nat16
+        |> InArr.append nat16
             (Arr.from16 I I I O O O O I O I I I I O I I)
         -- ...
         |> tag
@@ -118,20 +118,20 @@ uuidFromChars : Uuid
 uuidFromChars =
     let
         c char =
-            Arr.extend nat20 (charToBits char)
+            InArr.append nat20 (charToBits char)
     in
     Arr.empty
         -- the first 120 bits
         |> c '骖' |> c '򥔤' |> c '򚔤'
         |> c '򒒔' |> c '񉉉' |> c '𥩒'
         -- the last 8 bits
-        |> Arr.extend nat8
+        |> InArr.append nat8
             (Arr.from8 O I O I I I I O)
         |> tag
 
 -- from another package
-charToBits : Char -> Arr (In Nat20 (Nat20Plus a)) Bit
-bitsToReadableString : Arr (In min max) Bit -> String
+charToBits : Char -> Arr (In Nat20 (Nat20Plus a_)) Bit
+bitsToReadableString : Arr (In min_ max_) Bit -> String
 ```
 
 Notice how all of these can build `Uuid`s **safely** & from different sources of information.
