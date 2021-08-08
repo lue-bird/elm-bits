@@ -1,18 +1,15 @@
-## contribute
-
-**Contributing is appreciated! 💙**
+## contributing 💙
 
 - suggest changes through pull requests
 - discuss major changes in an issue or in a github Discussion
 
-## you
+## you can
 
 - share your thoughts
 - add operations that might be useful
 
-### guide
-
-commits look like this:
+## commits
+look like this:
 > do details, make other details & this
 
 | mark     | means   |
@@ -24,9 +21,3 @@ commits look like this:
 | ✓ ...    | correct |
 | -< ...   | split   |
 | >- ...   | merge   |
-
-#### others
-| mark        | means         |
-| :---------- | :------------ |
-| #...        | see           |
-| ! ...       | attention     |
