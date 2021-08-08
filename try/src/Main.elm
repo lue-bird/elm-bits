@@ -15,9 +15,8 @@ import Html exposing (Html)
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
 import MinArr
-import NNats exposing (..)
 import Nat exposing (Min)
-import TypeNats exposing (..)
+import Nats exposing (..)
 import Typed exposing (val)
 
 

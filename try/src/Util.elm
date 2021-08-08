@@ -9,9 +9,8 @@ module Util exposing
 import Arr exposing (Arr)
 import LinearDirection exposing (LinearDirection(..))
 import MinArr
-import NNats exposing (..)
 import Nat exposing (In, Min)
-import TypeNats exposing (..)
+import Nats exposing (..)
 
 
 {-| Last element in a `List`.

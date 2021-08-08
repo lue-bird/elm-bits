@@ -33,11 +33,10 @@ import Array exposing (Array)
 import Common
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
-import NNats exposing (..)
 import Nat exposing (ArgIn, In, Min, Nat)
+import Nats exposing (..)
 import Random
 import Serialize exposing (Codec)
-import TypeNats exposing (..)
 import Typed exposing (val)
 
 

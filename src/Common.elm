@@ -5,10 +5,8 @@ import InNat
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit)
 import MinNat
-import NNats exposing (..)
 import Nat exposing (In, Min, Nat)
-import TypeNats exposing (..)
-import Typed exposing (val)
+import Nats exposing (..)
 
 
 bitsToNat : Arr (In min_ Nat53) Bit -> Nat (Min Nat0)

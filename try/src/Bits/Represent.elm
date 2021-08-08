@@ -24,10 +24,9 @@ import Color exposing (Color)
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
 import Lue.Bits as Bits
-import NNats exposing (..)
 import Nat exposing (In)
 import Toop
-import TypeNats exposing (..)
+import Nats exposing (..)
 import Typed exposing (val)
 
 

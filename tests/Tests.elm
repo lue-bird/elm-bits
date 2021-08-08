@@ -6,10 +6,9 @@ import Expect exposing (Expectation)
 import InArr
 import Lue.Bit exposing (Bit(..))
 import Lue.Bits as Bits
-import NNats exposing (..)
 import Nat exposing (In)
+import Nats exposing (..)
 import Test exposing (Test, describe, test)
-import TypeNats exposing (..)
 import Typed exposing (val)
 
 

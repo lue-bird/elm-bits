@@ -31,11 +31,10 @@ module Lue.Bit exposing
 -}
 
 import InNat
-import NNats exposing (..)
 import Nat exposing (In, Nat)
+import Nats exposing (..)
 import Random
 import Serialize
-import TypeNats exposing (..)
 
 
 {-| One of 2 states.

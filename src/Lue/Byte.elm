@@ -21,10 +21,9 @@ import Arr exposing (Arr)
 import Common
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit exposing (Bit(..))
-import NNats exposing (..)
 import Nat exposing (In, Only)
+import Nats exposing (..)
 import Serialize
-import TypeNats exposing (..)
 import Typed exposing (val)
 
 

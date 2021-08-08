@@ -56,13 +56,16 @@ With bits:
 ```elm
 module Uuid exposing (Uuid, random)
 
-import Arr -- from typesafe-array
+-- from typesafe-array
+import Arr
 
 -- from bounded-nat
-import TypeNats exposing (Nat128)
+import Nats exposing (Nat128)
 import Nat exposing (Only)
 
-import Typed exposing (tag) -- from typed-value
+-- from typed-value
+import Typed exposing (tag)
+
 
 type alias Uuid =
     Typed Tagged UuidTag
@@ -101,13 +104,13 @@ import Typed exposing (tag, val)
 
 viewUuid : Uuid -> Html msg_
 viewUuid uuid =
-    val uuid -- our bits
+    val uuid -- our bits in the id
         |> bitsToReadableString
         |> Html.text
 
 uuidFromAllBits : Uuid
 uuidFromAllBits =
-    -- raw bits (could be in a seperate package)
+    -- raw bits
     Arr.from16 O I O I I I I O I I I I I O O O
         |> InArr.append nat16
             (Arr.from16 I I I O O O O I O I I I I O I I)
@@ -134,9 +137,9 @@ charToBits : Char -> Arr (In Nat20 (Nat20Plus a_)) Bit
 bitsToReadableString : Arr (In min_ max_) Bit -> String
 ```
 
-Notice how all of these can build `Uuid`s **safely** & from different sources of information.
+Notice how all of these can build `Uuid`s _safely_ from _different sources of information_.
 
-→ This package currently contains the building blocks in relation to bits. They can be serialized, generated, modified & read.
+→ This package currently contains the building blocks in relation to bits. They can be generated, modified, read and serialized.
 
 [coinop-logan/phace]: https://package.elm-lang.org/packages/coinop-logan/phace/latest/
 [pukkamustard/elm-identicon]: https://github.com/pukkamustard/elm-identicon

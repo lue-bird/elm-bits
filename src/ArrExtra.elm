@@ -5,9 +5,8 @@ import Array
 import Array.LinearDirection as Array
 import LinearDirection exposing (LinearDirection(..))
 import MinArr
-import NNats exposing (..)
 import Nat exposing (ArgIn, In, Min, Nat)
-import TypeNats exposing (..)
+import Nats exposing (..)
 
 
 groupPaddingLeft :
