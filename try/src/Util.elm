@@ -39,8 +39,7 @@ removeLast : Arr (In min max) element -> Arr (Min Nat0) element
 removeLast arr =
     case arr |> MinArr.isLengthAtLeast nat1 { lowest = nat0 } of
         Nat.Below below ->
-            MinArr.value below
-            
+            below |> Arr.toMin
+
         Nat.EqualOrGreater atLeast1 ->
             atLeast1 |> MinArr.drop nat1 LastToFirst
-            

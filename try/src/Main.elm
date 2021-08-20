@@ -40,7 +40,7 @@ init =
     ( { inputBits =
             Arr.from6 O I O O I I
                 |> Arr.lowerMinLength nat0
-                |> MinArr.value
+                |> Arr.toMin
       }
     , Cmd.none
     )

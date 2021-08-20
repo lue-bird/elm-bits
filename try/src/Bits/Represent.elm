@@ -21,12 +21,13 @@ import Array
 import Collage exposing (Collage)
 import Collage.Layout
 import Color exposing (Color)
+import InArr
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
 import Lue.Bits as Bits
 import Nat exposing (In)
-import Toop
 import Nats exposing (..)
+import Toop
 import Typed exposing (val)
 
 
@@ -36,7 +37,7 @@ import Typed exposing (val)
     --> "1010"
 
 -}
-as01String : Arr (In min_ max_) Bit -> String
+as01String : Arr (In minLength_ maxLength_) Bit -> String
 as01String bits =
     Arr.map (Bit.toNat >> val >> String.fromInt) bits
         |> Arr.fold FirstToLast (++) ""
@@ -51,7 +52,7 @@ as01String bits =
 `String` from unicode `Char`s.
 
 -}
-asShortUnicodeString : Arr (In min_ max_) Bit -> String
+asShortUnicodeString : Arr (In minLength_ maxLength_) Bit -> String
 asShortUnicodeString bits =
     Arr.groupPaddingLeft nat20 O bits
         |> Arr.map
@@ -63,16 +64,13 @@ asShortUnicodeString bits =
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f).
 -}
-asHexChar : Arr (In min_ Nat4) Bit -> Char
+asHexChar : Arr (In minLength_ Nat4) Bit -> Char
 asHexChar hexBits =
     let
         paddedHexBits =
             hexBits |> Arr.resize LastToFirst nat4 O
-
-        at index =
-            Arr.at index FirstToLast paddedHexBits
     in
-    case Toop.T4 (at nat0) (at nat1) (at nat2) (at nat3) of
+    case paddedHexBits |> Arr.to4 of
         Toop.T4 O O O O ->
             '0'
 
@@ -135,17 +133,14 @@ as09avChar : Arr (In min_ Nat5) Bit -> Char
 as09avChar bits =
     let
         paddedBits =
-            bits |> Arr.resize LastToFirst nat4 O
-
-        at index =
-            Arr.at index FirstToLast paddedBits
+            bits |> Arr.resize LastToFirst nat5 O
     in
-    case at nat0 of
+    case paddedBits |> Arr.at nat0 FirstToLast of
         O ->
-            asHexChar (Arr.take nat4 FirstToLast paddedBits)
+            asHexChar (Arr.take nat4 LastToFirst paddedBits)
 
         I ->
-            case Toop.T4 (at nat0) (at nat1) (at nat2) (at nat3) of
+            case paddedBits |> Arr.take nat4 LastToFirst |> Arr.to4 of
                 Toop.T4 O O O O ->
                     'g'
 
@@ -195,7 +190,7 @@ as09avChar bits =
                     'v'
 
 
-as09avString : Arr (In min_ max_) Bit -> String
+as09avString : Arr (In minLength_ maxLength_) Bit -> String
 as09avString bits =
     Arr.groupPaddingLeft nat5 O bits
         |> Arr.map as09avChar
@@ -206,16 +201,13 @@ as09avString bits =
 
 {-| Four bits represented in a `Char` of multiple uniquely identifiable symbols
 -}
-asFirstLetterInWord : Arr (In min_ Nat4) Bit -> Char
+asFirstLetterInWord : Arr (In minLength_ Nat4) Bit -> Char
 asFirstLetterInWord bits =
     let
         paddedBits =
             bits |> Arr.resize LastToFirst nat4 O
-
-        at index =
-            Arr.at index FirstToLast paddedBits
     in
-    case Toop.T4 (at nat0) (at nat1) (at nat2) (at nat3) of
+    case paddedBits |> Arr.to4 of
         Toop.T4 O O O O ->
             'b'
 
@@ -270,11 +262,8 @@ asThirdLetterInWord bits =
     let
         paddedBits =
             bits |> Arr.resize LastToFirst nat4 O
-
-        at index =
-            Arr.at index FirstToLast paddedBits
     in
-    case Toop.T4 (at nat0) (at nat1) (at nat2) (at nat3) of
+    case paddedBits |> Arr.to4 of
         Toop.T4 O O O O ->
             'b'
 
@@ -329,21 +318,18 @@ asVocal bits =
     let
         paddedBits =
             bits |> Arr.resize LastToFirst nat2 O
-
-        at index =
-            Arr.at index FirstToLast paddedBits
     in
-    case ( at nat0, at nat1 ) of
-        ( O, O ) ->
+    case paddedBits |> Arr.to2 of
+        Toop.T2 O O ->
             'a'
 
-        ( O, I ) ->
+        Toop.T2 O I ->
             'i'
 
-        ( I, O ) ->
+        Toop.T2 I O ->
             'o'
 
-        ( I, I ) ->
+        Toop.T2 I I ->
             'u'
 
 
@@ -396,18 +382,15 @@ asShape bits =
     let
         paddedBits =
             bits |> Arr.resize LastToFirst nat3 O
-
-        at index =
-            Arr.at index FirstToLast paddedBits
     in
-    case ( at nat0, at nat1, at nat2 ) of
-        ( O, O, O ) ->
+    case paddedBits |> Arr.to3 of
+        Toop.T3 O O O ->
             Collage.circle 1
 
-        ( O, O, I ) ->
+        Toop.T3 O O I ->
             Collage.rectangle 0.5 1.5
 
-        ( O, I, O ) ->
+        Toop.T3 O I O ->
             Collage.rectangle 1.5 0.5
 
         _ ->
@@ -423,21 +406,23 @@ asCollage bits =
         paddedBits =
             bits |> Arr.resize LastToFirst nat11 O
 
-        at index =
-            Arr.at index FirstToLast paddedBits
-
         colorShape =
-            case ( at nat3, at nat4 ) of
-                ( O, O ) ->
+            case
+                paddedBits
+                    |> InArr.drop nat3 FirstToLast
+                    |> Arr.take nat2 FirstToLast
+                    |> Arr.to2
+            of
+                Toop.T2 O O ->
                     Collage.filled
 
-                ( O, I ) ->
+                Toop.T2 O I ->
                     Collage.outlined << Collage.solid 0.5
 
-                ( I, O ) ->
+                Toop.T2 I O ->
                     Collage.outlined << Collage.dash 0.5
 
-                ( I, I ) ->
+                Toop.T2 I I ->
                     Collage.outlined << Collage.dot 0.5
     in
     colorShape
@@ -447,7 +432,7 @@ asCollage bits =
         (asShape (Arr.take nat3 FirstToLast paddedBits))
 
 
-asRecognizableCollage : Arr (In min_ max_) Bit -> Collage msg_
+asRecognizableCollage : Arr (In minLength_ maxLength_) Bit -> Collage msg_
 asRecognizableCollage bits =
     let
         collages =
