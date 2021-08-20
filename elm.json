@@ -3,7 +3,7 @@
     "name": "lue-bird/elm-bits",
     "summary": "operate in your custom bit format",
     "license": "MIT",
-    "version": "3.0.1",
+    "version": "4.0.0",
     "exposed-modules": [
         "Lue.Bits",
         "Lue.Bit"
