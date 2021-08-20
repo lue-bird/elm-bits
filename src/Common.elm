@@ -19,7 +19,7 @@ bitsToNat bits =
                         >> Nat.mul (nat2 |> Nat.toPower powAtLeast1)
 
                 Nat.Below _ ->
-                    Bit.toNat >> MinNat.value
+                    Bit.toNat >> Nat.toMin
         )
         (Arr.nats nat53
             |> Arr.lowerMinLength nat0
@@ -27,4 +27,4 @@ bitsToNat bits =
         (bits |> Arr.reverse |> Arr.lowerMinLength nat0)
         |> Arr.fold FirstToLast
             (\a b -> a |> MinNat.addMin nat0 b)
-            (nat0 |> MinNat.value)
+            (nat0 |> Nat.toMin)
