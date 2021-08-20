@@ -61,7 +61,7 @@ toNat =
     \bit ->
         case bit of
             O ->
-                nat0 |> InNat.value
+                nat0 |> Nat.toIn
 
             I ->
                 nat1 |> Nat.lowerMin nat0

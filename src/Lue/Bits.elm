@@ -31,13 +31,13 @@ import Arr exposing (Arr)
 import ArrExtra as Arr
 import Array exposing (Array)
 import Common
+import InArr
 import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit as Bit exposing (Bit(..))
 import Nat exposing (ArgIn, In, Min, Nat)
 import Nats exposing (..)
 import Random
 import Serialize exposing (Codec)
-import Typed exposing (val)
 
 
 {-| A [`Codec`](https://package.elm-lang.org/packages/MartinSStewart/elm-serialize/latest/) for an `Arr` of `Bit`s.
@@ -51,21 +51,17 @@ import Serialize exposing (Codec)
             String
             (Arr (In Nat128 (Nat128Plus a_)) Bit)
     bit128 =
-        Bits.serialize nat128
-            Arr.serializeErrorToString
+        Bits.serialize nat128 Arr.errorToString
+
+Use the `serialize` functions in `InArr` and `MinArr` to serialize `Arr`s with a length in a range.
 
 -}
 serialize :
-    Nat (ArgIn min max ifN)
-    ->
-        ({ actualLength : Int
-         , expectedLength : Nat (ArgIn min max ifN)
-         }
-         -> serializeError
-        )
-    -> Codec serializeError (Arr (In min max) Bit)
+    Nat (ArgIn minLength maxLength ifN_)
+    -> (InArr.Error -> error)
+    -> Codec error (Arr (In minLength maxLength) Bit)
 serialize length toSerializeError =
-    Arr.serialize length toSerializeError Bit.serialize
+    InArr.serialize length toSerializeError Bit.serialize
 
 
 {-| A `Random.Generator` for an `Arr` of `Bit`s.
@@ -74,8 +70,8 @@ To use it effectively, you will need some [extra bits of randomness](https://pac
 
 -}
 random :
-    Nat (ArgIn min max ifN_)
-    -> Random.Generator (Arr (In min max) Bit)
+    Nat (ArgIn minAmount maxAmount ifN_)
+    -> Random.Generator (Arr (In minAmount maxAmount) Bit)
 random bitCount =
     Arr.random bitCount Bit.random
 
@@ -88,7 +84,7 @@ Bits from the [53](https://package.elm-lang.org/packages/elm-community/basics-ex
     --> Nat 138
 
 -}
-toNat : Arr (In min_ Nat53) Bit -> Nat (Min Nat0)
+toNat : Arr (In minLength_ Nat53) Bit -> Nat (Min Nat0)
 toNat bits =
     Common.bitsToNat bits
 
@@ -113,7 +109,7 @@ toNat bits =
 
 -}
 toBytes :
-    Arr (In min_ max_) Bit
+    Arr (In minLength_ maxLength_) Bit
     -> Arr (Min Nat0) (Arr (In Nat8 (Nat8Plus a_)) Bit)
 toBytes =
     Arr.groupPaddingLeft nat8 O

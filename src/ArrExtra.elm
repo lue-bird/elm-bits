@@ -12,7 +12,7 @@ import Nats exposing (..)
 groupPaddingLeft :
     Nat (ArgIn (Nat1Plus minGroupSizeMinus1) maxGroupSize ifN_)
     -> element
-    -> Arr (In min_ max_) element
+    -> Arr (In minLength_ maxLength_) element
     -> Arr (Min Nat0) (Arr (In (Nat1Plus minGroupSizeMinus1) maxGroupSize) element)
 groupPaddingLeft groupSize defaultElement bitArr =
     let
@@ -20,7 +20,7 @@ groupPaddingLeft groupSize defaultElement bitArr =
             Arr.groupsOf groupSize LastToFirst bitArr
     in
     if Array.isEmpty (remaining |> Arr.toArray) then
-        groups |> MinArr.value
+        groups |> Arr.toMin
 
     else
         remaining
