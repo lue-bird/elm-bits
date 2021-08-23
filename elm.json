@@ -15,10 +15,10 @@
         "elm/random": "1.0.0 <= v < 2.0.0",
         "lue-bird/elm-bounded-nat": "19.0.0 <= v < 20.0.0",
         "lue-bird/elm-linear-direction": "2.2.0 <= v < 3.0.0",
-        "lue-bird/elm-typed-value": "5.0.0 <= v < 6.0.0",
         "lue-bird/elm-typesafe-array": "18.0.0 <= v < 19.0.0"
     },
     "test-dependencies": {
-        "elm-explorations/test": "1.2.2 <= v < 2.0.0"
+        "elm-explorations/test": "1.2.2 <= v < 2.0.0",
+        "lue-bird/elm-typed-value": "5.0.0 <= v < 6.0.0"
     }
 }
