@@ -1,9 +1,10 @@
-## bits
-Bits are a good way of storing information. The goal of this package is to enable transporting information as bits in elm.
+## elm-bits
+information.
 
 ## Example: id
 
-Current id packages have different ways of showing the contained information. This is for example how [danyx23's Uuid][danyx23/elm-uuid] does it:
+Current id packages use different types which hold the information.
+This is how [danyx23's Uuid][danyx23/elm-uuid] does it for example:
 
 ```elm
 module CurrentUuid exposing (CurrentUuid, toString, fromString)
@@ -51,7 +52,7 @@ generate =
         (Random.list 31 (Random.int 0 15))
 ```
 
-With bits:
+With elm-bits:
 
 ```elm
 module Uuid exposing (Uuid, random)
@@ -88,7 +89,7 @@ package links:
 
 Bits, as a universal way of representing information, could then be
 
-- represented in a variety of ways (→ [in action](https://lue-bird.github.io/elm-bits/try/))
+- translated to a variety of representations (→ [in action](https://lue-bird.github.io/elm-bits/try/))
 
     - different string formats (human readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal, ...)
     - colors, shapes, identicons ([coinop-logan/phace][coinop-logan/phace] or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon])), ...
@@ -139,7 +140,7 @@ bitsToReadableString : Arr (In min_ max_) Bit -> String
 
 Notice how all of these can build `Uuid`s _safely_ from _different sources of information_.
 
-→ This package currently contains the building blocks in relation to bits. They can be generated, modified, read and serialized.
+→ This package currently contains building blocks in relation to bits. They can be generated, modified, read and serialized.
 
 [coinop-logan/phace]: https://package.elm-lang.org/packages/coinop-logan/phace/latest/
 [pukkamustard/elm-identicon]: https://github.com/pukkamustard/elm-identicon
