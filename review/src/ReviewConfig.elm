@@ -29,6 +29,13 @@ config =
     [ NoUnused.Dependencies.rule
     , OnlyAllSingleUseTypeVarsEndWith_.rule
     , NoSinglePatternCase.rule
+        (NoSinglePatternCase.fixInArgument
+            |> NoSinglePatternCase.ifAsPatternRequired
+                (NoSinglePatternCase.fixInLetInstead
+                    |> NoSinglePatternCase.andIfNoLetExists
+                        NoSinglePatternCase.createNewLet
+                )
+        )
     , NoLeftPizza.rule NoLeftPizza.Any
     , NoExposingEverything.rule
     , NoImportingEverything.rule [ "Nats" ]
