@@ -21,6 +21,8 @@ import NoImportingEverything
 import NoMissingTypeAnnotation
 import NoForbiddenWords
 import NoBooleanCase
+import NoPrematureLetComputation
+import NoAlways
 import LinksPointToExistingPackageMembers
 
 
@@ -40,7 +42,9 @@ config =
     , NoExposingEverything.rule
     , NoImportingEverything.rule [ "Nats" ]
     , NoMissingTypeAnnotation.rule
-    , NoForbiddenWords.rule [ "TODO", "todo" ]
+    , NoForbiddenWords.rule [ "TODO", "todo", "REPLACEME" ]
     , NoBooleanCase.rule
+    , NoPrematureLetComputation.rule
+    , NoAlways.rule
     , LinksPointToExistingPackageMembers.rule
     ]
