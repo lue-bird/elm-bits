@@ -1,5 +1,5 @@
 ## elm-bits
-information.
+Represent information as bits.
 
 ## Example: id
 
@@ -91,7 +91,7 @@ Bits, as a universal way of representing information, could then be
 
 - translated to a variety of representations (→ [in action](https://lue-bird.github.io/elm-bits/try/))
 
-    - different string formats (human readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal, ...)
+    - different string formats (human-readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal, ...)
     - colors, shapes, identicons ([coinop-logan/phace][coinop-logan/phace] or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon])), ...
 
 - converted from multiple types of data

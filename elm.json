@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "lue-bird/elm-bits",
-    "summary": "operate in your custom bit format",
+    "summary": "use a custom bit format",
     "license": "MIT",
     "version": "4.0.0",
     "exposed-modules": [
