@@ -29,7 +29,6 @@ module Lue.Bits exposing
 
 import Arr exposing (Arr)
 import ArrExtra as Arr
-import Array exposing (Array)
 import Common
 import InArr
 import LinearDirection exposing (LinearDirection(..))

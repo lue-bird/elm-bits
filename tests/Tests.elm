@@ -2,7 +2,7 @@ module Tests exposing (suite)
 
 import Arr exposing (Arr)
 import Array
-import Expect exposing (Expectation)
+import Expect
 import InArr
 import Lue.Bit exposing (Bit(..))
 import Lue.Bits as Bits

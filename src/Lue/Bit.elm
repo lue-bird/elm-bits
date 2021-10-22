@@ -30,7 +30,6 @@ module Lue.Bit exposing
 
 -}
 
-import InNat
 import Nat exposing (In, Nat)
 import Nats exposing (..)
 import Random

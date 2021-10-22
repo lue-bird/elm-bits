@@ -19,7 +19,6 @@ is a byte.
 
 import Arr exposing (Arr)
 import Common
-import LinearDirection exposing (LinearDirection(..))
 import Lue.Bit exposing (Bit(..))
 import Nat exposing (In, Only)
 import Nats exposing (..)

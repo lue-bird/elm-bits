@@ -2,7 +2,6 @@ module ArrExtra exposing (groupPaddingLeft)
 
 import Arr exposing (Arr)
 import Array
-import Array.LinearDirection as Array
 import LinearDirection exposing (LinearDirection(..))
 import MinArr
 import Nat exposing (ArgIn, In, Min, Nat)
