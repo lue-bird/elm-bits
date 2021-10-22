@@ -1,8 +1,7 @@
 module Tests exposing (suite)
 
 import Arr exposing (Arr)
-import Array
-import Expect
+import Expect exposing (Expectation)
 import InArr
 import Lue.Bit exposing (Bit(..))
 import Lue.Bits as Bits
@@ -43,7 +42,8 @@ byteTest =
             (\() ->
                 Arr.from4 I O I I
                     |> Bits.padToByte
-                    |> Expect.equal (Arr.from8 O O O O I O I I)
+                    |> expectEqualArrs
+                        (Arr.from8 O O O O I O I I)
             )
         , test "toNat"
             (\() ->
@@ -73,15 +73,18 @@ bytesTest =
             [ test "no bits is no bytes"
                 (\() ->
                     Bits.toBytes Arr.empty
-                        |> Expect.equal Arr.empty
+                        |> expectEqualArrs Arr.empty
                 )
             , test "4 bits is a 4bit byte"
                 (\() ->
                     Bits.toBytes (Arr.from4 O I I I)
-                        |> Arr.toArray
-                        |> Expect.equal
-                            (Array.fromList
-                                [ Arr.from4 O I I I |> Bits.padToByte ]
+                        |> Arr.map Arr.toList
+                        |> expectEqualArrs
+                            (Arr.from1
+                                (Arr.from4 O I I I
+                                    |> Bits.padToByte
+                                    |> Arr.toList
+                                )
                             )
                 )
             , test "27 bits is 3 8bit bytes & a 3bit byte"
@@ -96,22 +99,12 @@ bytesTest =
                                         (Arr.from8 O I I I O I O O)
                                 )
                         )
-                        |> Arr.toArray
-                        |> Array.toList
-                        |> List.map
-                            (Arr.toArray
-                                >> Array.toList
-                            )
-                        |> Expect.equal
+                        |> Arr.map Arr.toList
+                        |> expectEqualArrs
                             (Arr.from1 (Arr.from3 I I I |> Bits.padToByte)
                                 |> InArr.append nat3
                                     (Arr.repeat nat3 (Arr.from8 O I I I O I O O))
-                                |> Arr.toArray
-                                |> Array.toList
-                                |> List.map
-                                    (Arr.toArray
-                                        >> Array.toList
-                                    )
+                                |> Arr.map Arr.toList
                             )
                 )
             ]
@@ -130,3 +123,14 @@ bitsTest =
                 )
             ]
         ]
+
+
+expectEqualArrs :
+    Arr length0_ element
+    -> Arr length1_ element
+    -> Expectation
+expectEqualArrs expectedArr actualArr =
+    actualArr
+        |> Arr.toList
+        |> Expect.equalLists
+            (expectedArr |> Arr.toList)
