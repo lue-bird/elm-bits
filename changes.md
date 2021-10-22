@@ -1,5 +1,9 @@
 # changelog
 
+#### 4.0.2
+
+- updated `typed-value` to 6.0.0
+
 #### 4.0.1
 
 - updated `bounded-nat` to 20.0.0
