@@ -1,5 +1,6 @@
-## elm-bits
 Represent information as bits.
+
+# [bits](https://dark.elm.dmy.fr/packages/lue-bird/elm-bits/latest/)
 
 ## Example: id
 
