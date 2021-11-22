@@ -1,4 +1,12 @@
-# changelog
+# changes
+
+## plans for 5.0.0
+
+- rename module `Lue.Bit` to `Bit.Lue`
+- rename module `Lue.Bits` to `Bits.Lue`
+- update `bounded-nat` to 21.0.0
+    - `NatX` types are now `NX`
+- update `typesafe-array` to 19.0.0
 
 #### 4.0.2
 
