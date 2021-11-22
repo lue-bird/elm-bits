@@ -16,6 +16,8 @@ module Lue.Bits exposing
 
 @docs toNat, toBytes, padToByte
 
+TODO: toInt etc.
+
 
 ## extra
 
