@@ -1,4 +1,4 @@
-make safe bit formats easily
+safe, typed bit arrays
 
 # [bits](https://dark.elm.dmy.fr/packages/lue-bird/elm-bits/latest/)
 
