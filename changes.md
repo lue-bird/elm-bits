@@ -1,13 +1,29 @@
-# changes
+## 5.1.0 plans
 
-## plans for 5.0.0
+  - `Bit.fuzz` add
+      - waiting for `elm-test` major version 2 to not trigger a breaking change
 
-- rename module `Lue.Bit` to `Bit.Lue`
-- rename module `Lue.Bits` to `Bits.Lue`
-- update `bounded-nat` to 21.0.0
-    - `NatX` types are now `NX`
-- added `Bits.Lue.toInt` and other conversion functions
-- update `typesafe-array` to 19.0.0
+# changes log
+
+## 5.0.0
+
+- `module Bit`
+    - `serialize` remove
+    - `toNat` → `toN`
+    - `fromN` add
+    - `opposite` add
+- `module Bits`
+    - `serialize` remove
+    - `random` remove
+        - in favor of `ArraySized.random Bit.random`
+    - `toNat` name → `toN`
+    - `toBytes` remove
+        - in favor of `toChunksOf n8`
+    - `padToByte` remove
+        - in favor of `padToLength n8`
+    - `padToLength`, `toChunksOf` add
+    - `fromN` add
+    - `fromIntSigned`, `toIntSigned` add
 
 #### 4.0.2
 

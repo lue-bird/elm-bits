@@ -1,2 +1,8 @@
+node_modules
 elm-stuff
-docs.json
+VerifyExamples
+
+# Editors
+.idea/
+ElmjutsuDumMyM0DuL3.elm
+.vscode

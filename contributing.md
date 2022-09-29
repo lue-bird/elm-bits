@@ -1,12 +1,9 @@
 ## contributing 💙
 
-- suggest changes through pull requests
-- discuss major changes in an issue or in a github Discussion
-
-## you can
-
 - share your thoughts
-- add operations that might be useful
+- add more codecs
+- suggest smaller changes through a pull request
+- discuss bigger changes in an issue or in a github Discussion 
 
 ## commits
 look like this:

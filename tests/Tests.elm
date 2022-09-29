@@ -1,136 +1,150 @@
 module Tests exposing (suite)
 
-import Arr exposing (Arr)
+import ArraySized exposing (ArraySized)
+import Bit exposing (Bit(..))
+import Bits
 import Expect exposing (Expectation)
-import InArr
-import Lue.Bit exposing (Bit(..))
-import Lue.Bits as Bits
-import Nat exposing (In)
-import Nats exposing (..)
+import Fuzz exposing (Fuzzer)
+import Linear exposing (Direction(..))
+import N exposing (n0, n3, n8)
+import N.Local exposing (n20, n32)
 import Test exposing (Test, describe, test)
-import Typed exposing (val)
-
-
-byte116 : Arr (In Nat8 (Nat8Plus a_)) Bit
-byte116 =
-    Arr.from7 I I I O I O O |> Bits.padToByte
-
-
-byte138 : Arr (In Nat8 (Nat8Plus a_)) Bit
-byte138 =
-    Arr.from8 I O O O I O I O
 
 
 suite : Test
 suite =
-    describe "elm-bits package"
-        [ byteTest
-        , bytesTest
-        , bitsTest
-        , test "remainderBy 0 doesn't crash elm"
-            (\() ->
-                isNaN (toFloat (remainderBy 0 10))
-                    |> Expect.equal True
-            )
-        ]
-
-
-byteTest : Test
-byteTest =
-    describe "byte"
-        [ test "pad 0s to byte"
-            (\() ->
-                Arr.from4 I O I I
-                    |> Bits.padToByte
-                    |> expectEqualArrs
-                        (Arr.from8 O O O O I O I I)
-            )
-        , test "toNat"
-            (\() ->
-                Expect.all
-                    [ \() ->
-                        Bits.toNat (Arr.from8 O O O O O O O I)
-                            |> val
-                            |> Expect.equal 1
-                    , \() ->
-                        Bits.toNat byte138
-                            |> val
-                            |> Expect.equal 138
-                    , \() ->
-                        Bits.toNat byte116
-                            |> val
-                            |> Expect.equal 116
-                    ]
-                    ()
-            )
-        ]
-
-
-bytesTest : Test
-bytesTest =
-    describe "bytes"
-        [ describe "fromBits"
-            [ test "no bits is no bytes"
-                (\() ->
-                    Bits.toBytes Arr.empty
-                        |> expectEqualArrs Arr.empty
-                )
-            , test "4 bits is a 4bit byte"
-                (\() ->
-                    Bits.toBytes (Arr.from4 O I I I)
-                        |> Arr.map Arr.toList
-                        |> expectEqualArrs
-                            (Arr.from1
-                                (Arr.from4 O I I I
-                                    |> Bits.padToByte
-                                    |> Arr.toList
-                                )
-                            )
-                )
-            , test "27 bits is 3 8bit bytes & a 3bit byte"
-                (\() ->
-                    Bits.toBytes
-                        (Arr.from3 I I I
-                            |> InArr.append nat24
-                                (Arr.from8 O I I I O I O O
-                                    |> InArr.append nat8
-                                        (Arr.from8 O I I I O I O O)
-                                    |> InArr.append nat8
-                                        (Arr.from8 O I I I O I O O)
-                                )
-                        )
-                        |> Arr.map Arr.toList
-                        |> expectEqualArrs
-                            (Arr.from1 (Arr.from3 I I I |> Bits.padToByte)
-                                |> InArr.append nat3
-                                    (Arr.repeat nat3 (Arr.from8 O I I I O I O O))
-                                |> Arr.map Arr.toList
-                            )
-                )
-            ]
+    describe "elm-bits"
+        [ bitsTest
         ]
 
 
 bitsTest : Test
 bitsTest =
-    describe "bits"
-        [ describe "toNat"
-            [ test "gets translated correctly"
+    describe "Bits"
+        [ test "padToLength"
+            (\() ->
+                ArraySized.l4 I O I I
+                    |> Bits.padToLength n8
+                    |> expectEqualArraySized
+                        (ArraySized.l8 O O O O I O I I)
+            )
+        , describe "toChunksOf"
+            [ test "no bits is no bytes"
                 (\() ->
-                    Bits.toNat byte138
-                        |> val
-                        |> Expect.equal 138
+                    ArraySized.empty
+                        |> Bits.toChunksOf n8
+                        |> expectEqualArraySized ArraySized.empty
+                )
+            , test "4 bits is a 4bit byte"
+                (\() ->
+                    ArraySized.l4 O I I I
+                        |> Bits.toChunksOf n8
+                        |> ArraySized.map ArraySized.toList
+                        |> expectEqualArraySized
+                            (ArraySized.l1
+                                (ArraySized.l4 O I I I
+                                    |> Bits.padToLength n8
+                                    |> ArraySized.toList
+                                )
+                            )
+                )
+            , test "27 bits is 3 8bit bytes & a 3bit byte"
+                (\() ->
+                    ArraySized.l3 I I I
+                        |> ArraySized.glue Up
+                            (ArraySized.l8 O I I I O I O O)
+                        |> ArraySized.glue Up
+                            (ArraySized.l8 O I I I O I O O)
+                        |> ArraySized.glue Up
+                            (ArraySized.l8 O I I I O I O O)
+                        |> Bits.toChunksOf n8
+                        |> ArraySized.map ArraySized.toList
+                        |> expectEqualArraySized
+                            (ArraySized.l1 (ArraySized.l3 I I I |> Bits.padToLength n8)
+                                |> ArraySized.glue Up
+                                    (ArraySized.repeat (ArraySized.l8 O I I I O I O O) n3)
+                                |> ArraySized.map ArraySized.toList
+                            )
                 )
             ]
+        , describe "N"
+            [ Test.fuzz
+                (Fuzz.map
+                    (ArraySized.fromArray
+                        >> ArraySized.take ( Up, n32 |> N.minTo n0 )
+                    )
+                    (Fuzz.array bitFuzz)
+                )
+                "toN >> fromN → padToLength n32"
+                (\bits ->
+                    bits
+                        |> Bits.toN
+                        |> Bits.fromN
+                        |> expectEqualArraySized
+                            (bits
+                                |> Bits.padToLength n32
+                            )
+                )
+            , Test.describe "toN"
+                [ test "138"
+                    (\() ->
+                        ArraySized.l8 I O O O I O I O
+                            |> Bits.toN
+                            |> N.toInt
+                            |> Expect.equal 138
+                    )
+                , test "1"
+                    (\() ->
+                        ArraySized.l8 O O O O O O O I
+                            |> ArraySized.maxTo n32
+                            |> Bits.toN
+                            |> N.toInt
+                            |> Expect.equal 1
+                    )
+                , test "116"
+                    (\() ->
+                        ArraySized.l8 O I I I O I O O
+                            |> ArraySized.maxTo n32
+                            |> Bits.toN
+                            |> N.toInt
+                            |> Expect.equal 116
+                    )
+                ]
+            ]
+        , Test.fuzz
+            (Fuzz.constant
+                (\bits -> { bits = bits })
+                |> Fuzz.andMap
+                    (Fuzz.map
+                        (ArraySized.fromArray
+                            >> Bits.atMost n20
+                        )
+                        (Fuzz.array bitFuzz)
+                    )
+            )
+            "toIntSigned >> fromIntSigned <original length> → identity"
+            (\{ bits } ->
+                bits
+                    |> ArraySized.maxTo n20
+                    |> Bits.toIntSigned
+                    |> Bits.fromIntSigned (bits |> ArraySized.length)
+                    |> expectEqualArraySized
+                        bits
+            )
         ]
 
 
-expectEqualArrs :
-    Arr length0_ element
-    -> Arr length1_ element
+expectEqualArraySized :
+    ArraySized length0_ element
+    -> ArraySized length1_ element
     -> Expectation
-expectEqualArrs expectedArr actualArr =
+expectEqualArraySized expectedArr actualArr =
     actualArr
-        |> Arr.toList
+        |> ArraySized.toList
         |> Expect.equalLists
-            (expectedArr |> Arr.toList)
+            (expectedArr |> ArraySized.toList)
+
+
+bitFuzz : Fuzzer Bit
+bitFuzz =
+    Fuzz.oneOf (List.map Fuzz.constant [ O, I ])
