@@ -15,8 +15,7 @@ type Uuid
 
 toString : Uuid -> String
 toString =
-    \(Uuid string) ->
-        string
+    \(Uuid string) -> string
 
 fromString : String -> Maybe Uuid
 fromString =
@@ -37,20 +36,21 @@ generate : Random.Generator Uuid
 generate =
     Random.map
         (\thirtyOneHexDigits ->
-            [ thirtyOneHexDigits |> List.take 8 |> List.map mapToHex |> String.fromList
-            , "-"
-            , thirtyOneHexDigits |> List.drop 8 |> List.take 4 |> List.map mapToHex |> String.fromList
-            , "-"
-            , "4"
-            , thirtyOneHexDigits |> List.drop 12 |> List.take 3 |> List.map mapToHex |> String.fromList
-            , "-"
-            , thirtyOneHexDigits |> List.drop 15 |> List.take 1 |> List.map limitDigitRange8ToB |> List.map mapToHex |> String.fromList
-            , thirtyOneHexDigits |> List.drop 16 |> List.take 3 |> List.map mapToHex |> String.fromList
-            , "-"
-            , thirtyOneHexDigits |> List.drop 19 |> List.take 12 |> List.map mapToHex |> String.fromList
-            ]
-                |> String.concat
-                |> Uuid
+            Uuid
+                ([ thirtyOneHexDigits |> List.take 8 |> List.map mapToHex |> String.fromList
+                 , "-"
+                 , thirtyOneHexDigits |> List.drop 8 |> List.take 4 |> List.map mapToHex |> String.fromList
+                 , "-"
+                 , "4"
+                 , thirtyOneHexDigits |> List.drop 12 |> List.take 3 |> List.map mapToHex |> String.fromList
+                 , "-"
+                 , thirtyOneHexDigits |> List.drop 15 |> List.take 1 |> List.map limitDigitRange8ToB |> List.map mapToHex |> String.fromList
+                 , thirtyOneHexDigits |> List.drop 16 |> List.take 3 |> List.map mapToHex |> String.fromList
+                 , "-"
+                 , thirtyOneHexDigits |> List.drop 19 |> List.take 12 |> List.map mapToHex |> String.fromList
+                 ]
+                    |> String.concat
+                )
         )
         (Random.list 31 (Random.int 0 15))
 ```
