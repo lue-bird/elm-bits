@@ -1,9 +1,10 @@
-## 5.1.0 plans
+# changes log
+
+### 5.1.0
 
   - `Bit.fuzz` add
-      - waiting for `elm-test` major version 2 to not trigger a breaking change
-
-# changes log
+      - `test` dependency add
+  - `typesafe-array` dependency → >= 26.0.0
 
 ## 5.0.0
 
