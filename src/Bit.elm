@@ -1,6 +1,6 @@
 module Bit exposing
     ( Bit(..)
-    , random
+    , random, fuzz
     , fromN, toN
     , opposite
     )
@@ -12,13 +12,7 @@ module Bit exposing
 
 ## create
 
-@docs random
-
-just like `random`, its pretty easy to implement all sorts of generators etc. for a [`Bit`](#Bit)
-
-    bitFuzz : Fuzzer Bit
-    bitFuzz =
-        Fuzz.oneOf (List.map Fuzz.constant [ O, I ])
+@docs random, fuzz
 
 
 ## `N`
@@ -35,6 +29,7 @@ Just open an issue or a PR
 
 -}
 
+import Fuzz exposing (Fuzzer)
 import N exposing (In, N, N1, To, Up, Up0, Up1, n0, n1)
 import Random
 
@@ -64,6 +59,13 @@ type Bit
 random : Random.Generator Bit
 random =
     Random.uniform I [ O ]
+
+
+{-| Uniform `Fuzzer` for either [`I`](#Bit) or [`O`](#Bit)
+-}
+fuzz : Fuzzer Bit
+fuzz =
+    Fuzz.oneOfValues [ O, I ]
 
 
 {-| `n0` → [`O`](#Bit), `n1` → [`I`](#Bit)
