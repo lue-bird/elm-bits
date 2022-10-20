@@ -73,7 +73,7 @@ bitsTest =
                     (ArraySized.fromArray
                         >> ArraySized.take ( Up, n32 |> N.minTo n0 )
                     )
-                    (Fuzz.array bitFuzz)
+                    (Fuzz.array Bit.fuzz)
                 )
                 "toN >> fromN → padToLength n32"
                 (\bits ->
@@ -119,7 +119,7 @@ bitsTest =
                         (ArraySized.fromArray
                             >> Bits.atMost n20
                         )
-                        (Fuzz.array bitFuzz)
+                        (Fuzz.array Bit.fuzz)
                     )
             )
             "toIntSigned >> fromIntSigned <original length> → identity"
@@ -135,16 +135,11 @@ bitsTest =
 
 
 expectEqualArraySized :
-    ArraySized length0_ element
-    -> ArraySized length1_ element
+    ArraySized element length0_
+    -> ArraySized element length1_
     -> Expectation
 expectEqualArraySized expectedArr actualArr =
     actualArr
         |> ArraySized.toList
         |> Expect.equalLists
             (expectedArr |> ArraySized.toList)
-
-
-bitFuzz : Fuzzer Bit
-bitFuzz =
-    Fuzz.oneOf (List.map Fuzz.constant [ O, I ])

@@ -3,7 +3,7 @@
     "name": "lue-bird/elm-bits",
     "summary": "safe, typed bit arrays",
     "license": "MIT",
-    "version": "5.0.1",
+    "version": "5.0.0",
     "exposed-modules": [
         "Bit",
         "Bits"
@@ -14,9 +14,9 @@
         "elm/random": "1.0.0 <= v < 2.0.0",
         "elm-explorations/test": "2.0.1 <= v < 3.0.0",
         "lue-bird/elm-allowable-state": "1.0.2 <= v < 2.0.0",
-        "lue-bird/elm-bounded-nat": "28.0.0 <= v < 29.0.0",
+        "lue-bird/elm-bounded-nat": "29.0.0 <= v < 30.0.0",
         "lue-bird/elm-linear-direction": "7.0.1 <= v < 8.0.0",
-        "lue-bird/elm-typesafe-array": "26.0.0 <= v < 27.0.0"
+        "lue-bird/elm-typesafe-array": "27.0.0 <= v < 28.0.0"
     },
     "test-dependencies": {}
 }

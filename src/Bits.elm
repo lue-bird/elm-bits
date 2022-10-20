@@ -61,12 +61,15 @@ padToLength :
     N (In (Fixed paddedMin) (Up maxX To paddedMaxPlusX))
     ->
         (ArraySized
+            Bit
             (In
                 (Up paddingMaxPlusX_ To paddedMaxPlusX)
                 (Up paddingMin_ To paddedMin)
             )
-            Bit
-         -> ArraySized (In (Fixed paddedMin) (Up maxX To paddedMaxPlusX)) Bit
+         ->
+            ArraySized
+                Bit
+                (In (Fixed paddedMin) (Up maxX To paddedMaxPlusX))
         )
 padToLength paddedLength =
     \bitsNotFullyPadded ->
@@ -106,8 +109,8 @@ To give the `ArraySized`'s _type_ more information
 atMost :
     N (Exactly newLength)
     ->
-        (ArraySized (In (Fixed min_) (Fixed max_)) Bit
-         -> ArraySized (Exactly newLength) Bit
+        (ArraySized Bit (In (Fixed min_) (Fixed max_))
+         -> ArraySized Bit (Exactly newLength)
         )
 atMost =
     \bitSizeAvailable bits ->
@@ -132,8 +135,8 @@ atMost =
 
 -}
 unpad :
-    ArraySized (In (Fixed min_) (Fixed max)) Bit
-    -> ArraySized (In (Up0 minX_) (Fixed max)) Bit
+    ArraySized Bit (In (Fixed min_) (Fixed max))
+    -> ArraySized Bit (In (Up0 minX_) (Fixed max))
 unpad =
     \arraySized ->
         let
@@ -207,14 +210,16 @@ unpad =
 toChunksOf :
     N (Exactly (Add1 chunkLengthMinus1))
     ->
-        (ArraySized (In (Fixed min_) (Up maxX To maxPlusX)) Bit
+        (ArraySized
+            Bit
+            (In (Fixed min_) (Up maxX To maxPlusX))
          ->
             ArraySized
-                (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
                 (ArraySized
-                    (Exactly (Add1 chunkLengthMinus1))
                     Bit
+                    (Exactly (Add1 chunkLengthMinus1))
                 )
+                (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
         )
 toChunksOf chunkBitLength =
     \arraySized ->
@@ -266,10 +271,7 @@ The `N` is always clamped to `<=  2 ^ 32 - 1`
 -}
 fromN :
     N range_
-    ->
-        ArraySized
-            (In (Up32 minX_) (Up32 maxX_))
-            Bit
+    -> ArraySized Bit (In (Up32 minX_) (Up32 maxX_))
 fromN =
     \n ->
         if (n |> N.toInt) >= (2 ^ 32) then
@@ -316,7 +318,7 @@ nBitAt index =
 
 -}
 toN :
-    ArraySized (In min_ (Up maxTo32_ To N32)) Bit
+    ArraySized Bit (In min_ (Up maxTo32_ To N32))
     -> N (Min (Up0 nX_))
 toN =
     \bits ->
@@ -338,7 +340,7 @@ toN =
                     }
                 )
             |> .total
-            |> N.intAtLeast n0
+            |> N.atLeastInt n0
 
 
 
@@ -364,7 +366,7 @@ fromIntSigned :
     N (Exactly bitSize)
     ->
         (Int
-         -> ArraySized (Exactly bitSize) Bit
+         -> ArraySized Bit (Exactly bitSize)
         )
 fromIntSigned bitSizeAvailable =
     \int ->
@@ -374,7 +376,7 @@ fromIntSigned bitSizeAvailable =
         else
             int
                 + (1 |> Bitwise.shiftLeftBy ((bitSizeAvailable |> N.toInt) - 1))
-                |> N.intAtLeast n0
+                |> N.atLeastInt n0
                 |> fromN
                 |> atMost bitSizeAvailable
 
@@ -413,9 +415,7 @@ For example, bit size 5 ranges from -16 to 15
 
 -}
 toIntSigned :
-    ArraySized
-        (In min_ (Up maxTo32 To N32))
-        Bit
+    ArraySized Bit (In min_ (Up maxTo32 To N32))
     -> Int
 toIntSigned =
     \bits ->

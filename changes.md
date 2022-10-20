@@ -1,10 +1,11 @@
 # changes log
 
-### 5.1.0
+## 6.0.0
 
+  - `typesafe-array` dependency → >= 27.0.0
   - `Bit.fuzz` add
       - `test` dependency add
-  - `typesafe-array` dependency → >= 26.0.0
+  - `bounded-nat` dependency → >= 29.0.0
 
 ## 5.0.0
 
