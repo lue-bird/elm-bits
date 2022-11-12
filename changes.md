@@ -1,5 +1,10 @@
 # changes log
 
+#### 6.0.1
+
+  - `typesafe-array` dependency → >= 27.1.1
+  - `linear-direction` dependency → >= 8.0.0
+
 ## 6.0.0
 
   - `typesafe-array` dependency → >= 27.0.0
