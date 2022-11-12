@@ -87,7 +87,7 @@ returns only [`I`](Bit#Bit)s up to the given length
     import ArraySized
 
     2 ^ 25
-        |> N.intAtLeast n0
+        |> N.atLeastInt n0
         |> Bits.fromN
         |> Bits.atMost n16
         |> ArraySized.maxTo n16
@@ -262,7 +262,7 @@ The `N` is always clamped to `<=  2 ^ 32 - 1`
     import N exposing (n0)
 
     2 ^ 53 - 1
-        |> N.intAtLeast n0
+        |> N.atLeastInt n0
         |> Bits.fromN
         |> Bits.toN
         |> N.toInt
