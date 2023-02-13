@@ -1,2 +1,4 @@
 ### try
-- [representing bits](https://lue-bird.github.io/elm-bits/try/)
+representing bits.
+
+Run online in https://elm-editor.com/ or locally by git cloning and running `elm reactor`.
