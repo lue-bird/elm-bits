@@ -1,5 +1,9 @@
 # changes log
 
+#### 7.0.1
+
+  - documentation types correct
+
 ## 7.0.0
 
   - `typesafe-array` dependency → >= 29.1.0
