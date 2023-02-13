@@ -1,6 +1,6 @@
 # changes log
 
-#### 6.0.2
+## 7.0.0
 
   - `typesafe-array` dependency → >= 29.1.0
   - `bounded-nat` dependency → >= 33.1.0
