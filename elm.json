@@ -14,9 +14,9 @@
         "elm/random": "1.0.0 <= v < 2.0.0",
         "elm-explorations/test": "2.0.1 <= v < 3.0.0",
         "lue-bird/elm-allowable-state": "1.0.2 <= v < 2.0.0",
-        "lue-bird/elm-bounded-nat": "29.0.0 <= v < 30.0.0",
-        "lue-bird/elm-linear-direction": "8.0.0 <= v < 9.0.0",
-        "lue-bird/elm-typesafe-array": "27.1.1 <= v < 28.0.0"
+        "lue-bird/elm-bounded-nat": "33.1.0 <= v < 34.0.0",
+        "lue-bird/elm-linear-direction": "10.0.0 <= v < 11.0.0",
+        "lue-bird/elm-typesafe-array": "29.1.0 <= v < 30.0.0"
     },
     "test-dependencies": {}
 }

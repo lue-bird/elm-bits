@@ -25,7 +25,7 @@ import Collage exposing (Collage)
 import Collage.Layout
 import Color exposing (Color)
 import Linear exposing (Direction(..))
-import N exposing (Add1, Exactly, Fixed, In, N10, N11, N2, N3, N4, N5, N6, To, Up, Up0, Up10, Up11, Up3, Up4, n0, n1, n10, n11, n2, n3, n4, n5, n6)
+import N exposing (Add1, Exactly, In, N10, N11, N2, N3, N4, N5, N6, On, To, Up, Up0, Up10, Up11, Up3, Up4, n0, n1, n10, n11, n2, n3, n4, n5, n6)
 import N.Local exposing (n20, n32)
 import Toop
 import Typed exposing (untag)
@@ -37,7 +37,7 @@ import Typed exposing (untag)
     --> "1010"
 
 -}
-to01String : ArraySized (In min_ max_) Bit -> String
+to01String : ArraySized Bit (In min_ max_) -> String
 to01String =
     \bits ->
         bits
@@ -55,7 +55,7 @@ to01String =
 
 -}
 toUnicodeString :
-    ArraySized (In (Fixed min_) (Up maxX_ To maxPlusX_)) Bit
+    ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_))
     -> String
 toUnicodeString =
     \bits ->
@@ -72,7 +72,7 @@ toUnicodeString =
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f)
 -}
-toHexChar : ArraySized (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) Bit -> Char
+toHexChar : ArraySized Bit (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) -> Char
 toHexChar =
     \bits ->
         case bits |> Bits.padToLength n4 |> ArraySized.to4 of
@@ -125,7 +125,7 @@ toHexChar =
                 'f'
 
 
-toHexString : ArraySized (In (Fixed min_) (Up maxX_ To maxPlusX_)) Bit -> String
+toHexString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
 toHexString =
     \bits ->
         bits
@@ -134,22 +134,22 @@ toHexString =
             |> ArraySized.toString
 
 
-to09avChar : ArraySized (In (Up minTo5_ To N5) (Up maxTo5_ To N5)) Bit -> Char
+to09avChar : ArraySized Bit (In (Up minTo5_ To N5) (Up maxTo5_ To N5)) -> Char
 to09avChar =
     \bits ->
         let
-            bitsPadded : ArraySized (Exactly N5) Bit
+            bitsPadded : ArraySized Bit (Exactly (On N5))
             bitsPadded =
                 bits |> Bits.padToLength n5
         in
         case bitsPadded |> ArraySized.element ( Up, n0 ) of
             O ->
                 bitsPadded
-                    |> ArraySized.take ( Down, n4, { atLeast = n4 } )
+                    |> ArraySized.take Down { atLeast = n4 } n4
                     |> toHexChar
 
             I ->
-                case bitsPadded |> ArraySized.take ( Down, n4, { atLeast = n4 } ) |> ArraySized.to4 of
+                case bitsPadded |> ArraySized.take Down { atLeast = n4 } n4 |> ArraySized.to4 of
                     Toop.T4 O O O O ->
                         'g'
 
@@ -199,7 +199,7 @@ to09avChar =
                         'v'
 
 
-to09avString : ArraySized (In (Fixed min_) (Up maxX_ To maxPlusX_)) Bit -> String
+to09avString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
 to09avString =
     \bits ->
         bits
@@ -210,7 +210,7 @@ to09avString =
 
 {-| Four bits represented in a `Char` of multiple uniquely identifiable symbols
 -}
-asFirstLetterInWord : ArraySized (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) Bit -> Char
+asFirstLetterInWord : ArraySized Bit (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) -> Char
 asFirstLetterInWord =
     \bits ->
         case bits |> Bits.padToLength n4 |> ArraySized.to4 of
@@ -263,7 +263,7 @@ asFirstLetterInWord =
                 'y'
 
 
-asThirdLetterInWord : ArraySized (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) Bit -> Char
+asThirdLetterInWord : ArraySized Bit (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) -> Char
 asThirdLetterInWord =
     \bits ->
         case bits |> Bits.padToLength n4 |> ArraySized.to4 of
@@ -316,7 +316,7 @@ asThirdLetterInWord =
                 ','
 
 
-asVocal : ArraySized (In (Up minTo2_ To N2) (Up maxTo2_ To N2)) Bit -> Char
+asVocal : ArraySized Bit (In (Up minTo2_ To N2) (Up maxTo2_ To N2)) -> Char
 asVocal =
     \bits ->
         case bits |> Bits.padToLength n2 |> ArraySized.to2 of
@@ -333,7 +333,7 @@ asVocal =
                 'u'
 
 
-toReadableWord : ArraySized (In (Up minTo10_ To N10) (Up maxTo10_ To N10)) Bit -> String
+toReadableWord : ArraySized Bit (In (Up minTo10_ To N10) (Up maxTo10_ To N10)) -> String
 toReadableWord =
     \bits ->
         let
@@ -343,22 +343,22 @@ toReadableWord =
                 bits |> Bits.padToLength n10 |> ArraySized.minTo n10
         in
         [ bitsPadded
-            |> ArraySized.take ( Up, n4, { atLeast = n4 } )
+            |> ArraySized.take Up { atLeast = n4 } n4
             |> asFirstLetterInWord
         , ArraySized.l2
             (bitsPadded |> ArraySized.element ( Up, n4 ))
             (bitsPadded |> ArraySized.element ( Up, n5 ))
             |> asVocal
         , bitsPadded
-            |> ArraySized.take ( Down, n4, { atLeast = n4 } )
+            |> ArraySized.take Down { atLeast = n4 } n4
             |> asThirdLetterInWord
         ]
             |> String.fromList
 
 
 toReadableWords :
-    ArraySized (In (Fixed min_) (Up maxX To maxPlusX)) Bit
-    -> ArraySized (In (Up0 minX_) (Up maxX To (Add1 maxPlusX))) String
+    ArraySized Bit (In (On min_) (Up maxX To maxPlusX))
+    -> ArraySized String (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
 toReadableWords =
     \bits ->
         bits
@@ -366,7 +366,7 @@ toReadableWords =
             |> ArraySized.map toReadableWord
 
 
-toReadableWordsString : ArraySized (In (Fixed min_) (Up maxX_ To maxPlusX_)) Bit -> String
+toReadableWordsString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
 toReadableWordsString =
     \bits ->
         bits
@@ -375,7 +375,7 @@ toReadableWordsString =
             |> String.join " "
 
 
-toColor : ArraySized (In (Up minTo6_ To N6) (Up maxTo6_ To N6)) Bit -> Color
+toColor : ArraySized Bit (In (Up minTo6_ To N6) (Up maxTo6_ To N6)) -> Color
 toColor =
     \bits ->
         let
@@ -392,7 +392,7 @@ toColor =
         in
         Color.rgb
             (bitsPadded
-                |> ArraySized.take ( Up, n2, { atLeast = n2 } )
+                |> ArraySized.take Up { atLeast = n2 } n2
                 |> component
             )
             (ArraySized.l2 (bitsPadded |> ArraySized.element ( Up, n2 ))
@@ -400,12 +400,12 @@ toColor =
                 |> component
             )
             (bitsPadded
-                |> ArraySized.take ( Down, n2, { atLeast = n2 } )
+                |> ArraySized.take Down { atLeast = n2 } n2
                 |> component
             )
 
 
-toShape : ArraySized (In (Up minTo3_ To N3) (Up maxTo3_ To N3)) Bit -> Collage.Shape
+toShape : ArraySized Bit (In (Up minTo3_ To N3) (Up maxTo3_ To N3)) -> Collage.Shape
 toShape =
     \bits ->
         case bits |> Bits.padToLength n3 |> ArraySized.to3 of
@@ -428,7 +428,7 @@ toShape =
                     1
 
 
-toCollage : ArraySized (In (Up minTo11_ To N11) (Up maxTo11_ To N11)) Bit -> Collage msg
+toCollage : ArraySized Bit (In (Up minTo11_ To N11) (Up maxTo11_ To N11)) -> Collage msg
 toCollage =
     \bits ->
         let
@@ -436,17 +436,17 @@ toCollage =
                 bits |> Bits.padToLength n11
         in
         bitsPadded
-            |> ArraySized.take ( Up, n3, { atLeast = n3 } )
+            |> ArraySized.take Up { atLeast = n3 } n3
             |> toShape
             |> shapeAppearing
                 { appearance =
                     bitsPadded
-                        |> ArraySized.drop ( Up, n3 )
-                        |> ArraySized.take ( Up, n2, { atLeast = n2 } )
+                        |> ArraySized.drop Up n3
+                        |> ArraySized.take Up { atLeast = n2 } n2
                         |> shapeAppearance
                 , fillStyle =
                     bitsPadded
-                        |> ArraySized.take ( Down, n6, { atLeast = n6 } )
+                        |> ArraySized.take Down { atLeast = n6 } n6
                         |> toColor
                         |> Collage.uniform
                 }
@@ -478,7 +478,7 @@ shapeAppearing { appearance, fillStyle } =
 
 
 shapeAppearance :
-    ArraySized (In (Up minTo2_ To N2) (Up maxTo2_ To N2)) Bit
+    ArraySized Bit (In (Up minTo2_ To N2) (Up maxTo2_ To N2))
     -> ShapeAppearance
 shapeAppearance =
     \bits ->
@@ -497,7 +497,7 @@ shapeAppearance =
 
 
 toRecognizableCollage :
-    ArraySized (In (Fixed min_) (Up maxX_ To maxPlusX_)) Bit
+    ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_))
     -> Collage msg_
 toRecognizableCollage =
     \bits ->

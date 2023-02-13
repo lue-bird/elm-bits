@@ -13,10 +13,11 @@ import Element.Background as UiBg
 import Element.Border as UiBorder
 import Element.Font as Font
 import Element.Input as UiInput
+import Emptiable
 import Html exposing (Html)
 import Html.Attributes
 import Linear exposing (Direction(..))
-import N exposing (Fixed, Min, N0, n0, n1)
+import N exposing (Min, N0, On, n0, n1)
 
 
 main : Program () State Event
@@ -30,7 +31,7 @@ main =
 
 
 type alias State =
-    { inputBits : ArraySized (Min (Fixed N0)) Bit
+    { inputBits : ArraySized Bit (Min (On N0))
     }
 
 
@@ -58,7 +59,6 @@ reactTo event =
                     | inputBits =
                         string
                             |> String.toList
-                            |> List.reverse
                             |> List.filterMap
                                 (Bit.Convert.fromChar >> Result.toMaybe)
                             |> Array.fromList
@@ -98,6 +98,7 @@ view state =
                 [ Ui.padding 3
                 , UiBg.color (Ui.rgba 0 0 0 0)
                 , Font.size 20
+                , Font.family [ Font.monospace ]
                 , Ui.width Ui.fill
                 , UiBorder.color (Ui.rgba 0 0 0 0)
                 ]
@@ -105,13 +106,11 @@ view state =
                 , onChange = InputText
                 , placeholder = Nothing
                 , text =
-                    case
-                        state.inputBits |> ArraySized.hasAtLeast n1
-                    of
-                        Ok atLeast1 ->
+                    case state.inputBits |> ArraySized.hasAtLeast1 of
+                        Emptiable.Filled atLeast1 ->
                             atLeast1 |> Bits.Convert.to01String
 
-                        Err _ ->
+                        Emptiable.Empty _ ->
                             "enter zeros & ones > "
                 }
           , Ui.el
@@ -141,7 +140,7 @@ view state =
                 , Ui.spacing 3
                 ]
       ]
-        |> Ui.column [ Ui.spacing 30 ]
+        |> Ui.column [ Ui.spacing 30, Ui.width Ui.fill ]
     , let
         text =
             Ui.text
@@ -201,7 +200,9 @@ view state =
               , width = Ui.shrink
               , view =
                     \( _, representation ) ->
-                        state.inputBits |> representation
+                        state.inputBits
+                            |> ArraySized.maxToOn
+                            |> representation
               }
             ]
         }

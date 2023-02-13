@@ -1,7 +1,7 @@
 module Bits exposing
     ( fromN, toN
     , fromIntSigned, toIntSigned
-    , padToLength, atMost, unpad
+    , padToLength, takeAtMost, unpad
     , toChunksOf
     )
 
@@ -26,13 +26,13 @@ when you know the exact number of bits, like in an id
 
 ## alter
 
-@docs padToLength, atMost, unpad
+@docs padToLength, takeAtMost, unpad
 @docs toChunksOf
 
 You can additionally use the operations of `ArraySized`, for example
 
     -- left shift
-    ArraySized.glue Up (ArraySized.repeat O n...)
+    ArraySized.attach Up (ArraySized.repeat O n...)
 
     -- complement
     ArraySized.map Bit.opposite
@@ -45,7 +45,7 @@ import ArraySized exposing (ArraySized)
 import Bit exposing (Bit(..))
 import Bitwise
 import Linear exposing (Direction(..))
-import N exposing (Add1, Exactly, Fixed, In, Min, N, To, Up, Up0, n0, n1)
+import N exposing (Add1, Exactly, In, Min, N, On, To, Up, Up0, n0, n1)
 import N.Local exposing (N31, N32, Up32, n31, n32)
 
 
@@ -58,7 +58,7 @@ Short for
 
 -}
 padToLength :
-    N (In (Fixed paddedMin) (Up maxX To paddedMaxPlusX))
+    N (In (On paddedMin) (Up maxX To paddedMaxPlusX))
     ->
         (ArraySized
             Bit
@@ -69,7 +69,7 @@ padToLength :
          ->
             ArraySized
                 Bit
-                (In (Fixed paddedMin) (Up maxX To paddedMaxPlusX))
+                (In (On paddedMin) (Up maxX To paddedMaxPlusX))
         )
 padToLength paddedLength =
     \bitsNotFullyPadded ->
@@ -87,32 +87,32 @@ returns only [`I`](Bit#Bit)s up to the given length
     import ArraySized
 
     2 ^ 25
-        |> N.atLeastInt n0
+        |> N.intToAtLeast n0
         |> Bits.fromN
-        |> Bits.atMost n16
+        |> Bits.takeAtMost n16
         |> ArraySized.maxTo n16
         |> Bits.toN
         |> N.toInt
     --> 2 ^ 16 - 1
 
 Its length after that will be `Exactly` the given desired length.
-Some operations like glueing or `Bits.toN` will stop working because of this.
+Some operations like attaching or `Bits.toN` will stop working because of this.
 In that case, just
 
-    |> Bits.atMost n
+    |> Bits.takeAtMost n
     |> ArraySized.minTo n
     |> ArraySized.maxTo n
 
 To give the `ArraySized`'s _type_ more information
 
 -}
-atMost :
-    N (Exactly newLength)
+takeAtMost :
+    N (Exactly (On newLength))
     ->
-        (ArraySized Bit (In (Fixed min_) (Fixed max_))
-         -> ArraySized Bit (Exactly newLength)
+        (ArraySized Bit (In (On min_) max_)
+         -> ArraySized Bit (Exactly (On newLength))
         )
-atMost =
+takeAtMost =
     \bitSizeAvailable bits ->
         case bits |> unpad |> ArraySized.hasAtMost bitSizeAvailable of
             Ok hasAtMostBitSizeAvailable ->
@@ -135,12 +135,12 @@ atMost =
 
 -}
 unpad :
-    ArraySized Bit (In (Fixed min_) (Fixed max))
-    -> ArraySized Bit (In (Up0 minX_) (Fixed max))
+    ArraySized Bit (In (On min_) max)
+    -> ArraySized Bit (In (Up0 minX_) max)
 unpad =
     \arraySized ->
         let
-            padOLength : N (In (Up x To x) (Fixed max))
+            padOLength : N (In (Up0 x) max)
             padOLength =
                 arraySized
                     |> ArraySized.foldFrom
@@ -170,11 +170,17 @@ unpad =
                         )
                     |> .padOLength
                     |> N.minTo n0
-                    |> N.atMost (arraySized |> ArraySized.length |> N.minTo n0)
+                    |> N.toIn ( n0, arraySized |> ArraySized.length )
                     |> N.minTo n0
         in
         arraySized
-            |> ArraySized.dropOverMin ( Up, padOLength )
+            |> ArraySized.minTo n0
+            |> ArraySized.take Down
+                { atLeast = n0 }
+                ((arraySized |> ArraySized.length |> N.toInt)
+                    - (padOLength |> N.toInt)
+                    |> N.intToIn ( n0, arraySized |> ArraySized.length )
+                )
             |> ArraySized.minTo n0
 
 
@@ -185,16 +191,16 @@ unpad =
     import N exposing (n8)
     import Bit exposing (Bit(..))
 
-    ArraySized.l1 O
+    ArraySized.one O
         |> Bits.toChunksOf n8
         |> ArraySized.map ArraySized.toList
         |> ArraySized.toList
     --> [ [ O, O, O, O, O, O, O, O ] ]
 
     ArraySized.l3 I I I
-        |> ArraySized.glue Up (ArraySized.l8 O I I I O I O O)
-        |> ArraySized.glue Up (ArraySized.l8 O I I I O I O O)
-        |> ArraySized.glue Up (ArraySized.l8 O I I I O I O O)
+        |> ArraySized.attach Up (ArraySized.l8 O I I I O I O O)
+        |> ArraySized.attach Up (ArraySized.l8 O I I I O I O O)
+        |> ArraySized.attach Up (ArraySized.l8 O I I I O I O O)
         |> Bits.toChunksOf n8
         |> ArraySized.map ArraySized.toList
         |> ArraySized.toList
@@ -208,16 +214,16 @@ unpad =
 
 -}
 toChunksOf :
-    N (Exactly (Add1 chunkLengthMinus1))
+    N (Exactly (On (Add1 chunkLengthMinus1)))
     ->
         (ArraySized
             Bit
-            (In (Fixed min_) (Up maxX To maxPlusX))
+            (In (On min_) (Up maxX To maxPlusX))
          ->
             ArraySized
                 (ArraySized
                     Bit
-                    (Exactly (Add1 chunkLengthMinus1))
+                    (Exactly (On (Add1 chunkLengthMinus1)))
                 )
                 (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
         )
@@ -230,13 +236,13 @@ toChunksOf chunkBitLength =
         in
         case chunked.remainder |> ArraySized.hasAtLeast n1 of
             Err _ ->
-                chunked.chunks |> ArraySized.maxUp n1
+                chunked.chunks |> ArraySized.maxAdd n1
 
             Ok remainder ->
                 chunked.chunks
                     |> ArraySized.insert ( Up, n0 )
                         (remainder
-                            |> ArraySized.maxUp n1
+                            |> ArraySized.maxAdd n1
                             |> padToLength chunkBitLength
                         )
                     |> ArraySized.minTo n0
@@ -246,15 +252,15 @@ toChunksOf chunkBitLength =
 -- N
 
 
-{-| Convert the unsigned integer to <= 32 bits
+{-| Convert the unsigned integer to 32 bits
 
-Combine with [`atMost`](#atMost) to clamp to a lower bit size
+Combine with [`takeAtMost`](#takeAtMost) to clamp to a lower bit size
 
     import N exposing (n4, n14)
     import Bit exposing (Bit(..))
     import ArraySized
 
-    n14 |> Bits.fromN |> Bits.atMost n4 |> ArraySized.toList
+    n14 |> Bits.fromN |> Bits.takeAtMost n4 |> ArraySized.toList
     --> [ I, I, I, O ]
 
 The `N` is always clamped to `<=  2 ^ 32 - 1`
@@ -262,7 +268,7 @@ The `N` is always clamped to `<=  2 ^ 32 - 1`
     import N exposing (n0)
 
     2 ^ 53 - 1
-        |> N.atLeastInt n0
+        |> N.intToAtLeast n0
         |> Bits.fromN
         |> Bits.toN
         |> N.toInt
@@ -340,7 +346,7 @@ toN =
                     }
                 )
             |> .total
-            |> N.atLeastInt n0
+            |> N.intToAtLeast n0
 
 
 
@@ -363,10 +369,10 @@ For example, bit size 5 ranges from -16 to 15
 
 -}
 fromIntSigned :
-    N (Exactly bitSize)
+    N (Exactly (On bitSize))
     ->
         (Int
-         -> ArraySized Bit (Exactly bitSize)
+         -> ArraySized Bit (Exactly (On bitSize))
         )
 fromIntSigned bitSizeAvailable =
     \int ->
@@ -376,9 +382,9 @@ fromIntSigned bitSizeAvailable =
         else
             int
                 + (1 |> Bitwise.shiftLeftBy ((bitSizeAvailable |> N.toInt) - 1))
-                |> N.atLeastInt n0
+                |> N.intToAtLeast n0
                 |> fromN
-                |> atMost bitSizeAvailable
+                |> takeAtMost bitSizeAvailable
 
 
 {-| Create signed `Int`
@@ -414,9 +420,7 @@ For example, bit size 5 ranges from -16 to 15
     --> -128 + 42
 
 -}
-toIntSigned :
-    ArraySized Bit (In min_ (Up maxTo32 To N32))
-    -> Int
+toIntSigned : ArraySized Bit (In min_ (Up maxTo32_ To N32)) -> Int
 toIntSigned =
     \bits ->
         (bits |> toN |> N.toInt)

@@ -1,5 +1,12 @@
 # changes log
 
+#### 6.0.2
+
+  - `typesafe-array` dependency → >= 29.1.0
+  - `bounded-nat` dependency → >= 33.1.0
+  - `linear-direction` dependency → >= 10.0.0
+  - `atMost` name → `takeAtMost`
+
 #### 6.0.1
 
   - `typesafe-array` dependency → >= 27.1.1

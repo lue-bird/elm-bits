@@ -77,7 +77,7 @@ bytesDecode endianness =
         |> Bytes.Decode.andThen
             (\lengthInt ->
                 Bytes.Decode.loop
-                    { remainingByteCount = lengthInt |> N.atLeastInt n0
+                    { remainingByteCount = lengthInt |> N.intToAtLeast n0
                     , soFar = []
                     }
                     arraySizedOfLengthBytesDecodeStep
@@ -120,7 +120,7 @@ arraySizedOfLengthBytesDecodeStep =
                         , soFar =
                             soFar
                                 ++ (byte
-                                        |> N.atLeastInt n0
+                                        |> N.intToAtLeast n0
                                         |> fromN
                                         |> padToLength n32
                                         |> ArraySized.dropOverMin ( Down, n8 )

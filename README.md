@@ -76,7 +76,7 @@ type alias Uuid =
         Tagged
         UuidTag
         Public
-        (ArraySized (Exactly N128) Bit)
+        (ArraySized Bit (Exactly (On N128)))
 
 type UuidTag
     = Uuid
@@ -124,12 +124,12 @@ uuidFromAllBits : Uuid
 uuidFromAllBits =
     -- raw bits
     ArraySized.l16 O I O I I I I O I I I I I O O O
-        |> ArraySized.glue Up
+        |> ArraySized.attach Up
             (ArraySized.l16 I I I O O O O I O I I I I O I I)
         ...
         |> tag Uuid
 
-bitsToHexString : ArraySized (In (Fixed min_) (Up maxX_ To maxPlusX_)) Bit -> String
+bitsToHexString : ArraySized (In (On min_) (Up maxX_ To maxPlusX_)) Bit -> String
 bitsToHexString =
     Bits.toChunksOf n4
         >> ArraySized.map toHexChar
