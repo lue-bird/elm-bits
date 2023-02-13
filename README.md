@@ -110,7 +110,7 @@ import Uuid exposing (Uuid)
 import Bit exposing (Bit(..))
 import Typed exposing (tag, untag)
 -- from linear-direction
-import Linear exposing (DirectionLinear(..))
+import Linear exposing (Direction(..))
 -- from bburdette/toop
 import Toop exposing (T4(..))
 
@@ -129,7 +129,7 @@ uuidFromAllBits =
         ...
         |> tag Uuid
 
-bitsToHexString : ArraySized (In (On min_) (Up maxX_ To maxPlusX_)) Bit -> String
+bitsToHexString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
 bitsToHexString =
     Bits.toChunksOf n4
         >> ArraySized.map toHexChar
@@ -137,7 +137,7 @@ bitsToHexString =
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f)
 -}
-bitToHexChar : ArraySized (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) Bit -> Char
+bitToHexChar : ArraySized Bit (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) -> Char
 bitToHexChar =
     \bits ->
         case bits |> Bits.padToLength n4 |> ArraySized.to4 of

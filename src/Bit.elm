@@ -43,7 +43,7 @@ This right here is really the core of this library.
 Representing bits safely is now quite readable!
 
     ArraySized.l8 O I I I O O I O
-    --: ArraySized (In (Up8 minX_) (Up8 maxX_)) Bit
+    --: ArraySized Bit (In (Up8 minX_) (Up8 maxX_))
 
 for an example of using this to represent an `Id`,
 visit the [readme](https://dark.elm.dmy.fr/packages/lue-bird/elm-bits/latest/)

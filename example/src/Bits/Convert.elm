@@ -338,7 +338,7 @@ toReadableWord =
     \bits ->
         let
             -- adding ↓ crashes the compiler for whatever reason
-            -- bitsPadded : ArraySized (In (Up10 paddedMinX_) (Up10 paddedMaxX_)) Bit
+            -- bitsPadded : ArraySized Bit (In (Up10 paddedMinX_) (Up10 paddedMaxX_))
             bitsPadded =
                 bits |> Bits.padToLength n10 |> ArraySized.minTo n10
         in
