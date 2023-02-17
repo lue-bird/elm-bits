@@ -1,5 +1,10 @@
 # changes log
 
+#### 8.0.0
+
+  - `typesafe-array` dependency → >= 30.0.0
+  - `linear-direction` dependency → >= 11.0.0
+
 #### 7.0.1
 
   - documentation types correct
