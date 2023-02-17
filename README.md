@@ -8,8 +8,6 @@ Most id packages use an opaque `type` that hold the information.
 Example from [danyx23's `Uuid`][danyx23/elm-uuid] to skim through ↓
 
 ```elm
-module Uuid exposing (Uuid, toString, fromString)
-
 type Uuid
     = Uuid String
 
@@ -58,8 +56,6 @@ generate =
 with bits:
 
 ```elm
-module Uuid exposing (Uuid, random)
-
 import Bit exposing (Bit)
 
 -- from typesafe-array
