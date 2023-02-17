@@ -116,7 +116,6 @@ takeAtMost =
         case bits |> unpad |> ArraySized.hasAtMost bitSizeAvailable of
             Ok hasAtMostBitSizeAvailable ->
                 hasAtMostBitSizeAvailable
-                    |> ArraySized.minTo n0
                     |> padToAtLeast bitSizeAvailable
 
             Err _ ->
@@ -168,19 +167,15 @@ unpad =
                                             }
                         )
                     |> .padOLength
-                    |> N.minTo n0
                     |> N.toIn ( n0, arraySized |> ArraySized.length )
-                    |> N.minTo n0
         in
         arraySized
-            |> ArraySized.minTo n0
             |> ArraySized.take Down
                 { atLeast = n0 }
                 ((arraySized |> ArraySized.length |> N.toInt)
                     - (padOLength |> N.toInt)
                     |> N.intToIn ( n0, arraySized |> ArraySized.length )
                 )
-            |> ArraySized.minTo n0
 
 
 {-| Pad the `ArraySized` of [`Bit`](Bit#Bit)s to chunks of a given length
@@ -297,9 +292,7 @@ nBitAt : N (In indexMin_ (Up indexMaxTo31_ To N31)) -> (N range_ -> Bit)
 nBitAt index =
     \n ->
         case
-            (n
-                |> N.toInt
-            )
+            (n |> N.toInt)
                 // (1 |> Bitwise.shiftLeftBy (index |> N.toInt))
                 |> remainderBy 2
         of
