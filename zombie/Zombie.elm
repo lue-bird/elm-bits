@@ -52,7 +52,7 @@ bytesEncode endianness =
                     chunked.chunks
                         |> ArraySized.insert ( Up, n0 )
                             (chunked.remainder
-                                |> padToLength n8
+                                |> padToAtLeast n8
                             )
                         |> ArraySized.map
                             (\byte ->
@@ -122,7 +122,7 @@ arraySizedOfLengthBytesDecodeStep =
                                 ++ (byte
                                         |> N.intToAtLeast n0
                                         |> fromN
-                                        |> padToLength n32
+                                        |> padToAtLeast n32
                                         |> ArraySized.dropOverMin ( Down, n8 )
                                         |> ArraySized.toList
                                    )

@@ -140,7 +140,7 @@ bitsToHexString =
 bitToHexChar : ArraySized Bit (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) -> Char
 bitToHexChar =
     \bits ->
-        case bits |> Bits.padToLength n4 |> ArraySized.to4 of
+        case bits |> Bits.padToAtLeast n4 |> ArraySized.to4 of
             T4 O O O O ->
                 '0'
 

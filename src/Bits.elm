@@ -1,7 +1,7 @@
 module Bits exposing
     ( fromN, toN
     , fromIntSigned, toIntSigned
-    , padToLength, takeAtMost, unpad
+    , padToAtLeast, takeAtMost, unpad
     , toChunksOf
     )
 
@@ -26,7 +26,7 @@ when you know the exact number of bits, like in an id
 
 ## alter
 
-@docs padToLength, takeAtMost, unpad
+@docs padToAtLeast, takeAtMost, unpad
 @docs toChunksOf
 
 You can additionally use the operations of `ArraySized`, for example
@@ -54,10 +54,10 @@ by padding with [`O`](Bit#Bit)s to the beginning
 
 Short for
 
-    ArraySized.padToLength Down (ArraySized.repeat O)
+    ArraySized.padToAtLeast Down lengthMinimum (ArraySized.repeat O)
 
 -}
-padToLength :
+padToAtLeast :
     N (In (On paddedMin) (Up maxX To paddedMaxPlusX))
     ->
         (ArraySized
@@ -71,13 +71,12 @@ padToLength :
                 Bit
                 (In (On paddedMin) (Up maxX To paddedMaxPlusX))
         )
-padToLength paddedLength =
+padToAtLeast paddedLength =
     \bitsNotFullyPadded ->
         bitsNotFullyPadded
-            |> ArraySized.padToLength
-                Down
-                (ArraySized.repeat O)
+            |> ArraySized.padToAtLeast Down
                 paddedLength
+                (ArraySized.repeat O)
 
 
 {-| If the `ArraySized` has a [`I`](Bit#Bit) earlier than a given number of [`Bit`](Bit#Bit)s up,
@@ -118,7 +117,7 @@ takeAtMost =
             Ok hasAtMostBitSizeAvailable ->
                 hasAtMostBitSizeAvailable
                     |> ArraySized.minTo n0
-                    |> padToLength bitSizeAvailable
+                    |> padToAtLeast bitSizeAvailable
 
             Err _ ->
                 ArraySized.repeat I bitSizeAvailable
@@ -243,7 +242,7 @@ toChunksOf chunkBitLength =
                     |> ArraySized.insert ( Up, n0 )
                         (remainder
                             |> ArraySized.maxAdd n1
-                            |> padToLength chunkBitLength
+                            |> padToAtLeast chunkBitLength
                         )
                     |> ArraySized.minTo n0
 
@@ -407,14 +406,14 @@ For example, bit size 5 ranges from -16 to 15
     -- 6-bit `Int`
     --> 10
 
-[`padToLength`](#padToLength) to convert it to a higher-bit representation
+[`padToAtLeast`](#padToAtLeast) to convert it to a higher-bit representation
 
     import ArraySized
     import Bit exposing (Bit(..))
     import N exposing (n8)
 
     ArraySized.l6 I O I O I O
-        |> Bits.padToLength n8
+        |> Bits.padToAtLeast n8
         |> Bits.toIntSigned
     -- 8-bit `Int`
     --> -128 + 42

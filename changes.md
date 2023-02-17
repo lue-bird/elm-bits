@@ -4,6 +4,7 @@
 
   - `typesafe-array` dependency → >= 30.0.0
   - `linear-direction` dependency → >= 11.0.0
+  - `padToLength` name → `padToAtLeast`
 
 #### 7.0.1
 

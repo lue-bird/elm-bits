@@ -21,10 +21,10 @@ suite =
 bitsTest : Test
 bitsTest =
     describe "Bits"
-        [ test "padToLength"
+        [ test "padToAtLeast"
             (\() ->
                 ArraySized.l4 I O I I
-                    |> Bits.padToLength n8
+                    |> Bits.padToAtLeast n8
                     |> expectEqualArraySized
                         (ArraySized.l8 O O O O I O I I)
             )
@@ -43,7 +43,7 @@ bitsTest =
                         |> expectEqualArraySized
                             (ArraySized.one
                                 (ArraySized.l4 O I I I
-                                    |> Bits.padToLength n8
+                                    |> Bits.padToAtLeast n8
                                     |> ArraySized.toList
                                 )
                             )
@@ -60,7 +60,7 @@ bitsTest =
                         |> Bits.toChunksOf n8
                         |> ArraySized.map ArraySized.toList
                         |> expectEqualArraySized
-                            (ArraySized.one (ArraySized.l3 I I I |> Bits.padToLength n8)
+                            (ArraySized.one (ArraySized.l3 I I I |> Bits.padToAtLeast n8)
                                 |> ArraySized.attach Up
                                     (ArraySized.repeat (ArraySized.l8 O I I I O I O O) n3)
                                 |> ArraySized.map ArraySized.toList
@@ -70,7 +70,7 @@ bitsTest =
         , describe "N"
             [ Test.fuzz
                 (ArraySized.inFuzz Bit.fuzz ( n0, n32 ))
-                "toN >> fromN → padToLength n32"
+                "toN >> fromN → padToAtLeast n32"
                 (\bits ->
                     bits
                         |> Bits.toN
@@ -78,7 +78,7 @@ bitsTest =
                         |> Debug.toString
                         |> Expect.equal
                             (bits
-                                |> Bits.padToLength n32
+                                |> Bits.padToAtLeast n32
                                 |> Debug.toString
                             )
                 )
