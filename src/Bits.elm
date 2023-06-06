@@ -46,7 +46,7 @@ import Bit exposing (Bit(..))
 import Bitwise
 import Linear exposing (Direction(..))
 import N exposing (Add1, Exactly, In, Min, N, On, To, Up, Up0, n0, n1)
-import N.Local exposing (N31, N32, Up32, n31, n32)
+import N.Local exposing (N31, N32, Up32, n32)
 
 
 {-| Increase the capacity to a given length
@@ -234,7 +234,7 @@ toChunksOf chunkBitLength =
 
             Ok remainder ->
                 chunked.chunks
-                    |> ArraySized.insert ( Up, n0 )
+                    |> ArraySized.insert ( Up, n1 )
                         (remainder
                             |> ArraySized.maxAdd n1
                             |> padToAtLeast chunkBitLength
@@ -278,8 +278,8 @@ fromN =
             ArraySized.repeat I n32
 
         else
-            ArraySized.upTo n31
-                |> ArraySized.minTo n32
+            ArraySized.n1To n32
+                |> ArraySized.map (N.subtract n1)
                 |> ArraySized.reverse
                 |> ArraySized.map
                     (\bitIndex ->

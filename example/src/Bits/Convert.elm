@@ -142,7 +142,7 @@ to09avChar =
             bitsPadded =
                 bits |> Bits.padToAtLeast n5
         in
-        case bitsPadded |> ArraySized.element ( Up, n0 ) of
+        case bitsPadded |> ArraySized.element ( Up, n1 ) of
             O ->
                 bitsPadded
                     |> ArraySized.take Down { atLeast = n4 } n4
