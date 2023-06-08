@@ -93,13 +93,19 @@ random =
 
 
 Bits as a universal way of representing information can be
+converted from multiple types of data or its bits directly, from characters, from ints...
 
-- turned into a variety of representations (→ [in action](https://lue-bird.github.io/elm-bits/try/))
+Bits can also be turned into a variety of representations (→ [example](https://github.com/lue-bird/elm-bits/example/))
 
-    - different string formats (human-readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/), less character space, hexadecimal, ...)
-    - colors, shapes, identicons ([coinop-logan/phace][coinop-logan/phace], [laurentpayot/minidenticons-elm](https://package.elm-lang.org/packages/laurentpayot/minidenticons-elm/latest/) or forks of [pukkamustard/elm-identicon](pukkamustard/elm-identicon) (e.g. [dividat/elm-identicon][dividat/elm-identicon]))), ...
+- different string formats like human-readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/)), less character space, hexadecimal, ...
+- colors, shapes, identicons like
+[coinop-logan/phace](https://package.elm-lang.org/packages/coinop-logan/phace/latest/),
+[laurentpayot/minidenticons-elm](https://package.elm-lang.org/packages/laurentpayot/minidenticons-elm/latest/)
+or forks of [pukkamustard/elm-identicon](https://github.com/pukkamustard/elm-identicon)
+(like [dividat/elm-identicon](https://package.elm-lang.org/packages/dividat/elm-identicon/latest/)),
+[`miniBill/elm-avataaars`](https://dark.elm.dmy.fr/packages/miniBill/elm-avataaars/latest/),
+...
 
-- converted from multiple types of data or its bits directly, from characters, from ints...
 
 ```elm
 import Uuid exposing (Uuid)
@@ -127,16 +133,16 @@ uuidFromAllBits =
 
 bitsToHexString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
 bitsToHexString =
-    Bits.toChunksOf n4
+    BitArray.toChunksOf n4
         >> ArraySized.map toHexChar
         >> ArraySized.toString
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f)
 -}
-bitToHexChar : ArraySized Bit (In (Up minTo4_ To N4) (Up maxTo4_ To N4)) -> Char
+bitToHexChar : ArraySized Bit (In (On N4) (Up maxTo4_ To N4)) -> Char
 bitToHexChar =
     \bits ->
-        case bits |> Bits.padToAtLeast n4 |> ArraySized.to4 of
+        case bits |> ArraySized.to4 of
             T4 O O O O ->
                 '0'
 
@@ -187,14 +193,13 @@ bitToHexChar =
 ```
 
 Notice how users can
-- build bits _safely_ from _different sources of information_
+- build bit arrays _safely_ from _different sources of information_
 - pattern-match conveniently and safely for different representations
+
+
 
 ----
 
 Confused? Hyped? Hit @lue up on anything on slack
 
-[coinop-logan/phace]: https://package.elm-lang.org/packages/coinop-logan/phace/latest/
-[pukkamustard/elm-identicon]: https://github.com/pukkamustard/elm-identicon
-[dividat/elm-identicon]: https://package.elm-lang.org/packages/dividat/elm-identicon/latest/
 [danyx23/elm-uuid]: https://package.elm-lang.org/packages/danyx23/elm-uuid/latest/Uuid
