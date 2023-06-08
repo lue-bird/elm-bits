@@ -60,12 +60,21 @@ import Bit exposing (Bit)
 
 -- from typesafe-array
 import ArraySized exposing (ArraySized)
--- from bounded-nat
-import N exposing (Exactly)
 -- from typed-value
 import Typed exposing (Typed, Tagged, Public, tag)
+-- from bounded-nat
+import N exposing (Exactly)
 -- generated. See `N`'s module documentation
 import N.Local exposing (N128)
+
+
+random : Random.Generator Uuid
+random =
+    Random.map (tag Uuid)
+        (ArraySized.random Bit.random n128)
+
+type UuidTag
+    = Uuid
 
 type alias Uuid =
     Typed
@@ -73,14 +82,6 @@ type alias Uuid =
         UuidTag
         Public
         (ArraySized Bit (Exactly (On N128)))
-
-type UuidTag
-    = Uuid
-
-random : Random.Generator Uuid
-random =
-    Random.map (tag Uuid)
-        (ArraySized.random Bit.random n128)
 ```
 
 → type-safe, clean way of storing information
@@ -95,7 +96,7 @@ random =
 Bits as a universal way of representing information can be
 converted from multiple types of data or its bits directly, from characters, from ints...
 
-Bits can also be turned into a variety of representations (→ [example](https://github.com/lue-bird/elm-bits/example/))
+Bits can also be turned into a variety of representations (→ [example](https://github.com/lue-bird/elm-bits/tree/master/example))
 
 - different string formats like human-readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/)), less character space, hexadecimal, ...
 - colors, shapes, identicons like
@@ -117,10 +118,10 @@ import Linear exposing (Direction(..))
 import Toop exposing (T4(..))
 
 uuidUi : Uuid -> Html msg_
-uuidUi =
-    untag -- the bit array
-        >> bitsToHexString
-        >> Html.text
+uuidUi uuid =
+    (uuid |> untag) -- the raw bit array
+        |> bitsToHexString
+        |> Html.text
 
 uuidFromAllBits : Uuid
 uuidFromAllBits =
@@ -131,11 +132,11 @@ uuidFromAllBits =
         ...
         |> tag Uuid
 
-bitsToHexString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
-bitsToHexString =
-    BitArray.toChunksOf n4
-        >> ArraySized.map toHexChar
-        >> ArraySized.toString
+bitsToHexString : ArraySized Bit (In min_ (Up maxX_ To maxPlusX_)) -> String
+bitsToHexString bits =
+    (bits |> BitArray.toChunksOf n4) -- chunk it up
+        |> ArraySized.map toHexChar
+        |> ArraySized.toString
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f)
 -}
@@ -196,7 +197,11 @@ Notice how users can
 - build bit arrays _safely_ from _different sources of information_
 - pattern-match conveniently and safely for different representations
 
+## where `elm-bits` is used
 
+- [`elm-morph`](https://package.elm-lang.org/packages/lue-bird/elm-morph/latest) can
+  create a parser-builder that can even read non-byte-multiple bit counts like 7
+- maybe you built something? Tell us about it ✿
 
 ----
 
