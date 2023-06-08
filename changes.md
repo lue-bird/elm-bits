@@ -1,5 +1,18 @@
 # changes log
 
+## 9.0.0
+
+  - `typesafe-array` dependency → >= 33.0.0
+  - `bounded-nat` dependency → >= 34.0.0
+  - `unpad` remove
+      - no good use-case in context of bit arrays
+  - `padToAtLeast`, `takeAtMost` remove
+      - in favor of directly `fromN`
+  - `fromIntSigned` name → `fromInt`
+  - `fromN`, `fromIntSigned` now require a specific bit count
+  - `toN` and `toIntSigned` accept higher bit counts than 32
+        - for convenience
+
 #### 8.0.1
 
   - `typesafe-array` dependency → >= 31.0.0
