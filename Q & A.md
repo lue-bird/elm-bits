@@ -8,8 +8,3 @@ Our types have a lot of type variables, most of them only used once.
 If you see a -_ you know not to focus on these.
 
 See the rule [`single-use-type-vars-end-with-underscore`](https://package.elm-lang.org/packages/lue-bird/elm-review-single-use-type-vars-end-with-underscore/latest/).
-
-#### No `filterMap`, only `whenJust`?
-
-- `whenJust` is easier to understand than `filterMap identity`
-- `whenJust` only filters, whereas `filterMap` maps _and_ filters
