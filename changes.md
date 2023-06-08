@@ -13,6 +13,7 @@
       - `fromN`, `fromIntSigned` now require a specific bit count
       - `toN` and `toIntSigned` accept higher bit counts than 32
             - for convenience
+      - `toChunksOf` result more correct
 
 #### 8.0.1
 
