@@ -17,7 +17,12 @@ import Emptiable
 import Html exposing (Html)
 import Html.Attributes
 import Linear exposing (Direction(..))
+import Minidenticons
 import N exposing (Min, N0, On, n0, n1)
+import N.Local exposing (n32)
+import Phace
+import QRCode
+import Svg.Attributes as SvgA
 
 
 main : Program () State Event
@@ -94,118 +99,122 @@ view state =
     [ [ "Representing bits"
             |> Ui.text
             |> Ui.el [ Font.size 40 ]
-      , [ [ UiInput.text
-                [ Ui.padding 3
-                , UiBg.color (Ui.rgba 0 0 0 0)
-                , Font.size 20
-                , Font.family [ Font.monospace ]
-                , Ui.width Ui.fill
-                , UiBorder.color (Ui.rgba 0 0 0 0)
-                ]
-                { label = UiInput.labelHidden "enter 0s & 1s"
-                , onChange = InputText
-                , placeholder = Nothing
-                , text =
-                    case state.inputBits |> ArraySized.hasAtLeast1 of
-                        Emptiable.Filled atLeast1 ->
-                            atLeast1 |> Bits.Convert.to01String
+      , [ "✎ enter sequence of 0s and 1s:" |> descriptionUi
+        , UiInput.text
+            [ UiBg.color (Ui.rgba 0 0 0 0)
+            , Font.size 25
+            , Font.family [ Font.monospace ]
+            , Ui.width Ui.fill
+            , Ui.paddingXY 36 6
+            , UiBorder.color (Ui.rgba 0 0 0 0)
+            ]
+            { label = UiInput.labelHidden "enter a bit sequence containing 0s and 1s"
+            , onChange = InputText
+            , placeholder = Nothing
+            , text =
+                case state.inputBits |> ArraySized.hasAtLeast1 of
+                    Emptiable.Filled atLeast1 ->
+                        atLeast1 |> Bits.Convert.to01String
 
-                        Emptiable.Empty _ ->
-                            "enter zeros & ones > "
-                }
-          , Ui.el
-                [ Ui.width Ui.fill
-                , UiBg.color (Ui.rgb 1 0.7 0)
-                , Ui.height (Ui.px 2)
-                ]
-                Ui.none
-          ]
-            |> Ui.column
-                [ Ui.width Ui.fill ]
-        , ((state.inputBits
-                |> ArraySized.length
-                |> N.toInt
-                |> String.fromInt
-           )
-            ++ " bits"
-          )
-            |> Ui.text
-            |> Ui.el
-                [ Font.color (Ui.rgba 1 1 1 0.5)
-                , Ui.padding 3
-                ]
+                    Emptiable.Empty _ ->
+                        "0"
+            }
         ]
             |> Ui.column
-                [ Ui.width Ui.fill
-                , Ui.spacing 3
+                [ Ui.paddingEach { left = 3, right = 3, top = 3, bottom = 3 }
+                , Ui.width Ui.fill
                 ]
       ]
         |> Ui.column [ Ui.spacing 30, Ui.width Ui.fill ]
-    , let
-        text =
-            Ui.text
-                >> Ui.el
-                    [ Font.color (Ui.rgb 1 0.5 0.5)
-                    , Font.family [ Font.monospace ]
-                    , Font.size 24
-                    ]
-                >> List.singleton
-                >> Ui.paragraph
-                    [ Ui.padding 8
-                    , Ui.width Ui.fill
-                    , Html.Attributes.style "word-break" "break-all"
-                        |> Ui.htmlAttribute
-                    ]
-
-        svg =
-            Collage.Render.svg
-                >> Ui.html
-                >> Ui.el [ Ui.paddingXY 0 8 ]
-      in
-      Ui.table
-        [ Ui.spacingXY 19 4
+    , Ui.column
+        [ Ui.spacing 12
         ]
-        { data =
-            [ ( "collage"
-              , Bits.Convert.toRecognizableCollage >> svg
-              )
-            , ( "string from all unicode"
-              , Bits.Convert.toUnicodeString >> text
-              )
-            , ( "string from hex: 0→9 then a→f"
-              , Bits.Convert.toHexString >> text
-              )
-            , ( "string from 0→9 then a→v"
-              , Bits.Convert.to09avString >> text
-              )
-            , ( "string from words"
-              , Bits.Convert.toReadableWordsString >> text
-              )
-            ]
-        , columns =
-            [ { header =
-                    Ui.text "as"
-                        |> Ui.el [ Font.size 24 ]
-              , width = Ui.shrink
-              , view =
-                    \( description, _ ) ->
-                        description
-                            |> Ui.text
-                            |> Ui.el
-                                [ Font.family [ Font.typeface "Noto Sans" ]
-                                , Font.size 24
+        ([ ( "identicon"
+           , \bits ->
+                bits
+                    |> Bits.Convert.toHexString
+                    |> Minidenticons.identicon 100 50
+                    |> Ui.html
+                    |> Ui.el [ Ui.width (Ui.px 100), Ui.height (Ui.px 100) ]
+           )
+         , ( "qr code"
+           , \bits ->
+                case bits |> Bits.Convert.toHexString |> QRCode.fromString of
+                    Err error ->
+                        descriptionUi ("Encoding error: " ++ (error |> Debug.toString))
+
+                    Ok qrCode ->
+                        [ qrCode
+                            |> QRCode.toSvg
+                                [ SvgA.width "120px"
+                                , SvgA.height "120px"
                                 ]
-              }
-            , { header = Ui.none
-              , width = Ui.shrink
-              , view =
-                    \( _, representation ) ->
-                        state.inputBits
+                        ]
+                            |> Html.div [ Html.Attributes.style "filter" "invert(100)" ]
+                            |> Ui.html
+                            |> Ui.el
+                                [ UiBg.color (Ui.rgb 0 0 0)
+                                , Ui.width Ui.shrink
+                                ]
+           )
+         , ( "collage"
+           , \bits ->
+                bits
+                    |> Bits.Convert.toRecognizableCollage
+                    |> Collage.Render.svg
+                    |> Ui.html
+                    |> Ui.el [ Ui.paddingXY 0 8 ]
+           )
+         , ( "phace"
+           , \bits ->
+                case Phace.fromHexString (bits |> Bits.Convert.toHexString |> hexStringToAtLeast32) 100 100 of
+                    Err error ->
+                        descriptionUi ("Encoding error: " ++ (error |> Phace.errorToString))
+
+                    Ok phace ->
+                        phace
+                            |> Ui.html
+                            |> Ui.el
+                                [ UiBg.color (Ui.rgb 0 0 0)
+                                , Ui.width Ui.shrink
+                                ]
+           )
+         , ( "bit count"
+           , \bits ->
+                bits
+                    |> ArraySized.length
+                    |> N.toInt
+                    |> String.fromInt
+                    |> Ui.text
+           )
+         , ( "string from all unicode"
+           , Bits.Convert.toUnicodeString >> Ui.text
+           )
+         , ( "string from hex: 0→9 then a→f"
+           , Bits.Convert.toHexString >> Ui.text
+           )
+         , ( "string from 0→9 then a→v"
+           , Bits.Convert.to09avString >> Ui.text
+           )
+         , ( "string from words"
+           , Bits.Convert.toReadableWordsString >> Ui.text
+           )
+         ]
+            |> List.map
+                (\( description, representation ) ->
+                    Ui.column []
+                        [ description |> descriptionUi
+                        , state.inputBits
                             |> ArraySized.maxToOn
                             |> representation
-              }
-            ]
-        }
+                            |> Ui.el
+                                [ Ui.paddingXY 36 6
+                                , Font.size 24
+                                , Font.family [ Font.monospace ]
+                                ]
+                        ]
+                )
+        )
     ]
         |> Ui.column
             [ Ui.paddingXY 62 60
@@ -215,3 +224,27 @@ view state =
             , UiBg.color (Ui.rgb 0 0 0)
             , Font.color (Ui.rgb 1 1 1)
             ]
+
+
+descriptionUi : String -> Ui.Element event_
+descriptionUi =
+    \description ->
+        description
+            |> Ui.text
+            |> Ui.el
+                [ Font.color (Ui.rgb 1 0.5 0.5)
+                , Font.family [ Font.sansSerif ]
+                , Font.size 24
+                ]
+            |> List.singleton
+            |> Ui.paragraph
+                [ Html.Attributes.style "word-break" "break-all"
+                    |> Ui.htmlAttribute
+                ]
+
+
+hexStringToAtLeast32 : String -> String
+hexStringToAtLeast32 =
+    \hexString ->
+        hexString
+            ++ String.repeat (34 - (hexString |> String.length)) "0"
