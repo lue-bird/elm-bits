@@ -1,32 +1,7 @@
-module N.Local exposing (Add20, Add31, Add32, N20, N31, N32, Up20, Up31, Up32, n20, n31, n32)
+module N.Local exposing (Add31, Add32, N31, N32, Up31, Up32, n31, n32)
 
 import N exposing (In, N, N0OrAdd1, To, Up, add, n1, n16, n2, n4, n8)
 import Possibly exposing (Possibly)
-
-
-{-| The [natural number](https://dark.elm.dmy.fr/packages/lue-bird/elm-bounded-nat/latest/N#N0OrAdd1) `20 +` a given `n`
--}
-type alias Add20 n =
-    N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never n)))))))))))))))))))
-
-
-{-| The [natural number](https://dark.elm.dmy.fr/packages/lue-bird/elm-bounded-nat/latest/N#N0OrAdd1) `20`
--}
-type alias N20 =
-    N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Possibly Never))))))))))))))))))))
-
-
-{-| `20` as the difference `Up x To (Add20 x)`
--}
-type alias Up20 x =
-    Up x To (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never (N0OrAdd1 Never x))))))))))))))))))))
-
-
-{-| The [`N`](https://dark.elm.dmy.fr/packages/lue-bird/elm-bounded-nat/latest/N#N) `20`
--}
-n20 : N (In (Up20 minX_) (Up20 maxX_))
-n20 =
-    n16 |> add n4
 
 
 {-| The [natural number](https://dark.elm.dmy.fr/packages/lue-bird/elm-bounded-nat/latest/N#N0OrAdd1) `31 +` a given `n`
