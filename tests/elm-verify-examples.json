@@ -2,6 +2,6 @@
   "root": "../src",
   "tests": [
     "Bit",
-    "Bits"
+    "BitArray"
   ]
 }
