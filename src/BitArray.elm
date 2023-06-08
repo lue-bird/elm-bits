@@ -45,7 +45,6 @@ You can additionally use the operations of `ArraySized`, for example
 import ArraySized exposing (ArraySized)
 import Bit exposing (Bit(..))
 import Bitwise
-import Emptiable
 import Linear exposing (Direction(..))
 import N exposing (Add1, Exactly, In, Min, N, On, To, Up, Up0, n0, n1, n2)
 
@@ -80,38 +79,57 @@ import N exposing (Add1, Exactly, In, Min, N, On, To, Up, Up0, n0, n1, n2)
 
 -}
 toChunksOf :
-    N (Exactly (On (Add1 chunkLengthMinus1)))
+    N (In (On (Add1 chunkMinFrom1)) (Up chunkMaxX To (Add1 chunkMaxFrom1PlusX)))
+    -> ArraySized Bit (In min_ (Up maxX To maxPlusX))
     ->
-        (ArraySized
-            Bit
-            (In (On min_) (Up maxX To maxPlusX))
-         ->
-            ArraySized
-                (ArraySized
-                    Bit
-                    (Exactly (On (Add1 chunkLengthMinus1)))
+        ArraySized
+            (ArraySized
+                Bit
+                (In
+                    (On (Add1 chunkMinFrom1))
+                    (Up chunkMaxX To (Add1 chunkMaxFrom1PlusX))
                 )
-                (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
-        )
-toChunksOf chunkBitLength =
-    \arraySized ->
-        let
-            chunked =
-                arraySized
-                    |> ArraySized.toChunksOf Down chunkBitLength
-        in
-        case chunked.remainder |> ArraySized.hasAtLeast n1 of
-            Err _ ->
-                chunked.chunks |> ArraySized.maxAdd n1
+            )
+            (In (Up0 minX_) (Up maxX To maxPlusX))
+toChunksOf chunkBitCount arraySized =
+    -- \arraySized ->
+    let
+        chunked =
+            arraySized
+                |> ArraySized.toChunksOf Down chunkBitCount
+    in
+    case chunked.remainder |> ArraySized.hasAtLeast n1 of
+        Err _ ->
+            chunked.chunks
 
-            Ok remainder ->
-                chunked.chunks
-                    |> ArraySized.insert ( Up, n1 )
-                        (remainder
-                            |> ArraySized.maxAdd n1
-                            |> ArraySized.toSize Down chunkBitLength (\_ -> O)
+        Ok remainder ->
+            let
+                chunksWithRemainder :
+                    ArraySized
+                        (ArraySized
+                            Bit
+                            (In
+                                (On (Add1 chunkMinFrom1))
+                                (Up chunkMaxX To (Add1 chunkMaxFrom1PlusX))
+                            )
                         )
-                    |> ArraySized.minTo n0
+                        (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
+                chunksWithRemainder =
+                    chunked.chunks
+                        |> ArraySized.insert ( Up, n1 )
+                            (remainder
+                                |> ArraySized.toSize Down chunkBitCount (\_ -> O)
+                            )
+                        |> ArraySized.minTo n0
+            in
+            case chunksWithRemainder |> ArraySized.hasAtMost (arraySized |> ArraySized.length |> N.minTo0) of
+                -- always in practice
+                Ok ok ->
+                    ok
+
+                -- never in practice
+                Err _ ->
+                    chunked.chunks
 
 
 
@@ -119,7 +137,7 @@ toChunksOf chunkBitLength =
 
 
 {-| Convert the [natural number](https://dark.elm.dmy.fr/packages/lue-bird/elm-bounded-nat/latest/)
-to a given number of bits.
+to a given number of bits (`<= 32`).
 
     import N exposing (n4, n14)
     import Bit exposing (Bit(..))
@@ -175,7 +193,7 @@ nBitAt indexFrom1 =
             |> Bit.fromN
 
 
-{-| Convert <= 32 bits into an unsigned integer: `N (Min (Up0 nX_))`
+{-| Convert <= 32 bits into a natural number: `N (Min (Up0 _))`
 
     import N
     import Bit exposing (Bit(..))
@@ -217,7 +235,7 @@ toN =
 -- `Int` signed
 
 
-{-| Clamp a signed `Int`, decoding a given bit size `n`
+{-| Encode with a given bit size `n` (`<= 32`)
 ranging from `-(2 ^ (n - 1))` to `2 ^ (n - 1) - 1`.
 For example, bit size 5 ranges from -16 to 15
 
@@ -256,7 +274,7 @@ fromIntSigned bitSizeAvailable =
 
 
 {-| Create signed `Int` from a bit array's in 2's complement encoding
-using its length as the `Int`'s bit count.
+using its length (`<= 32`) as the `Int`'s bit count.
 
 So given bit count `n`,
 decodes in the range `-(2 ^ (n - 1))` → `2 ^ (n - 1) - 1`.
