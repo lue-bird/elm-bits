@@ -182,7 +182,7 @@ fromN bitCount =
 nHasAtMostBits : N bitCountRange_ -> (N range_ -> Bool)
 nHasAtMostBits bitCount =
     \n ->
-        (n |> N.toInt |> Bitwise.shiftRightBy (bitCount |> N.toInt)) == 0
+        (n |> N.toInt) < 2 * (2 ^ (bitCount |> N.toInt))
 
 
 nBitAt : N (In indexMin_ indexMax_) -> (N range_ -> Bit)
