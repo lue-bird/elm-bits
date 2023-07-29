@@ -1,5 +1,9 @@
 # changes log
 
+#### 9.0.1
+
+  - don't return only `I`s for `fromN n32`
+
 ## 9.0.0
 
   - `typesafe-array` dependency → >= 33.0.0
