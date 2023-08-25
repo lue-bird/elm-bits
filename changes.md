@@ -1,5 +1,10 @@
 # changes log
 
+#### 9.0.2
+
+  - `bounded-nat` → >= 35.0.0
+  - `typesafe-array` → >= 34.0.1
+
 #### 9.0.1
 
   - don't return only `I`s for `fromN n32`
