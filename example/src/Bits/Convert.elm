@@ -351,7 +351,7 @@ toReadableWord =
 
 toReadableWords :
     ArraySized Bit (In (On min_) (Up maxX To maxPlusX))
-    -> ArraySized String (In (Up0 minX_) (Up maxX To (Add1 maxPlusX)))
+    -> ArraySized String (In (Up0 minX_) (Up maxX To maxPlusX))
 toReadableWords =
     \bits ->
         bits
