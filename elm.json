@@ -3,7 +3,7 @@
     "name": "lue-bird/elm-bits",
     "summary": "safe, typed bit arrays",
     "license": "MIT",
-    "version": "9.0.1",
+    "version": "9.0.2",
     "exposed-modules": [
         "Bit",
         "BitArray"
