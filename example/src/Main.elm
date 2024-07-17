@@ -143,7 +143,7 @@ view state =
            , \bits ->
                 case bits |> Bits.Convert.toHexString |> QRCode.fromString of
                     Err error ->
-                        descriptionUi ("Encoding error: " ++ (error |> Debug.toString))
+                        descriptionUi ("Encoding error: " ++ (error |> qrCodeErrorToString))
 
                     Ok qrCode ->
                         [ qrCode
@@ -155,7 +155,7 @@ view state =
                             |> Html.div [ Html.Attributes.style "filter" "invert(100)" ]
                             |> Element.html
                             |> Element.el
-                                [ Element.Background.color (Element.rgb 0 0 0)
+                                [ Element.Background.color (Element.rgba 0 0 0 0)
                                 , Element.width Element.shrink
                                 ]
            )
@@ -282,3 +282,32 @@ type alias State =
 
 type Event
     = InputText String
+
+
+qrCodeErrorToString : QRCode.Error -> String
+qrCodeErrorToString =
+    \qrCodeError ->
+        case qrCodeError of
+            QRCode.AlignmentPatternNotFound ->
+                "alignment pattern not found"
+
+            QRCode.InvalidNumericChar ->
+                "invalid numeric char"
+
+            QRCode.InvalidAlphanumericChar ->
+                "invalid alphanumeric char"
+
+            QRCode.InvalidUTF8Char ->
+                "invalid UTF-8 char"
+
+            QRCode.LogTableException n ->
+                "log table exception with " ++ (n |> String.fromInt)
+
+            QRCode.PolynomialMultiplyException ->
+                "polynomial multiply exception"
+
+            QRCode.PolynomialModException ->
+                "polynomial mod exception"
+
+            QRCode.InputLengthOverflow ->
+                "input length overflow"
