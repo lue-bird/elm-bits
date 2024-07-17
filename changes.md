@@ -1,5 +1,11 @@
 # changes log
 
+## 10.0.0
+
+  - replace `Bits` by `Bits` operating on `List Bit` keeping only `fromIntSigned`, `toIntSigned` and replacing `fromN`/`toN` by `fromIntUnsigned`/`toIntUnsigned`
+  - `Bit.fuzz`, `Bit.random`, `Bit.toN`, `Bit.fromN` remove
+  - all dependencies remove
+
 #### 9.0.2
 
   - `bounded-nat` → >= 35.0.0
@@ -13,7 +19,7 @@
 
   - `typesafe-array` dependency → >= 33.0.0
   - `bounded-nat` dependency → >= 34.0.0
-  - `module Bits` name → `BitArray`
+  - `module Bits` name → `Bits`
       - `unpad` remove
           - no good use-case in context of bit arrays
       - `padToAtLeast`, `takeAtMost` remove

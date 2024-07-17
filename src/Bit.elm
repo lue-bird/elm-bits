@@ -1,37 +1,13 @@
-module Bit exposing
-    ( Bit(..)
-    , random, fuzz
-    , fromN, toN
-    , opposite
-    )
+module Bit exposing (Bit(..), opposite)
 
 {-| A primitive: the single bit
 
-@docs Bit
+@docs Bit, opposite
 
-
-## create
-
-@docs random, fuzz
-
-
-## `N`
-
-@docs fromN, toN
-
-
-## alter
-
-@docs opposite
-
-I'll be happy to add or merge more stuff!
+I'll happily add or merge more stuff!
 Just open an issue or a PR
 
 -}
-
-import Fuzz exposing (Fuzzer)
-import N exposing (In, N, N1, To, Up, Up0, Up1, n0, n1)
-import Random
 
 
 {-| One of 2 states:
@@ -42,8 +18,16 @@ import Random
 This right here is really the core of this library.
 Representing bits safely is now quite readable!
 
-    ArraySized.l8 O I I I O O I O
-    --: ArraySized Bit (In (Up8 minX_) (Up8 maxX_))
+    [ O, I, I, I, O, O, I, O ]
+    --: List Bit
+
+    randomBit : Random.Generator Bit
+    randomBit =
+        Random.uniform I [ O ]
+
+    fuzz : Fuzz.Fuzzer Bit
+    fuzz =
+        Fuzz.oneOfValues [ O, I ]
 
 for an example of using this to represent an `Id`,
 visit the [readme](https://dark.elm.dmy.fr/packages/lue-bird/elm-bits/latest/)
@@ -54,35 +38,7 @@ type Bit
     | O
 
 
-{-| Uniform `Random.Generator` for either [`I`](#Bit) or [`O`](#Bit)
--}
-random : Random.Generator Bit
-random =
-    Random.uniform I [ O ]
-
-
-{-| Uniform `Fuzzer` for either [`I`](#Bit) or [`O`](#Bit)
--}
-fuzz : Fuzzer Bit
-fuzz =
-    Fuzz.oneOfValues [ O, I ]
-
-
-{-| `n0` → [`O`](#Bit), `n1` → [`I`](#Bit)
--}
-fromN : N (In min_ (Up maxTo1_ To N1)) -> Bit
-fromN =
-    \n ->
-        case n |> N.toInt of
-            0 ->
-                O
-
-            -- 1
-            _ ->
-                I
-
-
-{-| Switch `O` ↔ `I`. Often called the NOT operator
+{-| Switch `O` ↔ `I`. Often called the not, negate or flip operator
 -}
 opposite : Bit -> Bit
 opposite =
@@ -93,21 +49,3 @@ opposite =
 
             I ->
                 O
-
-
-{-| Convert `O` to `n0`, `I` to `1`.
-`N (In (Up0 minX_) (Up1 maxX_))` means that the result will be between 0 & 1
-
-    toInt =
-        Bit.toN >> N.toInt
-
--}
-toN : Bit -> N (In (Up0 minX_) (Up1 maxX_))
-toN =
-    \bit ->
-        case bit of
-            O ->
-                n0 |> N.maxTo n1
-
-            I ->
-                n1 |> N.minTo n0
