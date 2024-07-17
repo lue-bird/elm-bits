@@ -1,8 +1,18 @@
-Operate on bits and bit lists.
+0, 1 and bit lists of sizes that don't have to be multiples of 8.
 
-## example: id
+```elm
+import Bit exposing (Bit(..))
+import Bits
 
-Most id packages use an opaque `type` that hold the information.
+-6 |> Bits.fromIntSigned 5
+--> [ I, I, O, I, O ]
+```
+
+Use when correctness/precision matters more than raw speed.
+
+## example use case: id
+
+Most id types use an opaque `type` to hold information.
 Example similar to [danyx23's `Uuid`][danyx23/elm-uuid] to skim through ↓
 
 ```elm
@@ -38,7 +48,7 @@ generate =
 with bits:
 
 ```elm
-module MyId exposing (MyId(..), random)
+module MyId exposing (MyId(..))
 
 import Bit exposing (Bit)
 import Vector60
@@ -53,10 +63,10 @@ Notice how extracting information is easy and to creating a new id can be done s
 but anything will do the job, like custom codegen or [lue-bird/elm-typesafe-array](https://dark.elm.dmy.fr/packages/lue-bird/elm-typesafe-array/latest/).
 Hell even if you just use an opaque `List Bit` you'll still have it easier than with a `String`.
 
-Bits as a universal way of representing information can be
-converted from multiple types of data or its bits directly, from characters, from ints...
+## conversions
 
-Bits can also be turned into a variety of representations (→ [example](https://github.com/lue-bird/elm-bits/tree/master/example))
+Bits as a universal way of representing information can be
+converted from and to basically any shape → [example](https://github.com/lue-bird/elm-bits/tree/master/example)
 
 - different string formats like human-readable (for example [michaelglass/proquint](https://package.elm-lang.org/packages/michaelglass/proquint/latest/)), less character space, hexadecimal, ...
 - colors, shapes, identicons like
