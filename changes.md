@@ -4,7 +4,7 @@
 
   - replace `BitArray` by `Bits` operating on `List Bit`
   - `Bit.fuzz`, `Bit.random`, `Bit.toN`, `Bit.fromN` remove
-  - all dependencies remove
+  - all dependencies except `elm/bytes` remove
 
 #### 9.0.2
 

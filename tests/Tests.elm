@@ -94,4 +94,28 @@ suite =
                     |> Bits.toIntSigned
                     |> Expect.equal naturalInt
             )
+        , Test.fuzz (Fuzz.list (Fuzz.intRange 0 255))
+            "ints |> List.concatMap (Bits.fromIntUnsigned 8) |> Bits.toIntUnsigned8s = ints"
+            (\ints ->
+                ints
+                    |> List.concatMap (Bits.fromIntUnsigned 8)
+                    |> Bits.toIntUnsigned8s
+                    |> Expect.equalLists ints
+            )
+        , Test.fuzz (Fuzz.list (Fuzz.intRange 0 (2 ^ 16 - 1)))
+            "ints |> List.concatMap (Bits.fromIntUnsigned 16) |> Bits.toIntUnsigned16s = ints"
+            (\ints ->
+                ints
+                    |> List.concatMap (Bits.fromIntUnsigned 16)
+                    |> Bits.toIntUnsigned16s
+                    |> Expect.equalLists ints
+            )
+        , Test.fuzz (Fuzz.list (Fuzz.intRange 0 (2 ^ 32 - 1)))
+            "ints |> List.concatMap (Bits.fromIntUnsigned 32) |> Bits.toIntUnsigned32s = ints"
+            (\ints ->
+                ints
+                    |> List.concatMap (Bits.fromIntUnsigned 32)
+                    |> Bits.toIntUnsigned32s
+                    |> Expect.equalLists ints
+            )
         ]

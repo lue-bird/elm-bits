@@ -36,35 +36,27 @@ to01String =
             |> String.fromList
 
 
-listToChunksOf : Int -> (List element -> List (List element))
-listToChunksOf chunkLength listToChunk =
-    let
-        toChunksUp :
-            List element
-            -> { chunks : List (List element), remainder : List element }
-        toChunksUp list =
-            if (list |> List.length) >= chunkLength then
-                let
-                    after : { chunks : List (List element), remainder : List element }
-                    after =
-                        list
-                            |> List.drop chunkLength
-                            |> toChunksUp
-                in
-                { chunks =
-                    (list |> List.take chunkLength)
-                        :: after.chunks
-                , remainder = after.remainder
-                }
+listToChunksOf : Int -> List a -> List (List a)
+listToChunksOf chunkSize list =
+    case list of
+        [] ->
+            []
 
-            else
-                { chunks = [], remainder = list }
+        head :: tail ->
+            listToChunksOfReverseOnto [] chunkSize (head :: tail)
+                |> List.reverse
 
-        fullyChunked : { chunks : List (List element), remainder : List element }
-        fullyChunked =
-            listToChunk |> toChunksUp
-    in
-    fullyChunked.remainder :: fullyChunked.chunks
+
+listToChunksOfReverseOnto : List (List a) -> Int -> List a -> List (List a)
+listToChunksOfReverseOnto soFar chunkSize list =
+    case List.drop chunkSize list of
+        [] ->
+            list :: soFar
+
+        remainingAfterChunkHead :: remainingAfterChunkTail ->
+            listToChunksOfReverseOnto (List.take chunkSize list :: soFar)
+                chunkSize
+                (remainingAfterChunkHead :: remainingAfterChunkTail)
 
 
 {-| Convert a `List` of `Bit`s to a

@@ -1,7 +1,7 @@
 {
     "type": "package",
     "name": "lue-bird/elm-bits",
-    "summary": "operate on bits and bit lists",
+    "summary": "0, 1 and bit lists of sizes that don't have to be multiples of 8",
     "license": "MIT",
     "version": "9.0.2",
     "exposed-modules": [
@@ -10,6 +10,7 @@
     ],
     "elm-version": "0.19.1 <= v < 0.20.0",
     "dependencies": {
+        "elm/bytes": "1.0.8 <= v < 2.0.0",
         "elm/core": "1.0.5 <= v < 2.0.0"
     },
     "test-dependencies": {
