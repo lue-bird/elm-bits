@@ -1,16 +1,10 @@
 module Bits.Convert exposing
     ( to01String
-    , to09avChar
     , to09avString
-    , toColor
-    , toHexChar
     , toHexString
     , toProquintSequence
-    , toReadableWord
-    , toReadableWords
     , toReadableWordsString
     , toRecognizableCollage
-    , toShape
     , toUnicodeString
     )
 
@@ -194,6 +188,15 @@ bitsToChunksOf4 =
                 Toop.T4 bit0 bit1 bit2 bit3 :: bitsToChunksOf4 bit4Up
 
 
+to09avString : List Bit -> String
+to09avString =
+    \bits ->
+        bits
+            |> bitsToChunksOf5
+            |> List.map to09avChar
+            |> String.fromList
+
+
 to09avChar : Toop.T5 Bit Bit Bit Bit Bit -> Char
 to09avChar =
     \(Toop.T5 bit0 bit1 bit2 bit3 bit4) ->
@@ -252,15 +255,6 @@ to09avChar =
                         'v'
 
 
-to09avString : List Bit -> String
-to09avString =
-    \bits ->
-        bits
-            |> bitsToChunksOf5
-            |> List.map to09avChar
-            |> String.fromList
-
-
 bitsToChunksOf5 : List Bit -> List (Toop.T5 Bit Bit Bit Bit Bit)
 bitsToChunksOf5 =
     \bits ->
@@ -282,6 +276,22 @@ bitsToChunksOf5 =
 
             bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5Up ->
                 Toop.T5 bit0 bit1 bit2 bit3 bit4 :: bitsToChunksOf5 bit5Up
+
+
+toReadableWordsString : List Bit -> String
+toReadableWordsString =
+    \bits ->
+        bits
+            |> toReadableWords
+            |> String.join " "
+
+
+toReadableWords : List Bit -> List String
+toReadableWords =
+    \bits ->
+        bits
+            |> bitsToChunksOf10
+            |> List.map toReadableWord
 
 
 toReadableWord : Toop.T10 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit -> String
@@ -420,14 +430,6 @@ asVocal bits =
             'u'
 
 
-toReadableWords : List Bit -> List String
-toReadableWords =
-    \bits ->
-        bits
-            |> bitsToChunksOf10
-            |> List.map toReadableWord
-
-
 bitsToChunksOf10 : List Bit -> List (Toop.T10 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit)
 bitsToChunksOf10 =
     \bits ->
@@ -464,54 +466,6 @@ bitsToChunksOf10 =
 
             bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: bit8 :: bit9 :: bit10Up ->
                 Toop.T10 bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9 :: bitsToChunksOf10 bit10Up
-
-
-toReadableWordsString : List Bit -> String
-toReadableWordsString =
-    \bits ->
-        bits
-            |> toReadableWords
-            |> String.join " "
-
-
-toColor : Toop.T6 Bit Bit Bit Bit Bit Bit -> Color
-toColor =
-    \(Toop.T6 bit0 bit1 bit2 bit3 bit4 bit5) ->
-        let
-            component componentBit0 componentBit1 =
-                (1 / 8)
-                    + ([ componentBit0, componentBit1 ]
-                        |> Bits.toIntUnsigned
-                        |> Basics.toFloat
-                      )
-                    / 4
-        in
-        Color.rgb
-            (component bit0 bit1)
-            (component bit2 bit3)
-            (component bit4 bit5)
-
-
-toShape : Toop.T3 Bit Bit Bit -> Collage.Shape
-toShape =
-    \bits ->
-        case bits of
-            Toop.T3 Bit.O Bit.O Bit.O ->
-                Collage.circle 1
-
-            Toop.T3 Bit.O Bit.O Bit.I ->
-                Collage.rectangle 0.5 1.5
-
-            Toop.T3 Bit.O Bit.I Bit.O ->
-                Collage.rectangle 1.5 0.5
-
-            Toop.T3 b0 b1 b2 ->
-                {- 3 to 8 -}
-                Collage.ngon
-                    ([ b0, b1, b2 ]
-                        |> Bits.toIntUnsigned
-                    )
-                    1
 
 
 type ShapeAppearance
@@ -566,10 +520,6 @@ toRecognizableCollage =
             |> Collage.Layout.stack
 
 
-
--- ↓ these could e.g. be code-generated
-
-
 toCollage : Toop.T11 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit -> Collage event_
 toCollage =
     \(Toop.T11 bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9 bit10) ->
@@ -584,6 +534,50 @@ toCollage =
                         |> toColor
                         |> Collage.uniform
                 }
+
+
+toShape : Toop.T3 Bit Bit Bit -> Collage.Shape
+toShape =
+    \bits ->
+        case bits of
+            Toop.T3 Bit.O Bit.O Bit.O ->
+                Collage.circle 1
+
+            Toop.T3 Bit.O Bit.O Bit.I ->
+                Collage.rectangle 0.5 1.5
+
+            Toop.T3 Bit.O Bit.I Bit.O ->
+                Collage.rectangle 1.5 0.5
+
+            Toop.T3 b0 b1 b2 ->
+                {- 3 to 8 -}
+                Collage.ngon
+                    ([ b0, b1, b2 ]
+                        |> Bits.toIntUnsigned
+                    )
+                    1
+
+
+
+-- ↓ these could e.g. be code-generated
+
+
+toColor : Toop.T6 Bit Bit Bit Bit Bit Bit -> Color
+toColor =
+    \(Toop.T6 bit0 bit1 bit2 bit3 bit4 bit5) ->
+        let
+            component componentBit0 componentBit1 =
+                (1 / 8)
+                    + ([ componentBit0, componentBit1 ]
+                        |> Bits.toIntUnsigned
+                        |> Basics.toFloat
+                      )
+                    / 4
+        in
+        Color.rgb
+            (component bit0 bit1)
+            (component bit2 bit3)
+            (component bit4 bit5)
 
 
 shapeAppearing :
