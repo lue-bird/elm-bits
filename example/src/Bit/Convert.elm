@@ -1,16 +1,16 @@
 module Bit.Convert exposing (fromChar, toChar)
 
-import Bit exposing (Bit(..))
+import Bit exposing (Bit)
 
 
 toChar : Bit -> Char
 toChar =
     \bit ->
         case bit of
-            O ->
+            Bit.O ->
                 '0'
 
-            I ->
+            Bit.I ->
                 '1'
 
 
@@ -19,10 +19,10 @@ fromChar =
     \char ->
         case char of
             '0' ->
-                O |> Ok
+                Bit.O |> Ok
 
             '1' ->
-                I |> Ok
+                Bit.I |> Ok
 
             non01 ->
                 non01 |> Err

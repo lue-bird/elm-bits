@@ -5,6 +5,7 @@ module Bits.Convert exposing
     , toColor
     , toHexChar
     , toHexString
+    , toProquintSequence
     , toReadableWord
     , toReadableWords
     , toReadableWordsString
@@ -16,33 +17,60 @@ module Bits.Convert exposing
 {-| Ideas on how to represent `Bit`s
 -}
 
-import Array
-import ArraySized exposing (ArraySized)
-import Bit as Bit exposing (Bit(..))
+import Bit exposing (Bit)
 import Bit.Convert
-import BitArray as Bits
+import Bits
 import Collage exposing (Collage)
 import Collage.Layout
 import Color exposing (Color)
-import Linear exposing (Direction(..))
-import N exposing (Add1, Exactly, In, N10, N11, N2, N3, N4, N5, N6, On, To, Up, Up0, Up10, Up11, Up3, Up4, n0, n1, n10, n11, n16, n2, n3, n4, n5, n6)
-import N.Local exposing (n32)
+import List
+import Proquint
 import Toop
-import Typed exposing (untag)
 
 
 {-| Convert to a string: `O`s are shown as `0`, `1`s as `I`s.
 
-    as01String (ArraySized.l4 I O I O)
+    as01String (List.l4 I O I O)
     --> "1010"
 
 -}
-to01String : ArraySized Bit (In min_ max_) -> String
+to01String : List Bit -> String
 to01String =
     \bits ->
         bits
-            |> ArraySized.map Bit.Convert.toChar
-            |> ArraySized.toString
+            |> List.map Bit.Convert.toChar
+            |> String.fromList
+
+
+listToChunksOf : Int -> (List element -> List (List element))
+listToChunksOf chunkLength listToChunk =
+    let
+        toChunksUp :
+            List element
+            -> { chunks : List (List element), remainder : List element }
+        toChunksUp list =
+            if (list |> List.length) >= chunkLength then
+                let
+                    after : { chunks : List (List element), remainder : List element }
+                    after =
+                        list
+                            |> List.drop chunkLength
+                            |> toChunksUp
+                in
+                { chunks =
+                    (list |> List.take chunkLength)
+                        :: after.chunks
+                , remainder = after.remainder
+                }
+
+            else
+                { chunks = [], remainder = list }
+
+        fullyChunked : { chunks : List (List element), remainder : List element }
+        fullyChunked =
+            listToChunk |> toChunksUp
+    in
+    fullyChunked.remainder :: fullyChunked.chunks
 
 
 {-| Convert a `List` of `Bit`s to a
@@ -54,388 +82,436 @@ to01String =
 `String` from unicode `Char`s.
 
 -}
-toUnicodeString :
-    ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_))
-    -> String
+toUnicodeString : List Bit -> String
 toUnicodeString =
     \bits ->
-        let
-            n20 =
-                n16 |> N.add n4
-        in
         bits
-            |> Bits.toChunksOf n20
-            |> ArraySized.map
-                (ArraySized.maxTo n20
-                    >> Bits.toN
-                    >> N.toInt
-                    >> Char.fromCode
+            |> listToChunksOf 20
+            |> List.map
+                (\bits20 ->
+                    bits20
+                        |> Bits.toIntUnsigned
+                        |> Char.fromCode
                 )
-            |> ArraySized.toString
+            |> String.fromList
+
+
+toProquintSequence : List Bit -> String
+toProquintSequence =
+    \bits ->
+        bits
+            |> listToChunksOf 32
+            |> List.map
+                (\chunk ->
+                    case chunk |> Bits.toIntUnsigned |> Proquint.fromInt of
+                        Nothing ->
+                            "ERROR using Proquint.fromInt"
+
+                        Just proquint ->
+                            proquint |> Proquint.toString
+                )
+            |> String.join ", "
 
 
 {-| Four bits represented as a hex `Char` (0-9 then a-f)
 -}
-toHexChar : ArraySized Bit (In (On N4) (Up maxTo4_ To N4)) -> Char
+toHexChar : Toop.T4 Bit Bit Bit Bit -> Char
 toHexChar =
     \bits ->
-        case bits |> ArraySized.to4 of
-            Toop.T4 O O O O ->
+        case bits of
+            Toop.T4 Bit.O Bit.O Bit.O Bit.O ->
                 '0'
 
-            Toop.T4 O O O I ->
+            Toop.T4 Bit.O Bit.O Bit.O Bit.I ->
                 '1'
 
-            Toop.T4 O O I O ->
+            Toop.T4 Bit.O Bit.O Bit.I Bit.O ->
                 '2'
 
-            Toop.T4 O O I I ->
+            Toop.T4 Bit.O Bit.O Bit.I Bit.I ->
                 '3'
 
-            Toop.T4 O I O O ->
+            Toop.T4 Bit.O Bit.I Bit.O Bit.O ->
                 '4'
 
-            Toop.T4 O I O I ->
+            Toop.T4 Bit.O Bit.I Bit.O Bit.I ->
                 '5'
 
-            Toop.T4 O I I O ->
+            Toop.T4 Bit.O Bit.I Bit.I Bit.O ->
                 '6'
 
-            Toop.T4 O I I I ->
+            Toop.T4 Bit.O Bit.I Bit.I Bit.I ->
                 '7'
 
-            Toop.T4 I O O O ->
+            Toop.T4 Bit.I Bit.O Bit.O Bit.O ->
                 '8'
 
-            Toop.T4 I O O I ->
+            Toop.T4 Bit.I Bit.O Bit.O Bit.I ->
                 '9'
 
-            Toop.T4 I O I O ->
+            Toop.T4 Bit.I Bit.O Bit.I Bit.O ->
                 'a'
 
-            Toop.T4 I O I I ->
+            Toop.T4 Bit.I Bit.O Bit.I Bit.I ->
                 'b'
 
-            Toop.T4 I I O O ->
+            Toop.T4 Bit.I Bit.I Bit.O Bit.O ->
                 'c'
 
-            Toop.T4 I I O I ->
+            Toop.T4 Bit.I Bit.I Bit.O Bit.I ->
                 'd'
 
-            Toop.T4 I I I O ->
+            Toop.T4 Bit.I Bit.I Bit.I Bit.O ->
                 'e'
 
-            Toop.T4 I I I I ->
+            Toop.T4 Bit.I Bit.I Bit.I Bit.I ->
                 'f'
 
 
-toHexString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
+toHexString : List Bit -> String
 toHexString =
     \bits ->
-        bits
-            |> Bits.toChunksOf n4
-            |> ArraySized.map toHexChar
-            |> ArraySized.toString
+        bits |> bitsToChunksOf4 |> List.map toHexChar |> String.fromList
 
 
-to09avChar : ArraySized Bit (In (On N5) (Up maxTo5_ To N5)) -> Char
-to09avChar =
+bitsToChunksOf4 : List Bit -> List (Toop.T4 Bit Bit Bit Bit)
+bitsToChunksOf4 =
     \bits ->
-        case bits |> ArraySized.element ( Up, n1 ) of
-            O ->
-                bits
-                    |> ArraySized.take Down { atLeast = n4 } n4
-                    |> toHexChar
+        case bits of
+            [] ->
+                []
 
-            I ->
-                case bits |> ArraySized.take Down { atLeast = n4 } n4 |> ArraySized.to4 of
-                    Toop.T4 O O O O ->
+            bit0 :: [] ->
+                List.singleton (Toop.T4 Bit.O Bit.O Bit.O bit0)
+
+            bit0 :: bit1 :: [] ->
+                List.singleton (Toop.T4 Bit.O Bit.O bit0 bit1)
+
+            bit0 :: bit1 :: bit2 :: [] ->
+                List.singleton (Toop.T4 Bit.O bit0 bit1 bit2)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4Up ->
+                Toop.T4 bit0 bit1 bit2 bit3 :: bitsToChunksOf4 bit4Up
+
+
+to09avChar : Toop.T5 Bit Bit Bit Bit Bit -> Char
+to09avChar =
+    \(Toop.T5 bit0 bit1 bit2 bit3 bit4) ->
+        case bit0 of
+            Bit.O ->
+                Toop.T4 bit1 bit2 bit3 bit4 |> toHexChar
+
+            Bit.I ->
+                case Toop.T4 bit1 bit2 bit3 bit4 of
+                    Toop.T4 Bit.O Bit.O Bit.O Bit.O ->
                         'g'
 
-                    Toop.T4 O O O I ->
+                    Toop.T4 Bit.O Bit.O Bit.O Bit.I ->
                         'h'
 
-                    Toop.T4 O O I O ->
+                    Toop.T4 Bit.O Bit.O Bit.I Bit.O ->
                         'i'
 
-                    Toop.T4 O O I I ->
+                    Toop.T4 Bit.O Bit.O Bit.I Bit.I ->
                         'j'
 
-                    Toop.T4 O I O O ->
+                    Toop.T4 Bit.O Bit.I Bit.O Bit.O ->
                         'k'
 
-                    Toop.T4 O I O I ->
+                    Toop.T4 Bit.O Bit.I Bit.O Bit.I ->
                         'l'
 
-                    Toop.T4 O I I O ->
+                    Toop.T4 Bit.O Bit.I Bit.I Bit.O ->
                         'm'
 
-                    Toop.T4 O I I I ->
+                    Toop.T4 Bit.O Bit.I Bit.I Bit.I ->
                         'n'
 
-                    Toop.T4 I O O O ->
+                    Toop.T4 Bit.I Bit.O Bit.O Bit.O ->
                         'o'
 
-                    Toop.T4 I O O I ->
+                    Toop.T4 Bit.I Bit.O Bit.O Bit.I ->
                         'p'
 
-                    Toop.T4 I O I O ->
+                    Toop.T4 Bit.I Bit.O Bit.I Bit.O ->
                         'q'
 
-                    Toop.T4 I O I I ->
+                    Toop.T4 Bit.I Bit.O Bit.I Bit.I ->
                         'r'
 
-                    Toop.T4 I I O O ->
+                    Toop.T4 Bit.I Bit.I Bit.O Bit.O ->
                         's'
 
-                    Toop.T4 I I O I ->
+                    Toop.T4 Bit.I Bit.I Bit.O Bit.I ->
                         't'
 
-                    Toop.T4 I I I O ->
+                    Toop.T4 Bit.I Bit.I Bit.I Bit.O ->
                         'u'
 
-                    Toop.T4 I I I I ->
+                    Toop.T4 Bit.I Bit.I Bit.I Bit.I ->
                         'v'
 
 
-to09avString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
+to09avString : List Bit -> String
 to09avString =
     \bits ->
         bits
-            |> Bits.toChunksOf n5
-            |> ArraySized.map to09avChar
-            |> ArraySized.toString
+            |> bitsToChunksOf5
+            |> List.map to09avChar
+            |> String.fromList
 
 
-{-| Four bits represented in a `Char` of multiple uniquely identifiable symbols
--}
-asFirstLetterInWord : ArraySized Bit (In (On N4) (Up maxTo4_ To N4)) -> Char
-asFirstLetterInWord =
+bitsToChunksOf5 : List Bit -> List (Toop.T5 Bit Bit Bit Bit Bit)
+bitsToChunksOf5 =
     \bits ->
-        case bits |> ArraySized.to4 of
-            Toop.T4 O O O O ->
-                'b'
+        case bits of
+            [] ->
+                []
 
-            Toop.T4 O O O I ->
-                'd'
+            bit0 :: [] ->
+                List.singleton (Toop.T5 Bit.O Bit.O Bit.O Bit.O bit0)
 
-            Toop.T4 O O I O ->
-                'f'
+            bit0 :: bit1 :: [] ->
+                List.singleton (Toop.T5 Bit.O Bit.O Bit.O bit0 bit1)
 
-            Toop.T4 O O I I ->
-                'g'
+            bit0 :: bit1 :: bit2 :: [] ->
+                List.singleton (Toop.T5 Bit.O Bit.O bit0 bit1 bit2)
 
-            Toop.T4 O I O O ->
-                'h'
+            bit0 :: bit1 :: bit2 :: bit3 :: [] ->
+                List.singleton (Toop.T5 Bit.O bit0 bit1 bit2 bit3)
 
-            Toop.T4 O I O I ->
-                'k'
-
-            Toop.T4 O I I O ->
-                'l'
-
-            Toop.T4 O I I I ->
-                'm'
-
-            Toop.T4 I O O O ->
-                'n'
-
-            Toop.T4 I O O I ->
-                'p'
-
-            Toop.T4 I O I O ->
-                'r'
-
-            Toop.T4 I O I I ->
-                's'
-
-            Toop.T4 I I O O ->
-                't'
-
-            Toop.T4 I I O I ->
-                'w'
-
-            Toop.T4 I I I O ->
-                'x'
-
-            Toop.T4 I I I I ->
-                'y'
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5Up ->
+                Toop.T5 bit0 bit1 bit2 bit3 bit4 :: bitsToChunksOf5 bit5Up
 
 
-asThirdLetterInWord : ArraySized Bit (In (On N4) (Up maxTo4_ To N4)) -> Char
-asThirdLetterInWord =
-    \bits ->
-        case bits |> ArraySized.to4 of
-            Toop.T4 O O O O ->
-                'b'
-
-            Toop.T4 O O O I ->
-                'd'
-
-            Toop.T4 O O I O ->
-                'f'
-
-            Toop.T4 O O I I ->
-                'g'
-
-            Toop.T4 O I O O ->
-                'k'
-
-            Toop.T4 O I O I ->
-                'l'
-
-            Toop.T4 O I I O ->
-                'm'
-
-            Toop.T4 O I I I ->
-                'n'
-
-            Toop.T4 I O O O ->
-                'p'
-
-            Toop.T4 I O O I ->
-                'r'
-
-            Toop.T4 I O I O ->
-                's'
-
-            Toop.T4 I O I I ->
-                't'
-
-            Toop.T4 I I O O ->
-                'w'
-
-            Toop.T4 I I O I ->
-                'x'
-
-            Toop.T4 I I I O ->
-                'y'
-
-            Toop.T4 I I I I ->
-                ','
-
-
-asVocal : ArraySized Bit (In (On N2) (Up maxTo2_ To N2)) -> Char
-asVocal =
-    \bits ->
-        case bits |> ArraySized.to2 of
-            Toop.T2 O O ->
-                'a'
-
-            Toop.T2 O I ->
-                'i'
-
-            Toop.T2 I O ->
-                'o'
-
-            Toop.T2 I I ->
-                'u'
-
-
-toReadableWord : ArraySized Bit (In (On N10) (Up maxTo10_ To N10)) -> String
+toReadableWord : Toop.T10 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit -> String
 toReadableWord =
-    \bits ->
-        [ bits
-            |> ArraySized.take Up { atLeast = n4 } n4
+    \(Toop.T10 bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9) ->
+        [ Toop.T4 bit0 bit1 bit2 bit3
             |> asFirstLetterInWord
-        , ArraySized.l2
-            (bits |> ArraySized.element ( Up, n4 ))
-            (bits |> ArraySized.element ( Up, n5 ))
+        , Toop.T2 bit4 bit5
             |> asVocal
-        , bits
-            |> ArraySized.take Down { atLeast = n4 } n4
+        , Toop.T4 bit6 bit7 bit8 bit9
             |> asThirdLetterInWord
         ]
             |> String.fromList
 
 
-toReadableWords :
-    ArraySized Bit (In (On min_) (Up maxX To maxPlusX))
-    -> ArraySized String (In (Up0 minX_) (Up maxX To maxPlusX))
+{-| Four bits represented in a `Char` of multiple uniquely identifiable symbols
+-}
+asFirstLetterInWord : Toop.T4 Bit Bit Bit Bit -> Char
+asFirstLetterInWord =
+    \bits ->
+        case bits of
+            Toop.T4 Bit.O Bit.O Bit.O Bit.O ->
+                'b'
+
+            Toop.T4 Bit.O Bit.O Bit.O Bit.I ->
+                'd'
+
+            Toop.T4 Bit.O Bit.O Bit.I Bit.O ->
+                'f'
+
+            Toop.T4 Bit.O Bit.O Bit.I Bit.I ->
+                'g'
+
+            Toop.T4 Bit.O Bit.I Bit.O Bit.O ->
+                'h'
+
+            Toop.T4 Bit.O Bit.I Bit.O Bit.I ->
+                'k'
+
+            Toop.T4 Bit.O Bit.I Bit.I Bit.O ->
+                'l'
+
+            Toop.T4 Bit.O Bit.I Bit.I Bit.I ->
+                'm'
+
+            Toop.T4 Bit.I Bit.O Bit.O Bit.O ->
+                'n'
+
+            Toop.T4 Bit.I Bit.O Bit.O Bit.I ->
+                'p'
+
+            Toop.T4 Bit.I Bit.O Bit.I Bit.O ->
+                'r'
+
+            Toop.T4 Bit.I Bit.O Bit.I Bit.I ->
+                's'
+
+            Toop.T4 Bit.I Bit.I Bit.O Bit.O ->
+                't'
+
+            Toop.T4 Bit.I Bit.I Bit.O Bit.I ->
+                'w'
+
+            Toop.T4 Bit.I Bit.I Bit.I Bit.O ->
+                'x'
+
+            Toop.T4 Bit.I Bit.I Bit.I Bit.I ->
+                'y'
+
+
+asThirdLetterInWord : Toop.T4 Bit Bit Bit Bit -> Char
+asThirdLetterInWord bits =
+    case bits of
+        Toop.T4 Bit.O Bit.O Bit.O Bit.O ->
+            'b'
+
+        Toop.T4 Bit.O Bit.O Bit.O Bit.I ->
+            'd'
+
+        Toop.T4 Bit.O Bit.O Bit.I Bit.O ->
+            'f'
+
+        Toop.T4 Bit.O Bit.O Bit.I Bit.I ->
+            'g'
+
+        Toop.T4 Bit.O Bit.I Bit.O Bit.O ->
+            'k'
+
+        Toop.T4 Bit.O Bit.I Bit.O Bit.I ->
+            'l'
+
+        Toop.T4 Bit.O Bit.I Bit.I Bit.O ->
+            'm'
+
+        Toop.T4 Bit.O Bit.I Bit.I Bit.I ->
+            'n'
+
+        Toop.T4 Bit.I Bit.O Bit.O Bit.O ->
+            'p'
+
+        Toop.T4 Bit.I Bit.O Bit.O Bit.I ->
+            'r'
+
+        Toop.T4 Bit.I Bit.O Bit.I Bit.O ->
+            's'
+
+        Toop.T4 Bit.I Bit.O Bit.I Bit.I ->
+            't'
+
+        Toop.T4 Bit.I Bit.I Bit.O Bit.O ->
+            'w'
+
+        Toop.T4 Bit.I Bit.I Bit.O Bit.I ->
+            'x'
+
+        Toop.T4 Bit.I Bit.I Bit.I Bit.O ->
+            'y'
+
+        Toop.T4 Bit.I Bit.I Bit.I Bit.I ->
+            ','
+
+
+asVocal : Toop.T2 Bit Bit -> Char
+asVocal bits =
+    case bits of
+        Toop.T2 Bit.O Bit.O ->
+            'a'
+
+        Toop.T2 Bit.O Bit.I ->
+            'i'
+
+        Toop.T2 Bit.I Bit.O ->
+            'o'
+
+        Toop.T2 Bit.I Bit.I ->
+            'u'
+
+
+toReadableWords : List Bit -> List String
 toReadableWords =
     \bits ->
         bits
-            |> Bits.toChunksOf n10
-            |> ArraySized.map toReadableWord
+            |> bitsToChunksOf10
+            |> List.map toReadableWord
 
 
-toReadableWordsString : ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_)) -> String
+bitsToChunksOf10 : List Bit -> List (Toop.T10 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit)
+bitsToChunksOf10 =
+    \bits ->
+        case bits of
+            [] ->
+                []
+
+            bit0 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0)
+
+            bit0 :: bit1 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1)
+
+            bit0 :: bit1 :: bit2 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: [] ->
+                List.singleton (Toop.T10 Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: bit8 :: [] ->
+                List.singleton (Toop.T10 Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: bit8 :: bit9 :: bit10Up ->
+                Toop.T10 bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9 :: bitsToChunksOf10 bit10Up
+
+
+toReadableWordsString : List Bit -> String
 toReadableWordsString =
     \bits ->
         bits
             |> toReadableWords
-            |> ArraySized.toList
             |> String.join " "
 
 
-toColor : ArraySized Bit (In (On N6) (Up maxTo6_ To N6)) -> Color
+toColor : Toop.T6 Bit Bit Bit Bit Bit Bit -> Color
 toColor =
-    \bits ->
+    \(Toop.T6 bit0 bit1 bit2 bit3 bit4 bit5) ->
         let
-            component componentBits =
+            component componentBit0 componentBit1 =
                 (1 / 8)
-                    + (componentBits
-                        |> Bits.toN
-                        |> N.toFloat
+                    + ([ componentBit0, componentBit1 ]
+                        |> Bits.toIntUnsigned
+                        |> Basics.toFloat
                       )
                     / 4
         in
         Color.rgb
-            (bits
-                |> ArraySized.take Up { atLeast = n2 } n2
-                |> component
-            )
-            (ArraySized.l2 (bits |> ArraySized.element ( Up, n2 ))
-                (bits |> ArraySized.element ( Up, n3 ))
-                |> component
-            )
-            (bits
-                |> ArraySized.take Down { atLeast = n2 } n2
-                |> component
-            )
+            (component bit0 bit1)
+            (component bit2 bit3)
+            (component bit4 bit5)
 
 
-toShape : ArraySized Bit (In (On N3) (Up maxTo3_ To N3)) -> Collage.Shape
+toShape : Toop.T3 Bit Bit Bit -> Collage.Shape
 toShape =
     \bits ->
-        case bits |> ArraySized.to3 of
-            Toop.T3 O O O ->
+        case bits of
+            Toop.T3 Bit.O Bit.O Bit.O ->
                 Collage.circle 1
 
-            Toop.T3 O O I ->
+            Toop.T3 Bit.O Bit.O Bit.I ->
                 Collage.rectangle 0.5 1.5
 
-            Toop.T3 O I O ->
+            Toop.T3 Bit.O Bit.I Bit.O ->
                 Collage.rectangle 1.5 0.5
 
             Toop.T3 b0 b1 b2 ->
                 {- 3 to 8 -}
                 Collage.ngon
-                    (ArraySized.l3 b0 b1 b2
-                        |> Bits.toN
-                        |> N.toInt
+                    ([ b0, b1, b2 ]
+                        |> Bits.toIntUnsigned
                     )
                     1
-
-
-toCollage : ArraySized Bit (In (On N11) (Up maxTo11_ To N11)) -> Collage msg
-toCollage =
-    \bits ->
-        bits
-            |> ArraySized.take Up { atLeast = n3 } n3
-            |> toShape
-            |> shapeAppearing
-                { appearance =
-                    bits
-                        |> ArraySized.drop Up n3
-                        |> ArraySized.take Up { atLeast = n2 } n2
-                        |> shapeAppearance
-                , fillStyle =
-                    bits
-                        |> ArraySized.take Down { atLeast = n6 } n6
-                        |> toColor
-                        |> Collage.uniform
-                }
 
 
 type ShapeAppearance
@@ -445,9 +521,74 @@ type ShapeAppearance
     | OutlinedDot
 
 
+toRecognizableCollage :
+    List Bit
+    -> Collage event_
+toRecognizableCollage =
+    \bits ->
+        let
+            collages : List (Collage event_)
+            collages =
+                bits
+                    |> bitsToChunksOf11
+                    |> List.map toCollage
+        in
+        collages
+            |> List.indexedMap
+                (\i collage ->
+                    let
+                        collageCount : Int
+                        collageCount =
+                            collages |> List.length
+
+                        part : Float
+                        part =
+                            (i |> Basics.toFloat) / (collageCount |> Basics.toFloat)
+
+                        rotation : Float
+                        rotation =
+                            turns part
+
+                        scale : Float
+                        scale =
+                            50 / ((collageCount |> Basics.toFloat) ^ 0.8)
+
+                        radius : Float
+                        radius =
+                            16
+                    in
+                    collage
+                        |> Collage.shiftX (radius * cos rotation)
+                        |> Collage.shiftY (radius * sin rotation)
+                        |> Collage.rotate rotation
+                        |> Collage.scale scale
+                )
+            |> Collage.Layout.stack
+
+
+
+-- ↓ these could e.g. be code-generated
+
+
+toCollage : Toop.T11 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit -> Collage event_
+toCollage =
+    \(Toop.T11 bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9 bit10) ->
+        Toop.T3 bit0 bit1 bit2
+            |> toShape
+            |> shapeAppearing
+                { appearance =
+                    Toop.T2 bit3 bit4
+                        |> shapeAppearance
+                , fillStyle =
+                    Toop.T6 bit5 bit6 bit7 bit8 bit9 bit10
+                        |> toColor
+                        |> Collage.uniform
+                }
+
+
 shapeAppearing :
     { appearance : ShapeAppearance, fillStyle : Collage.FillStyle }
-    -> (Collage.Shape -> Collage msg)
+    -> (Collage.Shape -> Collage event_)
 shapeAppearing { appearance, fillStyle } =
     case appearance of
         Filled ->
@@ -463,61 +604,58 @@ shapeAppearing { appearance, fillStyle } =
             Collage.outlined (Collage.dot 0.5 fillStyle)
 
 
-shapeAppearance :
-    ArraySized Bit (In (On N2) (Up maxTo2_ To N2))
-    -> ShapeAppearance
-shapeAppearance =
+shapeAppearance : Toop.T2 Bit Bit -> ShapeAppearance
+shapeAppearance bits =
+    case bits of
+        Toop.T2 Bit.O Bit.O ->
+            Filled
+
+        Toop.T2 Bit.O Bit.I ->
+            OutlinedSolid
+
+        Toop.T2 Bit.I Bit.O ->
+            OutlinedDash
+
+        Toop.T2 Bit.I Bit.I ->
+            OutlinedDot
+
+
+bitsToChunksOf11 : List Bit -> List (Toop.T11 Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit Bit)
+bitsToChunksOf11 =
     \bits ->
-        case bits |> ArraySized.to2 of
-            Toop.T2 O O ->
-                Filled
+        case bits of
+            [] ->
+                []
 
-            Toop.T2 O I ->
-                OutlinedSolid
+            bit0 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0)
 
-            Toop.T2 I O ->
-                OutlinedDash
+            bit0 :: bit1 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1)
 
-            Toop.T2 I I ->
-                OutlinedDot
+            bit0 :: bit1 :: bit2 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2)
 
+            bit0 :: bit1 :: bit2 :: bit3 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3)
 
-toRecognizableCollage :
-    ArraySized Bit (In (On min_) (Up maxX_ To maxPlusX_))
-    -> Collage msg_
-toRecognizableCollage =
-    \bits ->
-        let
-            collages =
-                bits
-                    |> Bits.toChunksOf n11
-                    |> ArraySized.map toCollage
-                    |> ArraySized.toArray
-                    |> Array.toList
-        in
-        collages
-            |> List.indexedMap
-                (\i collage ->
-                    let
-                        collageCount =
-                            List.length collages
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4)
 
-                        part =
-                            toFloat i / toFloat collageCount
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5)
 
-                        rotation =
-                            turns part
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6)
 
-                        scale =
-                            50 / (toFloat collageCount ^ 0.8)
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7)
 
-                        radius =
-                            16
-                    in
-                    collage
-                        |> Collage.shiftX (radius * cos rotation)
-                        |> Collage.shiftY (radius * sin rotation)
-                        |> Collage.rotate rotation
-                        |> Collage.scale scale
-                )
-            |> Collage.Layout.stack
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: bit8 :: [] ->
+                List.singleton (Toop.T11 Bit.O Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: bit8 :: bit9 :: [] ->
+                List.singleton (Toop.T11 Bit.O bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9)
+
+            bit0 :: bit1 :: bit2 :: bit3 :: bit4 :: bit5 :: bit6 :: bit7 :: bit8 :: bit9 :: bit10 :: bit11Up ->
+                Toop.T11 bit0 bit1 bit2 bit3 bit4 bit5 bit6 bit7 bit8 bit9 bit10 :: bitsToChunksOf11 bit11Up
