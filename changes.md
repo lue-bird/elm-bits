@@ -2,7 +2,7 @@
 
 ## 10.0.0
 
-  - replace `Bits` by `Bits` operating on `List Bit` keeping only `fromIntSigned`, `toIntSigned` and replacing `fromN`/`toN` by `fromIntUnsigned`/`toIntUnsigned`
+  - replace `BitArray` by `Bits` operating on `List Bit`
   - `Bit.fuzz`, `Bit.random`, `Bit.toN`, `Bit.fromN` remove
   - all dependencies remove
 
