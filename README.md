@@ -60,7 +60,7 @@ type MyId
 Notice how extracting information is easy and to creating a new id can be done safely (without e.g. requiring going through decoders, parsers, validations, opaque random generators etc.).
 
 🧩 `Vector60` is from [Chadtech/elm-vector](https://dark.elm.dmy.fr/packages/Chadtech/elm-vector/latest)
-but anything will do the job, like custom codegen or [lue-bird/elm-typesafe-array](https://dark.elm.dmy.fr/packages/lue-bird/elm-typesafe-array/latest/).
+but anything will do the job, like a record, custom codegen or [lue-bird/elm-typesafe-array](https://dark.elm.dmy.fr/packages/lue-bird/elm-typesafe-array/latest/).
 Hell even if you just use an opaque `List Bit` you'll still have it easier than with a `String`.
 
 ## conversions

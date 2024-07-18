@@ -30,13 +30,12 @@ You can also use all the operations that work on `List`, for example
 -}
 
 import Bit exposing (Bit)
-import Bitwise
 import Bytes exposing (Bytes)
 import Bytes.Decode
 
 
 {-| Convert the unsigned `Int`
-to a given number of bits (`<= 32`).
+to a given number of bits.
 
     import Bit exposing (Bit(..))
     import Bits
@@ -44,51 +43,31 @@ to a given number of bits (`<= 32`).
     14 |> Bits.fromIntUnsigned 4
     --> [ I, I, I, O ]
 
-The `Int` is always clamped to `<= 2 ^ bitCount - 1`
-
-    import Bits
-
-    (2 ^ 53 - 1)
-        |> Bits.fromIntUnsigned 32
-        |> Bits.toIntUnsigned
-    --> 2 ^ 32 - 1
-
 -}
 fromIntUnsigned : Int -> (Int -> List Bit)
 fromIntUnsigned bitCount intUnsigned =
-    if intUnsigned |> intUnsignedHasAtMostBits bitCount then
-        List.range 0 (bitCount - 1)
-            |> List.reverse
-            |> List.map
-                (\bitIndex -> intUnsigned |> intUnsignedBitAt bitIndex)
+    fromIntUnsignedOnto [] bitCount intUnsigned
+
+
+fromIntUnsignedOnto : List Bit -> Int -> (Int -> List Bit)
+fromIntUnsignedOnto soFar bitCount intUnsigned =
+    if bitCount <= 0 then
+        soFar
 
     else
-        List.repeat bitCount Bit.I
+        fromIntUnsignedOnto
+            ((case Basics.remainderBy 2 intUnsigned of
+                0 ->
+                    Bit.O
 
-
-intUnsignedHasAtMostBits : Int -> (Int -> Bool)
-intUnsignedHasAtMostBits maximumBitCount =
-    \intUnsigned ->
-        intUnsigned < 2 * (2 ^ maximumBitCount)
-
-
-intUnsignedBitAt : Int -> (Int -> Bit)
-intUnsignedBitAt indexFrom0 =
-    \intUnsigned ->
-        (intUnsigned |> Bitwise.shiftRightBy indexFrom0)
-            |> bitFromRemainderBy2
-
-
-bitFromRemainderBy2 : Int -> Bit
-bitFromRemainderBy2 =
-    \int ->
-        case int |> Basics.remainderBy 2 of
-            0 ->
-                Bit.O
-
-            -- 1
-            _ ->
-                Bit.I
+                -- 1
+                _ ->
+                    Bit.I
+             )
+                :: soFar
+            )
+            (bitCount - 1)
+            (intUnsigned // 2)
 
 
 {-| Convert ≤ 32 bits into a natural `Int` ≥ 0
@@ -103,25 +82,30 @@ bitFromRemainderBy2 =
 -}
 toIntUnsigned : List Bit -> Int
 toIntUnsigned =
-    \bits ->
-        bits
-            |> List.foldr
-                (\bit soFar ->
-                    { power = soFar.power + 1
-                    , total =
-                        case bit of
-                            Bit.O ->
-                                soFar.total
+    \bits -> toIntUnsignedOnto 0 bits
 
-                            Bit.I ->
-                                soFar.total + (2 ^ soFar.power)
-                    }
+
+toIntUnsignedOnto : Int -> List Bit -> Int
+toIntUnsignedOnto soFar bits =
+    case bits of
+        [] ->
+            soFar
+
+        headBit :: tailBits ->
+            toIntUnsignedOnto
+                ((soFar * 2)
+                    + (case headBit of
+                        Bit.O ->
+                            0
+
+                        Bit.I ->
+                            1
+                      )
                 )
-                { power = 0, total = 0 }
-            |> .total
+                tailBits
 
 
-{-| Encode with a given bit size `n` (≤ 32)
+{-| Encode a signed `Int` with a given bit size `n`
 ranging from `-(2 ^ (n - 1))` to `2 ^ (n - 1) - 1`.
 For example, bit size 5 ranges from -16 to 15
 
@@ -149,7 +133,7 @@ fromIntSigned bitSizeAvailable intSigned =
 
 
 {-| Create signed `Int` from a bit array's in 2's complement encoding
-using its length (≤ 32) as the `Int`'s bit count.
+using its length as the `Int`'s bit count.
 
 So given bit count `n`,
 decodes in the range `-(2 ^ (n - 1))` → `2 ^ (n - 1) - 1`.
@@ -197,12 +181,13 @@ fromBytes : Bytes -> List Bit
 fromBytes =
     \bytes ->
         bytes
-            |> Bytes.Decode.decode (byteList (bytes |> Bytes.width))
+            |> Bytes.Decode.decode
+                (bitListBytesDecoderOfByteWidth (bytes |> Bytes.width))
             |> Maybe.withDefault []
 
 
-byteList : Int -> Bytes.Decode.Decoder (List Bit)
-byteList length =
+bitListBytesDecoderOfByteWidth : Int -> Bytes.Decode.Decoder (List Bit)
+bitListBytesDecoderOfByteWidth length =
     Bytes.Decode.loop { byteCountLeft = length, reverse = [] }
         (\state ->
             if state.byteCountLeft <= 0 then

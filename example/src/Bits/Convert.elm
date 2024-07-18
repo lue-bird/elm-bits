@@ -38,20 +38,20 @@ to01String =
 
 listToChunksOf : Int -> List a -> List (List a)
 listToChunksOf chunkSize list =
-    case list of
-        [] ->
-            []
-
-        head :: tail ->
-            listToChunksOfReverseOnto [] chunkSize (head :: tail)
-                |> List.reverse
+    listToChunksOfReverseOnto [] chunkSize list
+        |> List.reverse
 
 
 listToChunksOfReverseOnto : List (List a) -> Int -> List a -> List (List a)
 listToChunksOfReverseOnto soFar chunkSize list =
     case List.drop chunkSize list of
         [] ->
-            list :: soFar
+            case list of
+                [] ->
+                    soFar
+
+                head :: tail ->
+                    (head :: tail) :: soFar
 
         remainingAfterChunkHead :: remainingAfterChunkTail ->
             listToChunksOfReverseOnto (List.take chunkSize list :: soFar)
