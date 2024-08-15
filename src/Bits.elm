@@ -262,7 +262,7 @@ from a list of individual bits.
 From there it's easy to convert to e.g. [`Bytes`](https://dark.elm.dmy.fr/packages/elm/bytes/latest/)
 using `List.map Bytes.Encode.unsignedInt16 |> Bytes.Encode.sequence`
 
-You should make sure in your code that, the given bits are a multiple of 8.
+You should make sure in your code that, the given bits are a multiple of 16.
 If there are remaining bits, `toIntUnsigned16s` treats your input as if it had enough 0s padded to the right.
 
 -}
@@ -301,7 +301,7 @@ from a list of individual bits.
 From there it's easy to convert to e.g. [`Bytes`](https://dark.elm.dmy.fr/packages/elm/bytes/latest/)
 using `List.map Bytes.Encode.unsignedInt32 |> Bytes.Encode.sequence`
 
-You should make sure in your code that, the given bits are a multiple of 8.
+You should make sure in your code that, the given bits are a multiple of 32.
 If there are remaining bits, `toIntUnsigned32s` treats your input as if it had enough 0s padded to the right.
 
 -}
