@@ -1,5 +1,10 @@
 # changes log
 
+#### 10.0.1
+
+  - correct padding behaviour of `Bits.toIntUnsignedNs` according to their documentation.
+    Thanks for reporting, [@miniBill](https://github.com/miniBill)!
+
 ## 10.0.0
 
   - replace `BitArray` by `Bits` operating on `List Bit`
