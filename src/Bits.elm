@@ -246,7 +246,7 @@ toIntUnsigned8sReverseOnto soFar bits =
                 bit8Up
 
         upTo7Bits ->
-            toIntUnsigned upTo7Bits :: soFar
+            toIntUnsigned (padRightToAtLeast 8 upTo7Bits) :: soFar
 
 
 {-| Convert to a list of `Int`s in range 0..65535
@@ -285,7 +285,7 @@ toIntUnsigned16sReverseOnto soFar bits =
                 bit16Up
 
         upTo15Bits ->
-            toIntUnsigned upTo15Bits :: soFar
+            toIntUnsigned (padRightToAtLeast 16 upTo15Bits) :: soFar
 
 
 {-| Convert to a list of `Int`s in range 0..4294967295
@@ -324,4 +324,9 @@ toIntUnsigned32sReverseOnto soFar bits =
                 bit32Up
 
         upTo31Bits ->
-            toIntUnsigned upTo31Bits :: soFar
+            toIntUnsigned (padRightToAtLeast 32 upTo31Bits) :: soFar
+
+
+padRightToAtLeast : Int -> List Bit -> List Bit
+padRightToAtLeast newMinimumLength list =
+    list ++ List.repeat (newMinimumLength - (list |> List.length)) Bit.O

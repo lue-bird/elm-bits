@@ -118,4 +118,52 @@ suite =
                     |> Bits.toIntUnsigned32s
                     |> Expect.equalLists ints
             )
+        , Test.fuzz
+            (Fuzz.intRange 0 20
+                |> Fuzz.map (\n -> n * 8 + 6)
+                |> Fuzz.andThen
+                    (\bitCount ->
+                        Fuzz.listOfLength bitCount
+                            (Fuzz.oneOfValues [ Bit.O, Bit.I ])
+                    )
+            )
+            "Bits.toIntUnsigned8s pads right"
+            (\bits ->
+                bits
+                    |> Bits.toIntUnsigned8s
+                    |> Expect.equalLists
+                        (bits ++ [ Bit.O, Bit.O ] |> Bits.toIntUnsigned8s)
+            )
+        , Test.fuzz
+            (Fuzz.intRange 0 20
+                |> Fuzz.map (\n -> n * 16 + 6)
+                |> Fuzz.andThen
+                    (\bitCount ->
+                        Fuzz.listOfLength bitCount
+                            (Fuzz.oneOfValues [ Bit.O, Bit.I ])
+                    )
+            )
+            "Bits.toIntUnsigned16s pads right"
+            (\bits ->
+                bits
+                    |> Bits.toIntUnsigned16s
+                    |> Expect.equalLists
+                        (bits ++ [ Bit.O, Bit.O ] |> Bits.toIntUnsigned16s)
+            )
+        , Test.fuzz
+            (Fuzz.intRange 0 20
+                |> Fuzz.map (\n -> n * 8 + 6)
+                |> Fuzz.andThen
+                    (\bitCount ->
+                        Fuzz.listOfLength bitCount
+                            (Fuzz.oneOfValues [ Bit.O, Bit.I ])
+                    )
+            )
+            "Bits.toIntUnsigned32s pads right"
+            (\bits ->
+                bits
+                    |> Bits.toIntUnsigned32s
+                    |> Expect.equalLists
+                        (bits ++ [ Bit.O, Bit.O ] |> Bits.toIntUnsigned32s)
+            )
         ]
