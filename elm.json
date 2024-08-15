@@ -3,7 +3,7 @@
     "name": "lue-bird/elm-bits",
     "summary": "0, 1 and bit lists of sizes that don't have to be multiples of 8",
     "license": "MIT",
-    "version": "10.0.0",
+    "version": "10.0.1",
     "exposed-modules": [
         "Bit",
         "Bits"
