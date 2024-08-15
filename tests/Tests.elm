@@ -152,7 +152,7 @@ suite =
             )
         , Test.fuzz
             (Fuzz.intRange 0 20
-                |> Fuzz.map (\n -> n * 8 + 6)
+                |> Fuzz.map (\n -> n * 32 + 6)
                 |> Fuzz.andThen
                     (\bitCount ->
                         Fuzz.listOfLength bitCount
