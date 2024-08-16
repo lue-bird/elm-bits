@@ -1,11 +1,11 @@
 module Bits exposing
-    ( fromIntUnsigned, fromIntSigned, fromBytes
+    ( fromIntUnsigned, fromIntSigned, fromBytes, toBytes
     , toIntUnsigned, toIntSigned, toIntUnsigned8s, toIntUnsigned16s, toIntUnsigned32s
     )
 
 {-| Convert from and to a `List` of [`Bit`](Bit#Bit)s
 
-@docs fromIntUnsigned, fromIntSigned, fromBytes
+@docs fromIntUnsigned, fromIntSigned, fromBytes, toBytes
 
 If you have a need for UTF-8 characters and Floats, feel free to [open an issue](https://github.com/lue-bird/elm-bits/issues/new) or PR.
 
@@ -32,6 +32,7 @@ You can also use all the operations that work on `List`, for example
 import Bit exposing (Bit)
 import Bytes exposing (Bytes)
 import Bytes.Decode
+import Bytes.Encode
 
 
 {-| Convert the unsigned `Int`
@@ -208,6 +209,20 @@ bitListBytesDecoderOfByteWidth length =
                 intUnsigned8List
                     |> List.concatMap (\unsignedInt8 -> unsignedInt8 |> fromIntUnsigned 8)
             )
+
+
+{-| Convert from a list of individual bits to [`Bytes`](https://dark.elm.dmy.fr/packages/elm/bytes/latest/).
+
+If the size of the input list is not a multiple of 8 this function will pad it to the right with 0s.
+
+-}
+toBytes : List Bit -> Bytes
+toBytes bits =
+    bits
+        |> toIntUnsigned8s
+        |> List.map Bytes.Encode.unsignedInt8
+        |> Bytes.Encode.sequence
+        |> Bytes.Encode.encode
 
 
 {-| Convert to a list of `Int`s in range 0..255
