@@ -1,5 +1,9 @@
 # changes log
 
+### 10.1.0
+
+  - add `Bits.toBytes`
+
 #### 10.0.1
 
   - correct padding behaviour of `Bits.toIntUnsignedNs` according to their documentation.
