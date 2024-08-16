@@ -2,7 +2,8 @@
 
 ### 10.1.0
 
-  - add `Bits.toBytes`
+  - add `Bits.toBytes`.
+    Thanks, [@miniBill](https://github.com/miniBill)!
 
 #### 10.0.1
 
