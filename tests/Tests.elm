@@ -2,6 +2,7 @@ module Tests exposing (suite)
 
 import Bit
 import Bits
+import Bytes.Encode
 import Expect
 import Fuzz
 import Test exposing (Test)
@@ -165,5 +166,42 @@ suite =
                     |> Bits.toIntUnsigned32s
                     |> Expect.equalLists
                         (bits ++ [ Bit.O, Bit.O ] |> Bits.toIntUnsigned32s)
+            )
+        , Test.fuzz
+            (Fuzz.intRange 0 (20 * 8)
+                |> Fuzz.andThen
+                    (\bitCount ->
+                        Fuzz.listOfLength bitCount
+                            (Fuzz.oneOfValues [ Bit.O, Bit.I ])
+                    )
+            )
+            "bits |> Bits.toBytes |> Bits.fromBytes == bits (padded right)"
+            (\bits ->
+                bits
+                    |> Bits.toBytes
+                    |> Bits.fromBytes
+                    |> Expect.equalLists
+                        (bits ++ List.repeat (modBy 8 -(List.length bits)) Bit.O)
+            )
+        , Test.fuzz
+            (Fuzz.intRange 0 20
+                |> Fuzz.andThen
+                    (\bitCount ->
+                        Fuzz.map Bytes.Encode.unsignedInt8 (Fuzz.intRange 0 255)
+                            |> Fuzz.listOfLength bitCount
+                            |> Fuzz.map
+                                (\bytes ->
+                                    bytes
+                                        |> Bytes.Encode.sequence
+                                        |> Bytes.Encode.encode
+                                )
+                    )
+            )
+            "bytes |> Bits.fromBytes |> Bits.toBytes == bytes"
+            (\bytes ->
+                bytes
+                    |> Bits.fromBytes
+                    |> Bits.toBytes
+                    |> Expect.equal bytes
             )
         ]
