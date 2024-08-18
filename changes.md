@@ -2,7 +2,8 @@
 
 #### 10.1.1
 
-  - make readme example slightly more believable
+  - make readme example slightly more believable.
+    Thanks for reporting, [@Janiczek](https://github.com/Janiczek)!
 
 ### 10.1.0
 
