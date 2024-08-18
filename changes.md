@@ -1,5 +1,9 @@
 # changes log
 
+#### 10.1.1
+
+  - make readme example slightly more believable
+
 ### 10.1.0
 
   - add `Bits.toBytes`.

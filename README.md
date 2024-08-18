@@ -35,9 +35,9 @@ generate =
                  , fifteenHexDigits |> List.drop 8 |> List.take 4 |> List.map mapToHex |> String.fromList
                  , "-"
                  , "4"
-                 , fifteenHexDigits |> List.drop 12 |> List.take 3 |> List.map mapToHex |> String.fromList
+                 , fifteenHexDigits |> List.drop 12 |> List.take 2 |> List.map mapToHex |> String.fromList
                  , "-"
-                 , fifteenHexDigits |> List.drop 15 |> List.take 1 |> List.map limitDigitRange8ToB |> List.map mapToHex |> String.fromList
+                 , fifteenHexDigits |> List.drop 14 |> List.take 1 |> List.map limitDigitRange8ToB |> List.map mapToHex |> String.fromList
                  ]
                     |> String.concat
                 )
